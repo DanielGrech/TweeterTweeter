@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 25
+/svn/!svn/ver/2/trunk/lib
+END
+twitter4j-core-2.2.1.jar
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/!svn/ver/2/trunk/lib/twitter4j-core-2.2.1.jar
+END
+signpost-jetty6-1.2.1.1.jar
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/!svn/ver/2/trunk/lib/signpost-jetty6-1.2.1.1.jar
+END
+signpost-core-1.2.1.1.jar
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/!svn/ver/2/trunk/lib/signpost-core-1.2.1.1.jar
+END
+droid-fu.jar
+K 25
+svn:wc:ra_dav:version-url
+V 38
+/svn/!svn/ver/2/trunk/lib/droid-fu.jar
+END
+signpost-commonshttp4-1.2.1.1.jar
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/!svn/ver/2/trunk/lib/signpost-commonshttp4-1.2.1.1.jar
+END

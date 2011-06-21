@@ -1,0 +1,113 @@
+package com.DGSD.TweeterTweeter;
+
+import twitter4j.Twitter;
+import twitter4j.TwitterFactory;
+import twitter4j.auth.AccessToken;
+import android.app.Application;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.content.res.Configuration;
+import android.os.Build;
+import android.preference.PreferenceManager;
+import android.util.Log;
+
+public class TTApplication extends Application implements
+	OnSharedPreferenceChangeListener {
+
+	private static final String TAG = TTApplication.class.getSimpleName();
+
+	public static String CONSUMER_KEY;
+
+	public static String CONSUMER_SECRET;
+
+	private Twitter mTwitter;
+	
+	private boolean mServiceRunning;
+
+	private TwitterSession mSession;
+
+	private AccessToken mAccessToken;
+
+	private SharedPreferences prefs;
+	
+	@Override
+	public void onCreate() {  
+		super.onCreate();
+		this.prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		this.prefs.registerOnSharedPreferenceChangeListener(this);
+
+		CONSUMER_KEY = getResources().getString(R.string.consumer_key);
+
+		CONSUMER_SECRET = getResources().getString(R.string.consumer_secret);
+
+		if(mTwitter == null) {
+			mTwitter = new TwitterFactory().getInstance();
+		}
+		
+		if(mSession == null) {
+			mSession = new TwitterSession(this);
+
+			mAccessToken = mSession.getAccessToken();
+
+			configureToken();
+		}
+
+		Log.i(TAG, "onCreated");
+	}
+
+	@Override
+	public void onTerminate() {  
+		super.onTerminate();
+		Log.i(TAG, "onTerminated");
+	}
+
+	@Override
+	public synchronized void onSharedPreferenceChanged(
+			SharedPreferences sharedPreferences, String key) { // 
+		mTwitter = null;
+	}
+
+	public boolean isHoneycombTablet() {
+		// Can use static final constants like HONEYCOMB, declared in later versions
+		// of the OS since they are inlined at compile time. This is guaranteed behavior.
+		return (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) 
+		&& (this.getResources().getConfiguration().screenLayout
+				& Configuration.SCREENLAYOUT_SIZE_MASK)
+				== Configuration.SCREENLAYOUT_SIZE_XLARGE;
+	}
+
+	private void configureToken() {
+		if (mAccessToken != null) {
+			try{
+				mTwitter.setOAuthConsumer(CONSUMER_KEY, CONSUMER_SECRET);
+			}catch(IllegalStateException e){
+				e.printStackTrace();
+			}
+			mTwitter.setOAuthAccessToken(mAccessToken);
+		}
+	}
+
+	public synchronized Twitter getTwitter() {
+		return mTwitter;
+	}
+
+	public TwitterSession getTwitterSession() {
+		return mSession;
+	}
+
+	public AccessToken getAccessToken() {
+		return mAccessToken;
+	}
+
+	public SharedPreferences getPrefs() {
+		return prefs;
+	}
+
+	public boolean isServiceRunning() {
+		return mServiceRunning;
+	}
+
+	public void setServiceRunning(boolean serviceRunning) { 
+		mServiceRunning = serviceRunning;
+	}
+}
