@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:droidfu="http://github.com/droidfu/schema"
+    android:id="@+id/listItem"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:padding="6dip"
+    android:focusable="false">
+    <com.github.droidfu.widgets.WebImageView
+        android:id="@+id/timeline_profile_image"
+        android:layout_width="50dp"
+        android:layout_height="fill_parent"
+        android:scaleType="centerInside"
+        android:layout_margin="6dip"
+        droidfu:autoLoad="false"
+        droidfu:progressDrawable="@drawable/ic_contact_picture"/>
+
+    <TextView
+         android:id="@+id/timeline_source"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:textSize="14.0sp" 
+         android:textStyle="bold"
+         android:singleLine="true"
+         android:layout_marginLeft="6.0dip"
+         android:layout_marginTop="4.0dip" 
+         android:layout_marginRight="7.0dip"
+         android:layout_toRightOf="@id/timeline_profile_image"
+         android:ellipsize="marquee"/>
+         
+    <TextView
+         android:id="@+id/timeline_date"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:textSize="14.0sp" 
+         android:singleLine="true"
+         android:layout_marginLeft="6.0dip"
+         android:layout_marginTop="4.0dip" 
+         android:layout_marginRight="7.0dip"
+         android:layout_toLeftOf="@id/timeline_source"
+         android:layout_alignParentRight="true"
+         android:ellipsize="marquee"/>
+
+    <com.DGSD.TweeterTweeter.UI.LinkEnabledTextView
+        android:id="@+id/timeline_tweet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/timeline_profile_image" 
+        android:layout_toLeftOf="@+id/favourite_star"
+        android:layout_below="@id/timeline_source"
+        android:layout_marginLeft="6.0dip" 
+        android:layout_marginRight="7.0dip"
+        android:gravity="center_vertical"
+        android:singleLine="false"
+        android:textSize="14.0sp" 
+        android:textColor="#ff888888"/>
+   
+    <ImageView
+        android:id="@+id/timeline_favourite_star"
+        android:layout_width="25px"
+        android:layout_height="fill_parent"
+        android:scaleType="centerInside"
+        android:layout_below="@id/timeline_date"
+        android:layout_alignRight="@id/timeline_date"
+        android:gravity="center_vertical"
+        android:visibility="gone"
+        android:src="@drawable/favourite_gold"/>
+</RelativeLayout>

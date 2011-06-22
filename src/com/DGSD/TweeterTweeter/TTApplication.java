@@ -1,10 +1,14 @@
 package com.DGSD.TweeterTweeter;
 
+import java.util.ArrayList;
+
+import twitter4j.IDs;
 import twitter4j.ResponseList;
 import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
+import twitter4j.User;
 import twitter4j.auth.AccessToken;
 import android.app.Application;
 import android.content.ContentValues;
@@ -138,15 +142,15 @@ OnSharedPreferenceChangeListener {
 			ResponseList<Status> timeline = mTwitter.getHomeTimeline();
 
 			long latestStatusCreatedAtTime = this.getStatusData()
-												.getLatestStatusCreatedAtTime();
+			.getLatestStatusCreatedAtTime();
 			int count = 0;
 
 			ContentValues values;
 			for (Status status : timeline) {
-				values = StatusData.createContentValues(Long.toString(status.getId()), 
+				values = StatusData.createTimelineContentValues(Long.toString(status.getId()), 
 						Long.toString(status.getCreatedAt().getTime()), status.getUser().getName(), 
 						status.getText(), status.getUser().getProfileImageURL().toString(),
-						status.isFavorited());
+						status.isFavorited(), status.getSource());
 
 				Log.d(TAG, "Got update with id " + status.getId() + ". Saving");
 
@@ -184,10 +188,10 @@ OnSharedPreferenceChangeListener {
 
 			ContentValues values;
 			for (Status status : timeline) {
-				values = StatusData.createContentValues(Long.toString(status.getId()), 
+				values = StatusData.createTimelineContentValues(Long.toString(status.getId()), 
 						Long.toString(status.getCreatedAt().getTime()), status.getUser().getName(), 
 						status.getText(), status.getUser().getProfileImageURL().toString(),
-						status.isFavorited());
+						status.isFavorited(), status.getSource());
 
 				Log.d(TAG, "Got update with id " + status.getId() + ". Saving");
 
@@ -199,7 +203,142 @@ OnSharedPreferenceChangeListener {
 			return;
 
 		} catch (RuntimeException e) {
-			Log.e(TAG, "Failed to fetch status updates", e);
+			Log.e(TAG, "Failed to fetch favourites", e);
+			return;
+		} catch (TwitterException e) {
+			Log.e(TAG, "Error connecting to Twitter service", e);
+			return;
+		}
+	}
+
+	// Connects to the online service and puts the latest followers into DB.
+	public synchronized void fetchFollowers() {  
+		Log.d(TAG, "Fetching Followers");
+		Twitter twitter = this.getTwitter();
+		if (twitter == null) {
+			Log.d(TAG, "Twitter connection info not initialized");
+			return;
+		}
+		try {
+			ArrayList<Long> mIds = new ArrayList<Long>();
+			long cursor = -1;
+
+			//Get the ids of all followers..
+			IDs ids;
+			do{
+				ids =  mTwitter.getFollowersIDs(cursor);
+
+				long[] idArray = ids.getIDs();
+
+				for(int i = 0, size=idArray.length; i<size ;i++)
+					mIds.add(idArray[i]);
+			}while( (cursor = ids.getNextCursor()) != 0);
+
+			long tempIds[] = new long[mIds.size()];
+			for(int i = 0, size = mIds.size(); i < size; i++)
+				tempIds[i] = mIds.get(i);
+
+			ResponseList<User> users = mTwitter.lookupUsers(tempIds);
+
+			ContentValues values;
+			for (User u : users) {
+				values = StatusData.createUserContentValues(u);
+
+				Log.d(TAG, "Got user: " + u.getName() + ". Saving");
+
+				this.getStatusData().insertOrIgnore(StatusData.FOLLOWERS_TABLE, values);
+			}
+
+			Log.d(TAG, "Finished getting followers");
+
+			return;
+
+		} catch (RuntimeException e) {
+			Log.e(TAG, "Failed to fetch followers", e);
+			return;
+		} catch (TwitterException e) {
+			Log.e(TAG, "Error connecting to Twitter service", e);
+			return;
+		}
+	}
+
+	// Connects to the online service and puts the latest following into DB.
+	public synchronized void fetchFollowing() {  
+		Log.d(TAG, "Fetching Friends");
+		Twitter twitter = this.getTwitter();
+		if (twitter == null) {
+			Log.d(TAG, "Twitter connection info not initialized");
+			return;
+		}
+		try {
+			ArrayList<Long> mIds = new ArrayList<Long>();
+			long cursor = -1;
+
+			//Get the ids of all friends..
+			IDs ids;
+			do{
+				ids =  mTwitter.getFriendsIDs(cursor);
+
+				long[] idArray = ids.getIDs();
+
+				for(int i = 0, size=idArray.length; i<size ;i++)
+					mIds.add(idArray[i]);
+			}while( (cursor = ids.getNextCursor()) != 0);
+
+			long tempIds[] = new long[mIds.size()];
+			for(int i = 0, size = mIds.size(); i < size; i++)
+				tempIds[i] = mIds.get(i);
+
+			ResponseList<User> users = mTwitter.lookupUsers(tempIds);
+
+			ContentValues values;
+			for (User u : users) {
+				values = StatusData.createUserContentValues(u);
+
+				Log.d(TAG, "Got user: " + u.getName() + ". Saving");
+
+				this.getStatusData().insertOrIgnore(StatusData.FOLLOWING_TABLE, values);
+			}
+
+			Log.d(TAG, "Finished getting friends");
+
+			return;
+
+		} catch (RuntimeException e) {
+			Log.e(TAG, "Failed to fetch friends", e);
+			return;
+		} catch (TwitterException e) {
+			Log.e(TAG, "Error connecting to Twitter service", e);
+			return;
+		}
+	}
+
+	// Connects to the online service and puts the latest following into DB.
+	public synchronized void fetchProfileInfo() {  
+		Log.d(TAG, "Fetching profile");
+		Twitter twitter = this.getTwitter();
+		if (twitter == null) {
+			Log.d(TAG, "Twitter connection info not initialized");
+			return;
+		}
+		try {
+
+			User u = mTwitter.showUser(mTwitter.getId());
+
+			if(u != null){
+				ContentValues values = StatusData.createUserContentValues(u);
+
+				Log.d(TAG, "Got profile");
+
+				this.getStatusData().insertOrIgnore(StatusData.PROFILE_TABLE, values);
+			}
+
+			Log.d(TAG, "Finished getting profile");
+
+			return;
+
+		} catch (RuntimeException e) {
+			Log.e(TAG, "Failed to fetch profile", e);
 			return;
 		} catch (TwitterException e) {
 			Log.e(TAG, "Error connecting to Twitter service", e);

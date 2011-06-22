@@ -6,10 +6,12 @@ import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 
 import com.DGSD.TweeterTweeter.Fragments.LoginFragment;
+import com.DGSD.TweeterTweeter.Fragments.StatusListFragment;
 
 public class TTActivity extends FragmentActivity {
 	
@@ -69,13 +71,17 @@ public class TTActivity extends FragmentActivity {
 				}else {
 					startService(new Intent(TTActivity.this, UpdaterService.class));
 					b.setText("Stop");
+					
+					getSupportFragmentManager().beginTransaction().replace(R.id.container, 
+							new StatusListFragment()).commit();
+					
 				}
 				
 				
 			}
 		});
 		
-		setContentView(b);
+		((ViewGroup)findViewById(R.id.container)).addView(b);
 	}
 	
 }

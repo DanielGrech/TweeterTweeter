@@ -14,19 +14,31 @@ public final class R {
     public static final class attr {
     }
     public static final class drawable {
-        public static final int icon=0x7f020000;
-        public static final int twitter_icon=0x7f020001;
-        public static final int word_icon=0x7f020002;
+        public static final int favourite_gold=0x7f020000;
+        public static final int ic_contact_picture=0x7f020001;
+        public static final int icon=0x7f020002;
+        public static final int twitter_icon=0x7f020003;
+        public static final int word_icon=0x7f020004;
     }
     public static final class id {
-        public static final int container=0x7f060003;
-        public static final int loginButton=0x7f060002;
-        public static final int loginLogo=0x7f060001;
-        public static final int loginfragmentContainer=0x7f060000;
+        public static final int container=0x7f060004;
+        public static final int favourite_star=0x7f06000a;
+        public static final int list=0x7f060000;
+        public static final int listItem=0x7f060005;
+        public static final int loginButton=0x7f060003;
+        public static final int loginLogo=0x7f060002;
+        public static final int loginfragmentContainer=0x7f060001;
+        public static final int timeline_date=0x7f060008;
+        public static final int timeline_favourite_star=0x7f06000b;
+        public static final int timeline_profile_image=0x7f060006;
+        public static final int timeline_source=0x7f060007;
+        public static final int timeline_tweet=0x7f060009;
     }
     public static final class layout {
-        public static final int login_fragment_layout=0x7f030000;
-        public static final int main=0x7f030001;
+        public static final int list_fragment_layout=0x7f030000;
+        public static final int login_fragment_layout=0x7f030001;
+        public static final int main=0x7f030002;
+        public static final int timeline_list_item=0x7f030003;
     }
     public static final class string {
         public static final int account_spinner=0x7f040003;
