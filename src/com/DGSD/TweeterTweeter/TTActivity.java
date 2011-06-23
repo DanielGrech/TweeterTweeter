@@ -11,7 +11,7 @@ import android.view.Window;
 import android.widget.Button;
 
 import com.DGSD.TweeterTweeter.Fragments.LoginFragment;
-import com.DGSD.TweeterTweeter.Fragments.StatusListFragment;
+import com.DGSD.TweeterTweeter.Fragments.TimelineFragment;
 
 public class TTActivity extends FragmentActivity {
 	
@@ -30,8 +30,8 @@ public class TTActivity extends FragmentActivity {
 		setContentView(R.layout.main);
 		
 		mApplication = (TTApplication)getApplication();
-
-		if(mApplication.getTwitterSession().getAccount() == null) {
+		
+		if(mApplication.getTwitterSession().getAccountList() == null) {
 			//Need to log in!
 			Log.i(TAG, "Need to log in..");
 			
@@ -73,7 +73,7 @@ public class TTActivity extends FragmentActivity {
 					b.setText("Stop");
 					
 					getSupportFragmentManager().beginTransaction().replace(R.id.container, 
-							new StatusListFragment()).commit();
+							TimelineFragment.newInstance("account2", null)).commit();
 					
 				}
 				

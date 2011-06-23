@@ -32,6 +32,8 @@ public class StatusData {
 	 * Various database columns.
 	 */
 	
+	public static final String C_ACCOUNT = "account";
+	
 	public static final String C_ID = "_id";
 
 	public static final String C_CREATED_AT = "created_at";
@@ -80,27 +82,27 @@ public class StatusData {
 		public void onCreate(SQLiteDatabase db) {
 			Log.i(TAG, "Creating database: " + DATABASE);
 			
-			db.execSQL("create table " + TIMELINE_TABLE + " (" + C_ID + " text primary key, "
+			db.execSQL("create table " + TIMELINE_TABLE + " (" + C_ACCOUNT + " text, " + C_ID + " text primary key, "
 					+ C_CREATED_AT + " text, " + C_USER + " text, " + C_TEXT + " text, " 
 					+ C_IMG + " text, " + C_FAV + " int, " + C_SRC + " text)");
 			
-			db.execSQL("create table " + FAVOURITES_TABLE + " (" + C_ID + " text primary key, "
+			db.execSQL("create table " + FAVOURITES_TABLE + " (" + C_ACCOUNT + " text, " + C_ID + " text primary key, "
 					+ C_CREATED_AT + " text, " + C_USER + " text, " + C_TEXT + " text, " 
 					+ C_IMG + " text, " + C_FAV + " int, " + C_SRC + " text)");
 			
-			db.execSQL("create table " + FOLLOWERS_TABLE + " (" + C_ID + " text primary key, "
+			db.execSQL("create table " + FOLLOWERS_TABLE + " (" + C_ACCOUNT + " text, " + C_ID + " text primary key, "
 					+ C_CREATED_AT + " text, " + C_NAME + " text, " + C_SCREEN_NAME + " text, "
 					+ C_DESC + " text, " + C_FAV + " int, " + C_FOLLOWERS + " int, "
 					+ C_FRIENDS + " int, " + C_NUM_STAT + " int, " + C_TEXT + " text, " 
 					+ C_IMG + " text)");
 			
-			db.execSQL("create table " + FOLLOWING_TABLE + " (" + C_ID + " text primary key, "
+			db.execSQL("create table " + FOLLOWING_TABLE + " (" + C_ACCOUNT + " text, " + C_ID + " text primary key, "
 					+ C_CREATED_AT + " text, " + C_NAME + " text, " + C_SCREEN_NAME + " text, "
 					+ C_DESC + " text, " + C_FAV + " int, " + C_FOLLOWERS + " int, "
 					+ C_FRIENDS + " int, " + C_NUM_STAT + " int, " + C_TEXT + " text, " 
 					+ C_IMG + " text)");
 			
-			db.execSQL("create table " + PROFILE_TABLE + " (" + C_ID + " text primary key, "
+			db.execSQL("create table " + PROFILE_TABLE + " (" + C_ACCOUNT + " text, " + C_ID + " text primary key, "
 					+ C_CREATED_AT + " text, " + C_NAME + " text, " + C_SCREEN_NAME + " text, "
 					+ C_DESC + " text, " + C_FAV + " int, " + C_FOLLOWERS + " int, "
 					+ C_FRIENDS + " int, " + C_NUM_STAT + " int, " + C_TEXT + " text, " 
@@ -125,11 +127,12 @@ public class StatusData {
 		Log.i(TAG, "Initialized data");
 	}
 
-	public static synchronized ContentValues createTimelineContentValues(String id, 
-			String createdAt, String user, String text, String imgUrl, 
+	public static synchronized ContentValues createTimelineContentValues(String account,
+			String id, String createdAt, String user, String text, String imgUrl, 
 			boolean isFav, String source) {
 		ContentValues values = new ContentValues();
 
+		values.put(C_ACCOUNT, account);
 		values.put(C_ID, id);
 		values.put(C_CREATED_AT, createdAt);
 		values.put(C_TEXT, text);
@@ -141,9 +144,10 @@ public class StatusData {
 		return values;
 	}
 
-	public static synchronized ContentValues createUserContentValues(User u) {
+	public static synchronized ContentValues createUserContentValues(String account, User u) {
 		ContentValues values = new ContentValues();
 		
+		values.put(C_ACCOUNT, account);
 		values.put(C_ID, Long.toString(u.getId()) );
 		values.put(C_CREATED_AT, Long.toString(u.getCreatedAt().getTime()) );
 		values.put(C_NAME, u.getName() );
@@ -191,31 +195,36 @@ public class StatusData {
 	 *
 	 * @return Cursor where the columns are _id, created_at, user, txt, usrImgUrl
 	 */
-	public Cursor getStatusUpdates() {   
+	public Cursor getStatusUpdates(String accountId) {   
 		SQLiteDatabase db = this.dbHelper.getReadableDatabase();
-		return db.query(TIMELINE_TABLE, null, null, null, null, null, GET_ALL_ORDER_BY);
+		return db.query(TIMELINE_TABLE, null, C_ACCOUNT + "=\"" + accountId + "\"", 
+				null, null, null, GET_ALL_ORDER_BY);
 	}
 	
-	public Cursor getFavourites() {   
+	public Cursor getFavourites(String accountId) {   
 		SQLiteDatabase db = this.dbHelper.getReadableDatabase();
-		return db.query(FAVOURITES_TABLE, null, null, null, null, null, GET_ALL_ORDER_BY);
+		return db.query(FAVOURITES_TABLE, null, C_ACCOUNT + "=\"" + accountId + "\"", 
+				null, null, null, GET_ALL_ORDER_BY);
 	}
 	
-	public Cursor getFriends() {   
+	public Cursor getFriends(String accountId) {   
 		SQLiteDatabase db = this.dbHelper.getReadableDatabase();
-		return db.query(FOLLOWING_TABLE, null, null, null, null, null, GET_ALL_ORDER_BY);
+		return db.query(FOLLOWING_TABLE, null, C_ACCOUNT + "=\"" + accountId + "\"", 
+				null, null, null, GET_ALL_ORDER_BY);
+		
 	}
 	
-	public Cursor getFollowers() {   
+	public Cursor getFollowers(String accountId) {   
 		SQLiteDatabase db = this.dbHelper.getReadableDatabase();
-		return db.query(FOLLOWERS_TABLE, null, null, null, null, null, GET_ALL_ORDER_BY);
+		return db.query(FOLLOWERS_TABLE, null, C_ACCOUNT + "=\"" + accountId + "\"", 
+				null, null, null, GET_ALL_ORDER_BY);
 	}
 
 	/**
 	 *
 	 * @return Timestamp of the latest status we ahve it the database
 	 */
-	public long getLatestStatusCreatedAtTime() {  
+	public long getLatestStatusCreatedAtTime(String accountId) {  
 		SQLiteDatabase db = this.dbHelper.getReadableDatabase();
 		try {
 			Cursor cursor = db.query(TIMELINE_TABLE, MAX_CREATED_AT_COLUMNS, null, null, null,
@@ -235,7 +244,7 @@ public class StatusData {
 	 * @param id of the status we are looking for
 	 * @return Text of the status
 	 */
-	public String getStatusTextById(long id) {  // 
+	public String getStatusTextById(String accountId, long id) {  // 
 		SQLiteDatabase db = this.dbHelper.getReadableDatabase();
 		try {
 			Cursor cursor = db.query(TIMELINE_TABLE, DB_TEXT_COLUMNS, C_ID + "=" + id, null,

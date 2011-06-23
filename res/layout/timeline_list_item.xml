@@ -8,10 +8,12 @@
     android:focusable="false">
     <com.github.droidfu.widgets.WebImageView
         android:id="@+id/timeline_profile_image"
-        android:layout_width="50dp"
-        android:layout_height="fill_parent"
+        android:layout_width="60dip"
+        android:layout_height="60dip"
         android:scaleType="centerInside"
         android:layout_margin="6dip"
+        android:adjustViewBounds="true"
+        android:gravity="center_vertical"
         droidfu:autoLoad="false"
         droidfu:progressDrawable="@drawable/ic_contact_picture"/>
 

@@ -3,12 +3,14 @@ package com.DGSD.TweeterTweeter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.util.Set;
 
 import oauth.signpost.OAuthProvider;
 import oauth.signpost.basic.DefaultOAuthProvider;
 import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
+import twitter4j.TwitterFactory;
 import twitter4j.User;
 import twitter4j.auth.AccessToken;
 import android.app.ProgressDialog;
@@ -41,25 +43,34 @@ public class TwitterConnection {
 	
 	private static final String TAG = "TwitterApp";
 
+	private String mAccountId;
+	
 	public TwitterConnection(TTApplication app, Context context) {
 
 		mApplication = app;
 		
 		mContext = context;
 		
-		mTwitter = mApplication.getTwitter(); 
+		mTwitter = new TwitterFactory().getInstance(); 
+		
 		mSession = mApplication.getTwitterSession();
+		
 		mProgressDlg = new ProgressDialog(mContext);
 
 		mProgressDlg.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
 		mHttpOauthConsumer = new CommonsHttpOAuthConsumer(TTApplication.CONSUMER_KEY, 
 				TTApplication.CONSUMER_SECRET);
+		
 		mHttpOauthprovider = new DefaultOAuthProvider("http://twitter.com/oauth/request_token",
 				"http://twitter.com/oauth/access_token",
-		"http://twitter.com/oauth/authorize");
+				"http://twitter.com/oauth/authorize");
 
-		mAccessToken = mSession.getAccessToken();
+		Set<String> mAccountList = mSession.getAccountList();
+		
+		mAccountId = "account" + (mAccountList == null ? 1 : mAccountList.size() + 1);
+		
+		mAccessToken = mSession.getAccessToken(mAccountId);
 
 		configureToken();
 	}
@@ -85,18 +96,18 @@ public class TwitterConnection {
 
 	public void resetAccessToken() {
 		if (mAccessToken != null) {
-			mSession.resetAccessToken();
+			mSession.resetAccessToken(mAccountId);
 
 			mAccessToken = null;
 		}
 	}
 
-	public String getAccount(){
-		return mSession.getAccount();
-	}
+//	public String getAccount(String account){
+//		return mSession.getAccount();
+//	}
 
 	public String getUsername(String account) {
-		return mSession.getUsername();
+		return mSession.getUsername(account);
 	}
 
 	public Twitter getObject(){
@@ -158,7 +169,7 @@ public class TwitterConnection {
 
 					User user = mTwitter.verifyCredentials();
 
-					mSession.storeAccessToken(mAccessToken, user.getScreenName());
+					mSession.storeAccessToken(mAccountId, mAccessToken, user.getScreenName());
 
 					what = 0;
 				} catch (Exception e){

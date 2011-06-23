@@ -1,5 +1,7 @@
 package com.DGSD.TweeterTweeter;
 
+import java.util.HashSet;
+
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
@@ -93,12 +95,17 @@ public class UpdaterService extends Service {
 			while (updaterService.runFlag) {
 				Log.d(TAG, "Timeline Updater running");
 				try {
-
-					// Get the timeline from the cloud & save to db
-					int newUpdates = mApplication.fetchStatusUpdates(); 
-
-					if (newUpdates > 0) { 
-						Log.d(TAG, "We have new stat-i");
+					HashSet<String> accounts = mApplication.getTwitterSession().getAccountList();
+					
+					if(accounts != null) {
+						for(String a : accounts) {
+        					// Get the timeline from the cloud & save to db
+        					int newUpdates = mApplication.fetchStatusUpdates(a); 
+        
+        					if (newUpdates > 0) { 
+        						Log.d(TAG, "We have new stat-i");
+        					}
+						}
 					}
 
 					Log.d(TAG, "Timeline Updater ran");
@@ -122,8 +129,14 @@ public class UpdaterService extends Service {
 			while (updaterService.runFlag) {
 				Log.d(TAG, "Favourites Updater running");
 				try {
-					// Get favourites from the cloud & save to db
-					mApplication.fetchFavourites();
+					HashSet<String> accounts = mApplication.getTwitterSession().getAccountList();
+					
+					if(accounts != null) {
+						for(String a : accounts) {
+        					// Get favourites from the cloud & save to db
+        					mApplication.fetchFavourites(a);
+						}
+					}
 
 					Log.d(TAG, "Favourites Updater ran");
 					Thread.sleep(FAVOURITES_DELAY);
@@ -146,15 +159,24 @@ public class UpdaterService extends Service {
 			while (updaterService.runFlag) {
 				Log.d(TAG, "Followers Updater running");
 				try {
-					// Get followers from the cloud & save to db
-					mApplication.fetchFollowers();
-
-					// Get following from the cloud & save to db
-					mApplication.fetchFollowing();
 					
-					// Get information for the current user..
-					mApplication.fetchProfileInfo();
+					HashSet<String> accounts = mApplication.getTwitterSession().getAccountList();
 					
+					if(accounts != null) {
+						for(String a : accounts) {
+        					// Get followers from the cloud & save to db
+        					mApplication.fetchFollowers(a);
+        
+        					// Get following from the cloud & save to db
+        					mApplication.fetchFollowing(a);
+        					
+        					// Get information for the current user..
+        					mApplication.fetchProfileInfo(a);
+						}
+					}
+					else {
+						Log.d(TAG, "Accounts List was null");
+					}
 					Log.d(TAG, "Followers Updater ran");
 					Thread.sleep(FOLLOWERS_DELAY);
 				} catch (InterruptedException e) {

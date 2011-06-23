@@ -80,5 +80,4 @@ public abstract class BaseStatusFragment extends BaseFragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
 		return super.onCreateView(inflater, container, savedInstanceState);
 	}
-	
 }

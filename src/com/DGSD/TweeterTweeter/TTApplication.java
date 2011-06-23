@@ -1,6 +1,8 @@
 package com.DGSD.TweeterTweeter;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 
 import twitter4j.IDs;
 import twitter4j.ResponseList;
@@ -28,13 +30,15 @@ OnSharedPreferenceChangeListener {
 
 	public static String CONSUMER_SECRET;
 
-	private Twitter mTwitter;
+	private HashMap<String,Twitter> mTwitterList;
+	
+	private HashSet<String> mAccountList;
+	
+	private HashMap<String, AccessToken > mAccessTokenList;
 
 	private boolean mServiceRunning;
 
 	private TwitterSession mSession;
-
-	private AccessToken mAccessToken;
 
 	private SharedPreferences prefs;
 
@@ -54,16 +58,30 @@ OnSharedPreferenceChangeListener {
 
 		CONSUMER_SECRET = getResources().getString(R.string.consumer_secret);
 
-		if(mTwitter == null) {
-			mTwitter = new TwitterFactory().getInstance();
+		if(mAccessTokenList == null) {
+			mAccessTokenList = new HashMap<String, AccessToken> ();
 		}
 
+		if(mTwitterList == null) {
+			mTwitterList = new HashMap<String, Twitter>();
+		}
+		
 		if(mSession == null) {
 			mSession = new TwitterSession(this);
 
-			mAccessToken = mSession.getAccessToken();
-
-			configureToken();
+			mAccountList = mSession.getAccountList();
+			
+			if(mAccountList != null) {
+    			for(String account : mAccountList) {
+    				AccessToken at = mSession.getAccessToken(account);
+    				Twitter t = new TwitterFactory().getInstance();
+    				
+    				mAccessTokenList.put(account,at);
+    				mTwitterList.put(account,t);
+    				
+    				configureToken(at, t);
+    			}
+			}
 		}
 
 		Log.i(TAG, "onCreated");
@@ -77,8 +95,9 @@ OnSharedPreferenceChangeListener {
 
 	@Override
 	public synchronized void onSharedPreferenceChanged(
-			SharedPreferences sharedPreferences, String key) { // 
-		mTwitter = null;
+			SharedPreferences sharedPreferences, String key) { 
+		Log.i(TAG, "Setting mTwitterList to null");
+		mTwitterList = null;
 	}
 
 	public boolean isHoneycombTablet() {
@@ -90,27 +109,27 @@ OnSharedPreferenceChangeListener {
 				== Configuration.SCREENLAYOUT_SIZE_XLARGE;
 	}
 
-	private void configureToken() {
-		if (mAccessToken != null) {
+	private void configureToken(AccessToken at, Twitter t) {
+		if (at != null) {
 			try{
-				mTwitter.setOAuthConsumer(CONSUMER_KEY, CONSUMER_SECRET);
+				t.setOAuthConsumer(CONSUMER_KEY, CONSUMER_SECRET);
 			}catch(IllegalStateException e){
 				e.printStackTrace();
 			}
-			mTwitter.setOAuthAccessToken(mAccessToken);
+			t.setOAuthAccessToken(at);
 		}
 	}
 
-	public synchronized Twitter getTwitter() {
-		return mTwitter;
+	public synchronized Twitter getTwitter(String accountId) {
+		return mTwitterList.get(accountId);
 	}
 
 	public TwitterSession getTwitterSession() {
 		return mSession;
 	}
 
-	public AccessToken getAccessToken() {
-		return mAccessToken;
+	public AccessToken getAccessToken(String accountId) {
+		return mAccessTokenList.get(accountId);
 	}
 
 	public SharedPreferences getPrefs() {
@@ -131,24 +150,24 @@ OnSharedPreferenceChangeListener {
 
 	// Connects to the online service and puts the latest statuses into DB.
 	// Returns the count of new statuses
-	public synchronized int fetchStatusUpdates() {  
+	public synchronized int fetchStatusUpdates(String accountId) {  
 		Log.d(TAG, "Fetching status updates");
-		Twitter twitter = this.getTwitter();
+		Twitter twitter = mTwitterList.get(accountId);
 		if (twitter == null) {
 			Log.d(TAG, "Twitter connection info not initialized");
 			return 0;
 		}
 		try {
-			ResponseList<Status> timeline = mTwitter.getHomeTimeline();
+			ResponseList<Status> timeline = twitter.getHomeTimeline();
 
 			long latestStatusCreatedAtTime = this.getStatusData()
-			.getLatestStatusCreatedAtTime();
+			.getLatestStatusCreatedAtTime(accountId);
 			int count = 0;
 
 			ContentValues values;
 			for (Status status : timeline) {
-				values = StatusData.createTimelineContentValues(Long.toString(status.getId()), 
-						Long.toString(status.getCreatedAt().getTime()), status.getUser().getName(), 
+				values = StatusData.createTimelineContentValues(accountId, Long.toString(status.getId()), 
+						Long.toString(status.getCreatedAt().getTime()), status.getUser().getScreenName(), 
 						status.getText(), status.getUser().getProfileImageURL().toString(),
 						status.isFavorited(), status.getSource());
 
@@ -176,20 +195,20 @@ OnSharedPreferenceChangeListener {
 	}
 
 	// Connects to the online service and puts the latest favourites into DB.
-	public synchronized void fetchFavourites() {  
+	public synchronized void fetchFavourites(String accountId) {  
 		Log.d(TAG, "Fetching Favourites");
-		Twitter twitter = this.getTwitter();
+		Twitter twitter = mTwitterList.get(accountId);
 		if (twitter == null) {
 			Log.d(TAG, "Twitter connection info not initialized");
 			return;
 		}
 		try {
-			ResponseList<Status> timeline = mTwitter.getFavorites();
+			ResponseList<Status> timeline = twitter.getFavorites();
 
 			ContentValues values;
 			for (Status status : timeline) {
-				values = StatusData.createTimelineContentValues(Long.toString(status.getId()), 
-						Long.toString(status.getCreatedAt().getTime()), status.getUser().getName(), 
+				values = StatusData.createTimelineContentValues(accountId, Long.toString(status.getId()), 
+						Long.toString(status.getCreatedAt().getTime()), status.getUser().getScreenName(), 
 						status.getText(), status.getUser().getProfileImageURL().toString(),
 						status.isFavorited(), status.getSource());
 
@@ -212,9 +231,9 @@ OnSharedPreferenceChangeListener {
 	}
 
 	// Connects to the online service and puts the latest followers into DB.
-	public synchronized void fetchFollowers() {  
+	public synchronized void fetchFollowers(String accountId) {  
 		Log.d(TAG, "Fetching Followers");
-		Twitter twitter = this.getTwitter();
+		Twitter twitter = mTwitterList.get(accountId);
 		if (twitter == null) {
 			Log.d(TAG, "Twitter connection info not initialized");
 			return;
@@ -226,7 +245,7 @@ OnSharedPreferenceChangeListener {
 			//Get the ids of all followers..
 			IDs ids;
 			do{
-				ids =  mTwitter.getFollowersIDs(cursor);
+				ids =  twitter.getFollowersIDs(cursor);
 
 				long[] idArray = ids.getIDs();
 
@@ -238,13 +257,13 @@ OnSharedPreferenceChangeListener {
 			for(int i = 0, size = mIds.size(); i < size; i++)
 				tempIds[i] = mIds.get(i);
 
-			ResponseList<User> users = mTwitter.lookupUsers(tempIds);
+			ResponseList<User> users = twitter.lookupUsers(tempIds);
 
 			ContentValues values;
 			for (User u : users) {
-				values = StatusData.createUserContentValues(u);
+				values = StatusData.createUserContentValues(accountId, u);
 
-				Log.d(TAG, "Got user: " + u.getName() + ". Saving");
+				Log.d(TAG, "Got user: " + u.getScreenName() + ". Saving");
 
 				this.getStatusData().insertOrIgnore(StatusData.FOLLOWERS_TABLE, values);
 			}
@@ -263,9 +282,9 @@ OnSharedPreferenceChangeListener {
 	}
 
 	// Connects to the online service and puts the latest following into DB.
-	public synchronized void fetchFollowing() {  
+	public synchronized void fetchFollowing(String accountId) {  
 		Log.d(TAG, "Fetching Friends");
-		Twitter twitter = this.getTwitter();
+		Twitter twitter = mTwitterList.get(accountId);
 		if (twitter == null) {
 			Log.d(TAG, "Twitter connection info not initialized");
 			return;
@@ -277,7 +296,7 @@ OnSharedPreferenceChangeListener {
 			//Get the ids of all friends..
 			IDs ids;
 			do{
-				ids =  mTwitter.getFriendsIDs(cursor);
+				ids =  twitter.getFriendsIDs(cursor);
 
 				long[] idArray = ids.getIDs();
 
@@ -289,13 +308,13 @@ OnSharedPreferenceChangeListener {
 			for(int i = 0, size = mIds.size(); i < size; i++)
 				tempIds[i] = mIds.get(i);
 
-			ResponseList<User> users = mTwitter.lookupUsers(tempIds);
+			ResponseList<User> users = twitter.lookupUsers(tempIds);
 
 			ContentValues values;
 			for (User u : users) {
-				values = StatusData.createUserContentValues(u);
+				values = StatusData.createUserContentValues(accountId, u);
 
-				Log.d(TAG, "Got user: " + u.getName() + ". Saving");
+				Log.d(TAG, "Got user: " + u.getScreenName() + ". Saving");
 
 				this.getStatusData().insertOrIgnore(StatusData.FOLLOWING_TABLE, values);
 			}
@@ -314,19 +333,19 @@ OnSharedPreferenceChangeListener {
 	}
 
 	// Connects to the online service and puts the latest following into DB.
-	public synchronized void fetchProfileInfo() {  
+	public synchronized void fetchProfileInfo(String accountId) {  
 		Log.d(TAG, "Fetching profile");
-		Twitter twitter = this.getTwitter();
+		Twitter twitter = mTwitterList.get(accountId);
 		if (twitter == null) {
 			Log.d(TAG, "Twitter connection info not initialized");
 			return;
 		}
 		try {
 
-			User u = mTwitter.showUser(mTwitter.getId());
+			User u = twitter.showUser(twitter.getId());
 
 			if(u != null){
-				ContentValues values = StatusData.createUserContentValues(u);
+				ContentValues values = StatusData.createUserContentValues(accountId, u);
 
 				Log.d(TAG, "Got profile");
 
