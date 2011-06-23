@@ -1,0 +1,46 @@
+
+- PAGING of data
+- Easy switching between views 
+    - I.e no defaulted home screen every time app opens 
+    - Direct links/sliding to change views 
+- Manual Retweet editing 
+- 'Reply to all' 
+- Picture thumbnails (I.e. if a picture is sent in a link 
+- Contacts integration 
+- Tweet 'scheduling' 
+- View, Create & Edit Lists 
+- Widgets 
+- Tweet Geotagging 
+- Viewing geotagged tweets on a map. 
+    - View nearby tweets on a map 
+- Font picker 
+    - Change font size, colour, link colour etc 
+- When composing tweets, select list to 'send as'.. 
+- Photo & Video uploading 
+- Conversation view 
+- Remember timeline position 
+- Stylized list dividers 
+- 'Shake to refresh' 
+- Colour tag individual people 
+- Enlarge Profile picture 
+        - Use Sony Ericsson ImageZoomView 
+- Mentions 
+- URL Shortening 
+- Look up username whilst composing new tweet 
+- Block/report user 
+- Android share integration 
+- Background notifications 
+- Edit profile information 
+- Follow/Unfollow user 
+
+- Search 
+    - Save searches 
+    - Search users 
+    - Search tweets 
+    - Search trends 
+- Retweets (Should cache own..)
+    - Of my
+    - To me 
+    - By me
+- Direct messages 
+- Delete a tweet 
