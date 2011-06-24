@@ -37,12 +37,16 @@ public final class R {
         public static final int action_item_selected=0x7f020001;
         public static final int arrow_down=0x7f020002;
         public static final int arrow_up=0x7f020003;
-        public static final int favourite_gold=0x7f020004;
-        public static final int ic_contact_picture=0x7f020005;
-        public static final int icon=0x7f020006;
-        public static final int popup=0x7f020007;
-        public static final int twitter_icon=0x7f020008;
-        public static final int word_icon=0x7f020009;
+        public static final int favourite=0x7f020004;
+        public static final int favourite_gold=0x7f020005;
+        public static final int ic_contact_picture=0x7f020006;
+        public static final int icon=0x7f020007;
+        public static final int popup=0x7f020008;
+        public static final int reply=0x7f020009;
+        public static final int retweet=0x7f02000a;
+        public static final int share=0x7f02000b;
+        public static final int twitter_icon=0x7f02000c;
+        public static final int word_icon=0x7f02000d;
     }
     public static final class id {
         public static final int arrow_down=0x7f08000a;

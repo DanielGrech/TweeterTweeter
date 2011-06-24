@@ -1,10 +1,7 @@
 package com.DGSD.TweeterTweeter.Fragments;
 
 import twitter4j.Paging;
-import twitter4j.ResponseList;
-import twitter4j.Status;
 import twitter4j.TwitterException;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.util.Log;
@@ -54,25 +51,24 @@ public class RetweetsByFragment extends BaseStatusFragment {
 	public synchronized void setupList() throws TwitterException {
 		Log.i(TAG, "Setting up list");
 
-		Cursor cursor;
 		if(mUserName == null) {
 			//We have this info in the db already..
-			cursor = mApplication.getStatusData().getRetweetsBy(mAccountId);
+			mCursor = mApplication.getStatusData().getRetweetsBy(mAccountId);
 			
-			getActivity().startManagingCursor(cursor);
+			getActivity().startManagingCursor(mCursor);
 
 			mAdapter = new SimpleCursorAdapter(getActivity(), R.layout.timeline_list_item, 
-					cursor, FROM, TO, 0);
+					mCursor, FROM, TO, 0);
 
 			((SimpleCursorAdapter)mAdapter).setViewBinder(mViewBinder);
 		}
 		else {
 			//We need to download the info from the network..
 			Paging p = new Paging(pageNum, ELEMENTS_PER_PAGE);
-			ResponseList<Status> favsList = mApplication.getTwitter(mAccountId).getRetweetedByUser(mUserName, p);
+			mDataList = mApplication.getTwitter(mAccountId).getRetweetedByUser(mUserName, p);
 			pageNum++;
 			
-			mAdapter = new TimelineAdapter(getActivity(), favsList);
+			mAdapter = new TimelineAdapter(getActivity(), mDataList);
 		}
 	}
 

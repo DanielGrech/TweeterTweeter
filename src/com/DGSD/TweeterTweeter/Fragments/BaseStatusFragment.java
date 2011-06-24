@@ -1,5 +1,8 @@
 package com.DGSD.TweeterTweeter.Fragments;
 
+import twitter4j.ResponseList;
+import twitter4j.Status;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.widget.SimpleCursorAdapter.ViewBinder;
@@ -8,27 +11,49 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.DGSD.TweeterTweeter.R;
 import com.DGSD.TweeterTweeter.StatusData;
+import com.DGSD.TweeterTweeter.UI.ActionItem;
+import com.DGSD.TweeterTweeter.UI.QuickAction;
 import com.github.droidfu.widgets.WebImageView;
 
 public abstract class BaseStatusFragment extends BaseFragment {
 
 	private static final String TAG = BaseStatusFragment.class.getSimpleName();
-	
+
 	protected static final String[] FROM = { StatusData.C_CREATED_AT, StatusData.C_USER,
 	    StatusData.C_TEXT, StatusData.C_IMG, StatusData.C_FAV };
 	
 	protected static final int[] TO = {R.id.timeline_date, R.id.timeline_source, R.id.timeline_tweet,
 		R.id.timeline_profile_image, R.id.timeline_favourite_star }; 
 	
+	private static final int TWEET_ID_COLUMN = 1;
+	
+	protected QuickAction mQuickAction;
+	
+	protected final ActionItem mReplyAction = new ActionItem();
+
+	protected final ActionItem mRetweetAction = new ActionItem();
+
+	protected final ActionItem mFavouriteAction = new ActionItem();
+
+	protected final ActionItem mShareAction = new ActionItem();
+	
+	protected Cursor mCursor;
+	
+	protected ResponseList<Status> mDataList;
+	
 	//Adjust data from database for display
 	protected static final ViewBinder mViewBinder = new ViewBinder() { 
 
 		@Override
-	    public boolean setViewValue(View view, Cursor cursor, int columnIndex) { 
+	    public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
+			
 	    	switch(view.getId()){
 	    		case R.id.timeline_date:
 	    			long timestamp = -1;
@@ -74,10 +99,94 @@ public abstract class BaseStatusFragment extends BaseFragment {
 	@Override
 	public void onCreate(Bundle savedInstance){
 		super.onCreate(savedInstance);
+		
+		setRetainInstance(true);
+		
+		createPopupActions();
 	}
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
 		return super.onCreateView(inflater, container, savedInstanceState);
+	}
+	
+	@Override
+	public void onActivityCreated(Bundle savedInstance) {
+		super.onActivityCreated(savedInstance);
+		
+		mListView.setOnItemLongClickListener(new OnItemLongClickListener(){
+			@Override
+			public boolean onItemLongClick(AdapterView<?> parent, View view, 
+					int pos, long id) {
+				
+				//Get available tweet data..
+				/*
+				 * TODO: Should just return a whole data structure with all details possible
+				 */
+				long tweet_id = getTweetId(pos);
+				
+				if(tweet_id == -1) {
+					//We couldn't get a tweet id :(
+					Toast.makeText(getActivity(), 
+							"Error getting data for tweet", Toast.LENGTH_SHORT).show();
+					
+					return false;
+				}
+				
+				Log.i(TAG, "TWEET ID: " + tweet_id);
+				
+				//Set the listeners for each item
+				/*
+				 * TODO: Set OnClickListeners for each ActionItem
+				 */
+				
+				//Add action items to the popup and display!
+				mQuickAction = new QuickAction(view);
+
+				mQuickAction.addActionItem(mReplyAction);
+				mQuickAction.addActionItem(mRetweetAction);
+				mQuickAction.addActionItem(mFavouriteAction);
+				mQuickAction.addActionItem(mShareAction);
+				mQuickAction.setAnimStyle(QuickAction.ANIM_AUTO);
+				
+				mQuickAction.show();
+				
+				return false;
+			}
+			
+		});
+	}
+	
+	private long getTweetId(int pos) {
+		long retval = -1;
+		
+		try{
+    		if(mCursor != null && mCursor.moveToPosition(pos)) {
+    			retval = Long.valueOf(mCursor.getString(TWEET_ID_COLUMN));
+    		}
+    		else if(mDataList != null) {
+    			retval = mDataList.get(pos).getId();
+    		}
+		}catch(RuntimeException e) {
+    			Log.e(TAG, "Error getting tweet id", e);
+    	}
+		
+		return retval;
+	}
+	
+	private void createPopupActions(){
+		Resources res = getActivity().getResources();
+		
+		//mReplyAction.setTitle("Reply");
+		mReplyAction.setIcon(res.getDrawable(R.drawable.reply));
+
+		//mRetweetAction.setTitle("Retweet");
+		mRetweetAction.setIcon(res.getDrawable(R.drawable.retweet));
+
+		//mFavouriteAction.setTitle("Favourite");
+		mFavouriteAction.setIcon(res.getDrawable(R.drawable.favourite));
+
+		//mShareAction.setTitle("Share");
+		mShareAction.setIcon(res.getDrawable(R.drawable.share));
 	}
 }

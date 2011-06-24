@@ -235,6 +235,9 @@ public class QuickAction extends CustomPopupWindow {
 		if (title != null) {			
 			text.setText(title);
 		}
+		else {
+			text.setVisibility(View.GONE);
+		}
 		
 		if (listener != null) {
 			container.setOnClickListener(listener);

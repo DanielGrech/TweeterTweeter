@@ -16,7 +16,7 @@
         
     	<LinearLayout
 	    	android:id="@+id/tracks"
-	    	android:orientation="vertical"
+	    	android:orientation="horizontal"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:layout_weight="1"

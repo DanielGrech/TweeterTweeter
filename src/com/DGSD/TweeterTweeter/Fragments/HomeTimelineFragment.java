@@ -1,6 +1,5 @@
 package com.DGSD.TweeterTweeter.Fragments;
 
-import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.util.Log;
@@ -43,14 +42,27 @@ public class HomeTimelineFragment extends BaseStatusFragment {
 	}
 	
 	@Override
+	public void onDestroy() {
+		super.onDetach();
+		try{
+			if(mCursor != null) {
+				mCursor.close();
+			}
+		}catch(RuntimeException e) {
+			Log.e(TAG, "Error closing cursor", e);
+		}
+		Log.i(TAG, "Destroying Fragment");
+	}
+	
+	@Override
 	public synchronized void setupList() {
 		Log.i(TAG, "Setting up list");
 		
-		Cursor cursor = mApplication.getStatusData().getStatusUpdates(mAccountId);
-		getActivity().startManagingCursor(cursor);
+		mCursor = mApplication.getStatusData().getStatusUpdates(mAccountId);
+		//getActivity().startManagingCursor(mCursor);
 		
 		mAdapter = new SimpleCursorAdapter(getActivity(), R.layout.timeline_list_item, 
-				cursor, FROM, TO, 0);
+				mCursor, FROM, TO, 0);
 		
 		((SimpleCursorAdapter)mAdapter).setViewBinder(mViewBinder);
 	}

@@ -202,9 +202,6 @@ public class StatusData {
 	}
 
 	public void insertOrIgnore(String table, ContentValues values) {  
-		Log.d(TAG, "inserting values");
-		
-		
 		SQLiteDatabase db = this.dbHelper.getWritableDatabase();  
 		try {
 			db.insertWithOnConflict(table, null, values,
