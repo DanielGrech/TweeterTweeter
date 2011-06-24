@@ -15,12 +15,12 @@ import android.view.ViewGroup;
 import com.DGSD.TweeterTweeter.R;
 import com.DGSD.TweeterTweeter.TimelineAdapter;
 
-public class TimelineFragment extends BaseStatusFragment {
+public class RetweetsByFragment extends BaseStatusFragment {
 
-	private static final String TAG = TimelineFragment.class.getSimpleName();
+	private static final String TAG = RetweetsByFragment.class.getSimpleName();
 
-	public static TimelineFragment newInstance(String accountId, String user){
-		TimelineFragment f = new TimelineFragment();
+	public static RetweetsByFragment newInstance(String accountId, String user){
+		RetweetsByFragment f = new RetweetsByFragment();
 
 		// Supply index input as an argument.
 		Bundle args = new Bundle();
@@ -57,7 +57,7 @@ public class TimelineFragment extends BaseStatusFragment {
 		Cursor cursor;
 		if(mUserName == null) {
 			//We have this info in the db already..
-			cursor = mApplication.getStatusData().getStatusUpdates(mAccountId);
+			cursor = mApplication.getStatusData().getRetweetsBy(mAccountId);
 			
 			getActivity().startManagingCursor(cursor);
 
@@ -69,7 +69,7 @@ public class TimelineFragment extends BaseStatusFragment {
 		else {
 			//We need to download the info from the network..
 			Paging p = new Paging(pageNum, ELEMENTS_PER_PAGE);
-			ResponseList<Status> favsList = mApplication.getTwitter(mAccountId).getUserTimeline(mUserName, p);
+			ResponseList<Status> favsList = mApplication.getTwitter(mAccountId).getRetweetedByUser(mUserName, p);
 			pageNum++;
 			
 			mAdapter = new TimelineAdapter(getActivity(), favsList);

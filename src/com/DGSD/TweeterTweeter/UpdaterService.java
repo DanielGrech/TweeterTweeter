@@ -15,6 +15,8 @@ public class UpdaterService extends Service {
 	private static final int FAVOURITES_DELAY = 60000; // wait a minute
 	
 	private static final int FOLLOWERS_DELAY = 60000; // wait a minute
+	
+	private static final int RETWEET_DELAY = 60000; // wait a minute
 
 	private boolean runFlag = false;
 
@@ -24,8 +26,10 @@ public class UpdaterService extends Service {
 	
 	private FollowersUpdater mFollowersUpdater;
 	
-	private TTApplication mApplication; 
-
+	private RetweetUpdater mRetweetUpdater;
+	
+	private TTApplication mApplication;
+	
 	@Override
 	public IBinder onBind(Intent intent) {
 		return null;
@@ -38,7 +42,8 @@ public class UpdaterService extends Service {
 		mTimelineUpdater = new TimelineUpdater();
 		mFollowersUpdater = new FollowersUpdater();
 		mFavouritesUpdater = new FavouritesUpdater();
-
+		mRetweetUpdater = new RetweetUpdater();
+		
 		Log.d(TAG, "onCreated");
 	}
 
@@ -54,6 +59,8 @@ public class UpdaterService extends Service {
 		mFavouritesUpdater.start();
 		
 		mFollowersUpdater.start();
+		
+		mRetweetUpdater.start();
 		
 		mApplication.setServiceRunning(true); 
 
@@ -74,6 +81,9 @@ public class UpdaterService extends Service {
 		
 		mFollowersUpdater.interrupt();
 		mFollowersUpdater = null;
+		
+		mRetweetUpdater.interrupt();
+		mRetweetUpdater = null;
 		
 		mApplication.setServiceRunning(false); 
 
@@ -102,6 +112,9 @@ public class UpdaterService extends Service {
         					// Get the timeline from the cloud & save to db
         					int newUpdates = mApplication.fetchStatusUpdates(a); 
         
+        					//Get any new mentions..
+        					mApplication.fetchMentions(a);
+        					
         					if (newUpdates > 0) { 
         						Log.d(TAG, "We have new stat-i");
         					}
@@ -146,6 +159,37 @@ public class UpdaterService extends Service {
 			}
 		}
 	} //Favourites Updater
+	
+	private class RetweetUpdater extends Thread {
+		public RetweetUpdater() {
+			super("UpdaterService-RetweetUpdater");
+		}
+
+		@Override
+		public void run() {
+			UpdaterService updaterService = UpdaterService.this;
+
+			while (updaterService.runFlag) {
+				Log.d(TAG, "Retweets Updater running");
+				try {
+					HashSet<String> accounts = mApplication.getTwitterSession().getAccountList();
+					
+					if(accounts != null) {
+						for(String a : accounts) {
+							mApplication.fetchRetweetsByMe(a);
+							
+							mApplication.fetchRetweetsOfMe(a);
+						}
+					}
+
+					Log.d(TAG, "Retweets Updater ran");
+					Thread.sleep(RETWEET_DELAY);
+				} catch (InterruptedException e) {
+					updaterService.runFlag = false;
+				}
+			}
+		}
+	} //Retweet Updater
 	
 	private class FollowersUpdater extends Thread {
 		public FollowersUpdater() {

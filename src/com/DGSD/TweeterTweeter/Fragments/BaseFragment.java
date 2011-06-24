@@ -19,6 +19,12 @@ public abstract class BaseFragment extends DialogFragment{
 
 	private static final String TAG = BaseFragment.class.getSimpleName();
 
+	protected static final int ELEMENTS_PER_PAGE = 100;
+	
+	/*
+	 * This method MUST be called from a background thread, as it is
+	 * free to do network comms or loading from a db..
+	 */
 	public abstract void setupList() throws TwitterException;
 	//public abstract Cursor loadData();
 	//public abstract Cursor loadNewDataItems();
@@ -32,6 +38,9 @@ public abstract class BaseFragment extends DialogFragment{
 	protected String mAccountId;
 	
 	protected String mUserName;
+	
+	//What page of tweets we want to load..
+	protected int pageNum = 1;
 
 	@Override
 	public void onCreate(Bundle savedInstance){

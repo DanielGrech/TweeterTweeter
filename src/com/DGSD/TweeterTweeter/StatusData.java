@@ -22,11 +22,18 @@ public class StatusData {
 	
 	public static final String FAVOURITES_TABLE = "favourites_table";
 	
+	public static final String MENTIONS_TABLE = "mentions_table";
+	
 	public static final String FOLLOWERS_TABLE = "followers_table";
 	
 	public static final String FOLLOWING_TABLE = "following_table";
 	
 	public static final String PROFILE_TABLE = "profile_table";
+	
+	public static final String RT_OF_TABLE = "rt_of_me_table";
+	
+	public static final String RT_BY_TABLE = "rt_by_me_table";
+	
 	
 	/*
 	 * Various database columns.
@@ -90,6 +97,18 @@ public class StatusData {
 					+ C_CREATED_AT + " text, " + C_USER + " text, " + C_TEXT + " text, " 
 					+ C_IMG + " text, " + C_FAV + " int, " + C_SRC + " text)");
 			
+			db.execSQL("create table " + MENTIONS_TABLE + " (" + C_ACCOUNT + " text, " + C_ID + " text primary key, "
+					+ C_CREATED_AT + " text, " + C_USER + " text, " + C_TEXT + " text, " 
+					+ C_IMG + " text, " + C_FAV + " int, " + C_SRC + " text)");
+			
+			db.execSQL("create table " + RT_BY_TABLE + " (" + C_ACCOUNT + " text, " + C_ID + " text primary key, "
+					+ C_CREATED_AT + " text, " + C_USER + " text, " + C_TEXT + " text, " 
+					+ C_IMG + " text, " + C_FAV + " int, " + C_SRC + " text)");
+			
+			db.execSQL("create table " + RT_OF_TABLE + " (" + C_ACCOUNT + " text, " + C_ID + " text primary key, "
+					+ C_CREATED_AT + " text, " + C_USER + " text, " + C_TEXT + " text, " 
+					+ C_IMG + " text, " + C_FAV + " int, " + C_SRC + " text)");
+			
 			db.execSQL("create table " + FOLLOWERS_TABLE + " (" + C_ACCOUNT + " text, " + C_ID + " text primary key, "
 					+ C_CREATED_AT + " text, " + C_NAME + " text, " + C_SCREEN_NAME + " text, "
 					+ C_DESC + " text, " + C_FAV + " int, " + C_FOLLOWERS + " int, "
@@ -113,9 +132,13 @@ public class StatusData {
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 			db.execSQL("drop table " + TIMELINE_TABLE);
 			db.execSQL("drop table " + FAVOURITES_TABLE);
+			db.execSQL("drop table " + MENTIONS_TABLE);
+			db.execSQL("drop table " + RT_BY_TABLE);
+			db.execSQL("drop table " + RT_OF_TABLE);
 			db.execSQL("drop table " + FOLLOWERS_TABLE);
 			db.execSQL("drop table " + FOLLOWING_TABLE);
 			db.execSQL("drop table " + PROFILE_TABLE);
+			
 			this.onCreate(db);
 		}
 	}
@@ -207,6 +230,24 @@ public class StatusData {
 				null, null, null, GET_ALL_ORDER_BY);
 	}
 	
+	public Cursor getMentions(String accountId) {   
+		SQLiteDatabase db = this.dbHelper.getReadableDatabase();
+		return db.query(MENTIONS_TABLE, null, C_ACCOUNT + "=\"" + accountId + "\"", 
+				null, null, null, GET_ALL_ORDER_BY);
+	}
+	
+	public Cursor getRetweetsOf(String accountId) {   
+		SQLiteDatabase db = this.dbHelper.getReadableDatabase();
+		return db.query(RT_OF_TABLE, null, C_ACCOUNT + "=\"" + accountId + "\"", 
+				null, null, null, GET_ALL_ORDER_BY);
+	}
+	
+		public Cursor getRetweetsBy(String accountId) {   
+		SQLiteDatabase db = this.dbHelper.getReadableDatabase();
+		return db.query(RT_BY_TABLE, null, C_ACCOUNT + "=\"" + accountId + "\"", 
+				null, null, null, GET_ALL_ORDER_BY);
+	}
+		
 	public Cursor getFriends(String accountId) {   
 		SQLiteDatabase db = this.dbHelper.getReadableDatabase();
 		return db.query(FOLLOWING_TABLE, null, C_ACCOUNT + "=\"" + accountId + "\"", 

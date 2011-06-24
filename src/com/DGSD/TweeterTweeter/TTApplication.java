@@ -171,8 +171,6 @@ OnSharedPreferenceChangeListener {
 						status.getText(), status.getUser().getProfileImageURL().toString(),
 						status.isFavorited(), status.getSource());
 
-				Log.d(TAG, "Got update with id " + status.getId() + ". Saving");
-
 				this.getStatusData().insertOrIgnore(StatusData.TIMELINE_TABLE, values);
 
 				if (latestStatusCreatedAtTime < status.getCreatedAt().getTime()) {
@@ -212,9 +210,109 @@ OnSharedPreferenceChangeListener {
 						status.getText(), status.getUser().getProfileImageURL().toString(),
 						status.isFavorited(), status.getSource());
 
-				Log.d(TAG, "Got update with id " + status.getId() + ". Saving");
-
 				this.getStatusData().insertOrIgnore(StatusData.FAVOURITES_TABLE, values);
+			}
+
+			Log.d(TAG, "Finished getting favourites");
+
+			return;
+
+		} catch (RuntimeException e) {
+			Log.e(TAG, "Failed to fetch favourites", e);
+			return;
+		} catch (TwitterException e) {
+			Log.e(TAG, "Error connecting to Twitter service", e);
+			return;
+		}
+	}
+	
+	// Connects to the online service and puts the latest favourites into DB.
+	public synchronized void fetchMentions(String accountId) {  
+		Log.d(TAG, "Fetching Mentions");
+		Twitter twitter = mTwitterList.get(accountId);
+		if (twitter == null) {
+			Log.d(TAG, "Twitter connection info not initialized");
+			return;
+		}
+		try {
+			ResponseList<Status> timeline = twitter.getMentions();
+
+			ContentValues values;
+			for (Status status : timeline) {
+				values = StatusData.createTimelineContentValues(accountId, Long.toString(status.getId()), 
+						Long.toString(status.getCreatedAt().getTime()), status.getUser().getScreenName(), 
+						status.getText(), status.getUser().getProfileImageURL().toString(),
+						status.isFavorited(), status.getSource());
+
+				this.getStatusData().insertOrIgnore(StatusData.MENTIONS_TABLE, values);
+			}
+
+			Log.d(TAG, "Finished getting mentions");
+
+			return;
+
+		} catch (RuntimeException e) {
+			Log.e(TAG, "Failed to fetch mentions", e);
+			return;
+		} catch (TwitterException e) {
+			Log.e(TAG, "Error connecting to Twitter service", e);
+			return;
+		}
+	}
+	
+	// Connects to the online service and puts the latest favourites into DB.
+	public synchronized void fetchRetweetsOfMe(String accountId) {  
+		Log.d(TAG, "Fetching Favourites");
+		Twitter twitter = mTwitterList.get(accountId);
+		if (twitter == null) {
+			Log.d(TAG, "Twitter connection info not initialized");
+			return;
+		}
+		try {
+			ResponseList<Status> timeline = twitter.getRetweetsOfMe();
+
+			ContentValues values;
+			for (Status status : timeline) {
+				values = StatusData.createTimelineContentValues(accountId, Long.toString(status.getId()), 
+						Long.toString(status.getCreatedAt().getTime()), status.getUser().getScreenName(), 
+						status.getText(), status.getUser().getProfileImageURL().toString(),
+						status.isFavorited(), status.getSource());
+
+				this.getStatusData().insertOrIgnore(StatusData.RT_OF_TABLE, values);
+			}
+
+			Log.d(TAG, "Finished getting favourites");
+
+			return;
+
+		} catch (RuntimeException e) {
+			Log.e(TAG, "Failed to fetch favourites", e);
+			return;
+		} catch (TwitterException e) {
+			Log.e(TAG, "Error connecting to Twitter service", e);
+			return;
+		}
+	}
+	
+	// Connects to the online service and puts the latest favourites into DB.
+	public synchronized void fetchRetweetsByMe(String accountId) {  
+		Log.d(TAG, "Fetching Favourites");
+		Twitter twitter = mTwitterList.get(accountId);
+		if (twitter == null) {
+			Log.d(TAG, "Twitter connection info not initialized");
+			return;
+		}
+		try {
+			ResponseList<Status> timeline = twitter.getRetweetedByMe();
+
+			ContentValues values;
+			for (Status status : timeline) {
+				values = StatusData.createTimelineContentValues(accountId, Long.toString(status.getId()), 
+						Long.toString(status.getCreatedAt().getTime()), status.getUser().getScreenName(), 
+						status.getText(), status.getUser().getProfileImageURL().toString(),
+						status.isFavorited(), status.getSource());
+
+				this.getStatusData().insertOrIgnore(StatusData.RT_BY_TABLE, values);
 			}
 
 			Log.d(TAG, "Finished getting favourites");
@@ -262,8 +360,6 @@ OnSharedPreferenceChangeListener {
 			ContentValues values;
 			for (User u : users) {
 				values = StatusData.createUserContentValues(accountId, u);
-
-				Log.d(TAG, "Got user: " + u.getScreenName() + ". Saving");
 
 				this.getStatusData().insertOrIgnore(StatusData.FOLLOWERS_TABLE, values);
 			}
@@ -314,8 +410,6 @@ OnSharedPreferenceChangeListener {
 			for (User u : users) {
 				values = StatusData.createUserContentValues(accountId, u);
 
-				Log.d(TAG, "Got user: " + u.getScreenName() + ". Saving");
-
 				this.getStatusData().insertOrIgnore(StatusData.FOLLOWING_TABLE, values);
 			}
 
@@ -346,8 +440,6 @@ OnSharedPreferenceChangeListener {
 
 			if(u != null){
 				ContentValues values = StatusData.createUserContentValues(accountId, u);
-
-				Log.d(TAG, "Got profile");
 
 				this.getStatusData().insertOrIgnore(StatusData.PROFILE_TABLE, values);
 			}

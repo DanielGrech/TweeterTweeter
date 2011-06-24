@@ -24,7 +24,6 @@
 - Colour tag individual people 
 - Enlarge Profile picture 
         - Use Sony Ericsson ImageZoomView 
-- Mentions 
 - URL Shortening 
 - Look up username whilst composing new tweet 
 - Block/report user 

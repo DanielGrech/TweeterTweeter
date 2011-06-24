@@ -11,7 +11,7 @@ import android.view.Window;
 import android.widget.Button;
 
 import com.DGSD.TweeterTweeter.Fragments.LoginFragment;
-import com.DGSD.TweeterTweeter.Fragments.TimelineFragment;
+import com.DGSD.TweeterTweeter.Fragments.RetweetsByFragment;
 
 public class TTActivity extends FragmentActivity {
 	
@@ -73,7 +73,7 @@ public class TTActivity extends FragmentActivity {
 					b.setText("Stop");
 					
 					getSupportFragmentManager().beginTransaction().replace(R.id.container, 
-							TimelineFragment.newInstance("account2", null)).commit();
+							RetweetsByFragment.newInstance("account2", "danielgrech")).commit();
 					
 				}
 				
