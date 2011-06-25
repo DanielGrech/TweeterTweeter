@@ -23,7 +23,7 @@
 - 'Shake to refresh' 
 - Colour tag individual people 
 - Enlarge Profile picture 
-        - Use Sony Ericsson ImageZoomView 
+    - Use Sony Ericsson ImageZoomView 
 - URL Shortening 
 - Look up username whilst composing new tweet 
 - Block/report user 
@@ -37,9 +37,21 @@
     - Search users 
     - Search tweets 
     - Search trends 
-- Retweets (Should cache own..)
-    - Of my
-    - To me 
-    - By me
 - Direct messages 
 - Delete a tweet 
+
+
+===== NEW TWEET FRAGMENT =====
+- Manual Retweet editing 
+- 'Reply to all' 
+- Tweet Geotagging 
+- When composing tweets, select list to 'send as' (I.e choose an account)..
+- Photo & Video uploading 
+    - From Gallery
+    - From Camera
+- URL Shortening  
+
+==== VIEW PROFILE FRAGMENT ====
+
+
+==== SINGLE TWEET FRAGMENT ====

@@ -71,6 +71,8 @@ public class StatusData {
 	 * Various database operations.
 	 */
 	private static final String GET_ALL_ORDER_BY = C_CREATED_AT + " DESC";
+	
+	private static final String GET_ALL_ORDER_BY_ALPHA = C_NAME + " DESC";
 
 	private static final String[] MAX_CREATED_AT_COLUMNS = { "max("
 		+ StatusData.C_CREATED_AT + ")" };
@@ -244,11 +246,19 @@ public class StatusData {
 		return db.query(RT_BY_TABLE, null, C_ACCOUNT + "=\"" + accountId + "\"", 
 				null, null, null, GET_ALL_ORDER_BY);
 	}
+	
+	public Cursor getFriends(String accountId, String whereClause) {   
+		SQLiteDatabase db = this.dbHelper.getReadableDatabase();
+		return db.query(FOLLOWING_TABLE, null, 
+				C_ACCOUNT + "=\"" + accountId + "\" AND " + whereClause, 
+				null, null, null, GET_ALL_ORDER_BY_ALPHA);
+		
+	}	
 		
 	public Cursor getFriends(String accountId) {   
 		SQLiteDatabase db = this.dbHelper.getReadableDatabase();
 		return db.query(FOLLOWING_TABLE, null, C_ACCOUNT + "=\"" + accountId + "\"", 
-				null, null, null, GET_ALL_ORDER_BY);
+				null, null, null, GET_ALL_ORDER_BY_ALPHA);
 		
 	}
 	

@@ -43,7 +43,7 @@
          android:layout_alignParentRight="true"
          android:ellipsize="marquee"/>
 
-    <com.DGSD.TweeterTweeter.UI.LinkEnabledTextView
+    <TextView
         android:id="@+id/timeline_tweet"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

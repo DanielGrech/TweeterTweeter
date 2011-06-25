@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:id="@+id/new_tweet_container">
+
+    <!-- This viewgroup should hold images of the different 
+         accounts (to select who to send tweet as -->
+    <LinearLayout
+	    android:orientation="horizontal"
+	    android:layout_width="fill_parent"
+	    android:layout_height="0dip"
+	    android:layout_weight="1"
+	    android:id="@+id/new_tweet_accounts_container"/>
+
+    <MultiAutoCompleteTextView
+        android:id="@+id/new_tweet_text"
+        android:layout_width="fill_parent"
+        android:layout_height="0dip"
+        android:layout_weight="1"
+        android:inputType="textCapSentences|textMultiLine"
+        android:imeOptions="actionGo"/>
+        
+    <TextView
+        android:id="@+id/new_tweet_character_count"
+        android:layout_height="0dip"
+        android:layout_width="fill_parent"
+        android:layout_weight="1"
+        android:gravity="center_vertical"
+        android:textSize="16sp" 
+        android:text="140"/>
+           
+    <Button
+        android:id="@+id/new_tweet_url_shorten"
+        android:layout_height="0dip"
+        android:layout_width="fill_parent"
+        android:layout_weight="1"
+        android:text="Shorten URL"/>
+        
+    <Button
+        android:id="@+id/new_tweet_media"
+        android:layout_height="0dip"
+        android:layout_width="fill_parent"
+        android:layout_weight="1"
+        android:text="Media"/>
+        
+    <Button
+        android:id="@+id/new_tweet_location"
+        android:layout_height="0dip"
+        android:layout_width="fill_parent"
+        android:layout_weight="1"
+        android:text="Location"/>
+    
+    <Button
+        android:id="@+id/new_tweet_submit"
+        android:layout_height="0dip"
+        android:layout_width="fill_parent"
+        android:layout_weight="1"
+        android:text="Submit"/>
+
+</LinearLayout>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:droidfu="http://github.com/droidfu/schema"
+    android:id="@+id/listItem"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:padding="6dip"
+    android:focusable="false">
+    
+    <com.github.droidfu.widgets.WebImageView
+        android:id="@+id/profile_image"
+        android:layout_width="50dip"
+        android:layout_height="wrap_content"
+        android:scaleType="centerInside"
+        android:layout_margin="6dip"
+        android:adjustViewBounds="true"
+        android:gravity="center_vertical"
+        droidfu:autoLoad="false"
+        droidfu:progressDrawable="@drawable/ic_contact_picture"/>
+    
+    <TextView
+        android:id="@+id/profile_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/profile_image" 
+        android:layout_marginLeft="6.0dip" 
+        android:layout_marginRight="7.0dip"
+        android:gravity="center_vertical"
+        android:singleLine="true"
+        android:textSize="14.0sp" 
+        android:textColor="#ff888888"/>
+</RelativeLayout>

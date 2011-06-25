@@ -6,12 +6,11 @@ import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 
-import com.DGSD.TweeterTweeter.Fragments.HomeTimelineFragment;
 import com.DGSD.TweeterTweeter.Fragments.LoginFragment;
+import com.DGSD.TweeterTweeter.Fragments.NewTweetFragment;
 
 public class TTActivity extends FragmentActivity {
 	
@@ -73,7 +72,7 @@ public class TTActivity extends FragmentActivity {
 					b.setText("Stop");
 					
 					getSupportFragmentManager().beginTransaction().replace(R.id.container, 
-							HomeTimelineFragment.newInstance("account2")).commit();
+							new NewTweetFragment()).commit();
 					
 				}
 				
@@ -81,7 +80,10 @@ public class TTActivity extends FragmentActivity {
 			}
 		});
 		
-		((ViewGroup)findViewById(R.id.container)).addView(b);
+		//((ViewGroup)findViewById(R.id.container)).addView(b);
+		
+		getSupportFragmentManager().beginTransaction().replace(R.id.container, 
+				new NewTweetFragment()).commit();
 	}
 	
 }
