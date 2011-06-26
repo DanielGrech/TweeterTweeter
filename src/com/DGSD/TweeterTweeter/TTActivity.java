@@ -11,6 +11,7 @@ import android.widget.Button;
 
 import com.DGSD.TweeterTweeter.Fragments.LoginFragment;
 import com.DGSD.TweeterTweeter.Fragments.NewTweetFragment;
+import com.DGSD.TweeterTweeter.Services.UpdaterService;
 
 public class TTActivity extends FragmentActivity {
 	

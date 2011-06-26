@@ -46,14 +46,16 @@ public final class R {
         public static final int retweet=0x7f02000a;
         public static final int share=0x7f02000b;
         public static final int twitter_icon=0x7f02000c;
-        public static final int word_icon=0x7f02000d;
+        public static final int twitter_notification_icon=0x7f02000d;
+        public static final int word_icon=0x7f02000e;
     }
     public static final class id {
         public static final int arrow_down=0x7f080015;
         public static final int arrow_up=0x7f080014;
         public static final int container=0x7f080006;
-        public static final int favourite_star=0x7f08001a;
+        public static final int favourite_star=0x7f08001c;
         public static final int icon=0x7f080000;
+        public static final int image=0x7f080016;
         public static final int list=0x7f080002;
         public static final int listItem=0x7f08000f;
         public static final int loginButton=0x7f080005;
@@ -70,11 +72,12 @@ public final class R {
         public static final int profile_image=0x7f080010;
         public static final int profile_name=0x7f080011;
         public static final int scroller=0x7f080012;
-        public static final int timeline_date=0x7f080018;
-        public static final int timeline_favourite_star=0x7f08001b;
-        public static final int timeline_profile_image=0x7f080016;
-        public static final int timeline_source=0x7f080017;
-        public static final int timeline_tweet=0x7f080019;
+        public static final int text=0x7f080017;
+        public static final int timeline_date=0x7f08001a;
+        public static final int timeline_favourite_star=0x7f08001d;
+        public static final int timeline_profile_image=0x7f080018;
+        public static final int timeline_source=0x7f080019;
+        public static final int timeline_tweet=0x7f08001b;
         public static final int title=0x7f080001;
         public static final int tracks=0x7f080013;
     }
@@ -86,7 +89,8 @@ public final class R {
         public static final int new_tweet_layout=0x7f030004;
         public static final int people_list_item=0x7f030005;
         public static final int popup=0x7f030006;
-        public static final int timeline_list_item=0x7f030007;
+        public static final int status_notification_layout=0x7f030007;
+        public static final int timeline_list_item=0x7f030008;
     }
     public static final class string {
         public static final int account_spinner=0x7f050003;

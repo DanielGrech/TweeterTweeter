@@ -21,7 +21,9 @@
         </intent-filter>
     </activity>
 
-    <service android:name=".UpdaterService" />
+    <service android:name=".Services.UpdaterService" />
+    
+    <service android:name=".Services.NewStatusService" />
 
 	</application>
 	

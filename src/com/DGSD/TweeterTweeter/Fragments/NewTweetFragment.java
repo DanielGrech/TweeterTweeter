@@ -61,6 +61,7 @@ import android.widget.Toast;
 import com.DGSD.TweeterTweeter.R;
 import com.DGSD.TweeterTweeter.StatusData;
 import com.DGSD.TweeterTweeter.TTApplication;
+import com.DGSD.TweeterTweeter.Services.NewStatusService;
 import com.github.droidfu.widgets.WebImageView;
 import com.rosaloves.bitlyj.BitlyException;
 
@@ -104,6 +105,10 @@ implements OnClickListener {
 	private Button mLocationButton;
 
 	private Button mSubmitButton;
+	
+	private long mLatitude = -1;
+	
+	private long mLongitude = -1;
 
 	protected static final String[] FROM = 
 	{ StatusData.C_SCREEN_NAME, StatusData.C_IMG };
@@ -306,6 +311,20 @@ implements OnClickListener {
 
 			case R.id.new_tweet_submit:
 				Log.i(TAG, "Submit Button!!");
+				
+				Intent intent = new Intent(getActivity(), NewStatusService.class);
+				
+				intent.putExtra(NewStatusService.TWEET_ACCOUNT, mAccountId);
+				
+				intent.putExtra(NewStatusService.TWEET_TEXT, mTweetEditText.getText());
+				
+				if(mLatitude != -1 && mLongitude != -1) {
+					intent.putExtra(NewStatusService.TWEET_LAT, mLatitude);
+					intent.putExtra(NewStatusService.TWEET_LONG, mLongitude);
+				}
+				
+				getActivity().startService(intent);
+				
 				break;
 		}
 	}
@@ -552,9 +571,22 @@ implements OnClickListener {
 			else {
 				for(Hyperlink link : mLinkList) {
 					System.err.println("NEW LINK: " + link.newUrl);
+					
+					if( link.newUrl.startsWith("http://")) {
+						link.newUrl = link.newUrl.substring(7);
+					}
+					
+					if( link.newUrl.startsWith("www.")) {
+						link.newUrl = link.newUrl.substring(4);
+					}
+						
+					
 					mText = mText.replace(link.foundUrl, link.newUrl);
 				}
-				mTweetEditText.setText(mText);
+				
+				mTweetEditText.setText("");
+				
+				mTweetEditText.append(mText);
 			}
 		}
 
@@ -705,9 +737,6 @@ implements OnClickListener {
 			}
 			else {
 				Log.i(TAG, "Photo at " + mUrl);
-				if(mUrl.startsWith("http://")) {
-					mUrl = mUrl.substring(7);
-				}
 
 				addToTweet(mUrl);
 

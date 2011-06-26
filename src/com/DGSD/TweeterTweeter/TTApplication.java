@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import twitter4j.GeoLocation;
 import twitter4j.IDs;
 import twitter4j.ResponseList;
 import twitter4j.Status;
+import twitter4j.StatusUpdate;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
@@ -148,6 +150,21 @@ OnSharedPreferenceChangeListener {
 		return statusData;
 	}
 
+	public void updateStatus(String accountId, String tweet, 
+			GeoLocation location) throws TwitterException {
+		Twitter twitter = mTwitterList.get(accountId);
+		
+		StatusUpdate status = new StatusUpdate(tweet);
+		
+		status.displayCoordinates(true);
+		
+		if(location != null) {
+			status.setLocation(location);
+		}
+		
+		twitter.updateStatus(status);
+	}
+	
 	// Connects to the online service and puts the latest statuses into DB.
 	// Returns the count of new statuses
 	public synchronized int fetchStatusUpdates(String accountId) {  
