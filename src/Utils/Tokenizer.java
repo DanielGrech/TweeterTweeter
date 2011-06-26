@@ -11,8 +11,6 @@ public class Tokenizer implements MultiAutoCompleteTextView.Tokenizer {
 	
 	@Override
 	public int findTokenEnd(CharSequence text, int cursor) {
-		Log.i(TAG, "findTokenEnd: " + text.toString());
-
 		int i = cursor;
 		int len = text.length();
 
@@ -28,7 +26,6 @@ public class Tokenizer implements MultiAutoCompleteTextView.Tokenizer {
 
 	@Override
 	public int findTokenStart(CharSequence text, int cursor) {
-		Log.i(TAG, "findTokenStart: " + text.toString());
 		int i = cursor;
 
 		while (i > 0 && text.charAt(i - 1) != '@') {
@@ -41,8 +38,6 @@ public class Tokenizer implements MultiAutoCompleteTextView.Tokenizer {
 	@Override
 	public CharSequence terminateToken(CharSequence text) {
 		int i = text.length();
-
-		Log.i(TAG, "Terminate Token: " + text.toString());
 
 		while (i > 0 && text.charAt(i - 1) == ' ') {
 			i--;

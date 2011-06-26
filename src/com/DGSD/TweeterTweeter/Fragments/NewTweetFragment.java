@@ -10,6 +10,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.Random;
+import java.util.Vector;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import twitter4j.TwitterException;
 import twitter4j.conf.Configuration;
@@ -39,6 +42,8 @@ import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v4.widget.SimpleCursorAdapter.CursorToStringConverter;
 import android.support.v4.widget.SimpleCursorAdapter.ViewBinder;
 import android.text.Editable;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -47,7 +52,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.FilterQueryProvider;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
@@ -59,7 +63,6 @@ import com.DGSD.TweeterTweeter.StatusData;
 import com.DGSD.TweeterTweeter.TTApplication;
 import com.github.droidfu.widgets.WebImageView;
 import com.rosaloves.bitlyj.BitlyException;
-import com.rosaloves.bitlyj.Url;
 
 /*
  * TODO: 
@@ -264,7 +267,7 @@ implements OnClickListener {
 	public void onClick(View v) {
 		switch(v.getId()) {
 			case R.id.new_tweet_url_shorten:
-				showUserPromptForUrl();
+				new UrlShortenTask().execute();
 				break;
 
 			case R.id.new_tweet_media:
@@ -358,32 +361,6 @@ implements OnClickListener {
 		mTweetEditText.setThreshold(1);
 
 		mTweetEditText.setTokenizer(new Tokenizer());
-	}
-
-	private void showUserPromptForUrl() {
-		AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
-
-		alert.setTitle("Enter a Url");
-		alert.setMessage("Enter a long url you want to make shorter");
-
-		// Set an EditText view to get user input 
-		final EditText input = new EditText(getActivity());
-		alert.setView(input);
-
-		alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int whichButton) {
-				String value = input.getText().toString();
-				new UrlShortenTask(value).execute();
-			}
-		});
-
-		alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int whichButton) {
-				// Canceled.
-			}
-		});
-
-		alert.show();
 	}
 
 	private void takeVideo() {
@@ -510,9 +487,7 @@ implements OnClickListener {
 	}
 
 	private class UrlShortenTask extends AsyncTask<Void, Void, Void> {
-		private String mOriginalUrl;
-
-		private String mNewUrl;
+		private String mText;
 
 		private String mUserName;
 
@@ -520,12 +495,15 @@ implements OnClickListener {
 
 		private boolean has_error = false;
 
-		public UrlShortenTask(String url) {
-			mOriginalUrl = url;
-			
-			if(!mOriginalUrl.startsWith("http://")) {
-				mOriginalUrl = "http://".concat(mOriginalUrl);
-			}
+		private ProgressDialog mProgressDialog;
+
+		private Vector<Hyperlink> mLinkList;
+
+		Pattern hyperLinksPattern = 
+			Pattern.compile("\\(?\\b(http://|www[.])[-A-Za-z0-9+&@#/%?=~_()|!:,.;]*[-A-Za-z0-9+&@#/%=~_()|]");
+		
+		public UrlShortenTask() {
+			mLinkList = new Vector<Hyperlink>();
 		}
 
 		@Override
@@ -533,14 +511,29 @@ implements OnClickListener {
 			mUserName = getActivity().getResources().getString(R.string.bitlyName);
 
 			mKey = getActivity().getResources().getString(R.string.bitlyKey);
+
+			mProgressDialog = ProgressDialog.show(getActivity(), "", 
+					"Shortening urls", true);
+			
+			mText = mTweetEditText.getText().toString();
 		}
 
 		@Override
 		protected Void doInBackground(Void... arg0) {
 			try{
-				Url url = as(mUserName, mKey).call(shorten(mOriginalUrl));
+				SpannableString linkableText = new SpannableString(mText);
 
-				mNewUrl = url.getShortUrl();
+				gatherLinks(linkableText, hyperLinksPattern);
+
+				for(Hyperlink link : mLinkList) {
+					String url = link.foundUrl.toString();
+					if(!url.startsWith("http://")) {
+						url = "http://".concat(url);
+					}
+					
+					link.newUrl = as(mUserName, mKey)
+							.call(shorten(url)).getShortUrl();
+				}
 			}catch(BitlyException e) {
 				Log.e(TAG, "Error shortening URL", e);
 				has_error = true;
@@ -550,13 +543,40 @@ implements OnClickListener {
 
 		@Override
 		protected void onPostExecute(Void arg) {
+			mProgressDialog.dismiss();
+
 			if(has_error) {
 				Toast.makeText(getActivity(), 
 						"Error shortening url", Toast.LENGTH_SHORT).show();
 			}
 			else {
-				addToTweet(mNewUrl);
+				for(Hyperlink link : mLinkList) {
+					System.err.println("NEW LINK: " + link.newUrl);
+					mText = mText.replace(link.foundUrl, link.newUrl);
+				}
+				mTweetEditText.setText(mText);
 			}
+		}
+
+		private final void gatherLinks(Spannable s, Pattern pattern){
+			// Matcher matching the pattern
+			Matcher m = pattern.matcher(s);
+
+			while (m.find()){
+				int start = m.start();
+				int end = m.end();
+
+				Hyperlink spec = new Hyperlink();
+
+				spec.foundUrl = s.subSequence(start, end);
+
+				mLinkList.add(spec);
+			}
+		}
+
+		private class Hyperlink{
+			CharSequence foundUrl;
+			String newUrl;
 		}
 	}
 
