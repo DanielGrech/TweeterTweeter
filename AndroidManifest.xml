@@ -35,7 +35,7 @@
             <action android:name="com.DGSD.TweeterTweeter.NEW_STATUS_UPDATES" />
         </intent-filter>
         
-        <receiver android:name=".NetworkReceiver">
+        <receiver android:name=".Receivers.NetworkReceiver">
 			 <intent-filter>
 			    <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
 			 </intent-filter>
