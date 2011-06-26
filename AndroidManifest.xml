@@ -30,11 +30,7 @@
 			    <action android:name="android.intent.action.BOOT_COMPLETED" />
 			 </intent-filter>
 		</receiver>
-		
-        <intent-filter>
-            <action android:name="com.DGSD.TweeterTweeter.NEW_STATUS_UPDATES" />
-        </intent-filter>
-        
+
         <receiver android:name=".Receivers.NetworkReceiver">
 			 <intent-filter>
 			    <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
