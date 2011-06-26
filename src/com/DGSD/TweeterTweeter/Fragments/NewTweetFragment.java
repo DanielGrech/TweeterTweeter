@@ -1,5 +1,8 @@
 package com.DGSD.TweeterTweeter.Fragments;
 
+import static com.rosaloves.bitlyj.Bitly.as;
+import static com.rosaloves.bitlyj.Bitly.shorten;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -14,6 +17,7 @@ import twitter4j.conf.PropertyConfiguration;
 import twitter4j.media.ImageUpload;
 import twitter4j.media.ImageUploadFactory;
 import twitter4j.media.MediaProvider;
+import Utils.Tokenizer;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -35,9 +39,6 @@ import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v4.widget.SimpleCursorAdapter.CursorToStringConverter;
 import android.support.v4.widget.SimpleCursorAdapter.ViewBinder;
 import android.text.Editable;
-import android.text.SpannableString;
-import android.text.Spanned;
-import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -46,6 +47,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FilterQueryProvider;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
@@ -56,6 +58,8 @@ import com.DGSD.TweeterTweeter.R;
 import com.DGSD.TweeterTweeter.StatusData;
 import com.DGSD.TweeterTweeter.TTApplication;
 import com.github.droidfu.widgets.WebImageView;
+import com.rosaloves.bitlyj.BitlyException;
+import com.rosaloves.bitlyj.Url;
 
 /*
  * TODO: 
@@ -72,7 +76,13 @@ implements OnClickListener {
 
 	private static final int GET_GALLERY_IMAGE = 1;
 
+	private static final int GET_CAMERA_VIDEO = 2;
+
 	public static final int MAX_TWEET_SIZE = 140;
+
+	private static final int MAXIMUM_VIDEO_SIZE = 2; //2Mb
+
+	private static final int LOW_QUALITY_VIDEO = 0;
 
 	private TTApplication mApplication;
 
@@ -212,7 +222,8 @@ implements OnClickListener {
 					try {
 						Bitmap captureBmp = Media.getBitmap(
 								getActivity().getContentResolver(), Uri.fromFile(file) );
-						new MediaUploadTask(captureBmp).execute();
+						new MediaUploadTask(MediaUploadTask.CAMERA_IMG, 
+								captureBmp).execute();
 					} catch (FileNotFoundException e) {
 						Log.e(TAG, "File not found", e);
 					} catch (IOException e) {
@@ -227,10 +238,23 @@ implements OnClickListener {
 				if (resultCode == Activity.RESULT_OK) {
 					Uri imageUri = intent.getData();
 
-					new MediaUploadTask(getPath(imageUri)).execute();
+					new MediaUploadTask(MediaUploadTask.GALLERY_IMG,
+							getPath(imageUri)).execute();
 				}
 				else {
-					Log.i(TAG, "Picture not taken!");
+					Log.i(TAG, "Picture not chosen!");
+				}
+				break;
+
+			case GET_CAMERA_VIDEO:
+				if (resultCode == Activity.RESULT_OK) {
+					Uri imageUri = intent.getData();
+
+					new MediaUploadTask(MediaUploadTask.CAMERA_VIDEO,
+							getPath(imageUri)).execute();
+				}
+				else {
+					Log.i(TAG, "Video not taken!");
 				}
 				break;
 		}
@@ -240,12 +264,14 @@ implements OnClickListener {
 	public void onClick(View v) {
 		switch(v.getId()) {
 			case R.id.new_tweet_url_shorten:
-				Log.i(TAG, "Url Shorten Button!!");
+				showUserPromptForUrl();
 				break;
 
 			case R.id.new_tweet_media:
-				final CharSequence[] choices = {"Camera Picture", "Gallery image", 
-						"Camera Video", "Gallery Video"};
+				//TODO: Put support for video back in!
+				/*final CharSequence[] choices = {"Camera Picture", "Gallery image", 
+						"Camera Video", "Gallery Video"};*/
+				final CharSequence[] choices = {"Camera Picture", "Gallery image"};
 
 				AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 				builder.setTitle("Media");
@@ -260,6 +286,9 @@ implements OnClickListener {
 							case 1:
 								//Gallery Picture
 								getGalleryPhoto();
+								break;
+							case 2:
+								takeVideo();
 								break;
 						}
 					}
@@ -331,6 +360,42 @@ implements OnClickListener {
 		mTweetEditText.setTokenizer(new Tokenizer());
 	}
 
+	private void showUserPromptForUrl() {
+		AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
+
+		alert.setTitle("Enter a Url");
+		alert.setMessage("Enter a long url you want to make shorter");
+
+		// Set an EditText view to get user input 
+		final EditText input = new EditText(getActivity());
+		alert.setView(input);
+
+		alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int whichButton) {
+				String value = input.getText().toString();
+				new UrlShortenTask(value).execute();
+			}
+		});
+
+		alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int whichButton) {
+				// Canceled.
+			}
+		});
+
+		alert.show();
+	}
+
+	private void takeVideo() {
+		Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+
+		intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, LOW_QUALITY_VIDEO);
+
+		intent.putExtra(MediaStore.EXTRA_SIZE_LIMIT, MAXIMUM_VIDEO_SIZE);  
+
+		startActivityForResult(intent, GET_CAMERA_VIDEO) ;
+	}
+
 	private void getGalleryPhoto() {
 		Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
 		intent.setType("image/*");
@@ -382,17 +447,17 @@ implements OnClickListener {
 			BitmapFactory.decodeStream(new FileInputStream(f),null,o);
 
 			//Find the correct scale value. It should be the power of 2.
-            final int REQUIRED_SIZE=70;
-            int width_tmp=o.outWidth, height_tmp=o.outHeight;
-            int scale=1;
-            while(true){
-                if(width_tmp/2<REQUIRED_SIZE || height_tmp/2<REQUIRED_SIZE)
-                    break;
-                width_tmp/=2;
-                height_tmp/=2;
-                scale++;
-            }
-			
+			final int REQUIRED_SIZE=70;
+			int width_tmp=o.outWidth, height_tmp=o.outHeight;
+			int scale=1;
+			while(true){
+				if(width_tmp/2<REQUIRED_SIZE || height_tmp/2<REQUIRED_SIZE)
+					break;
+				width_tmp/=2;
+				height_tmp/=2;
+				scale++;
+			}
+
 			//decode with inSampleSize
 			BitmapFactory.Options o2 = new BitmapFactory.Options();
 			o2.inSampleSize=scale;
@@ -401,6 +466,20 @@ implements OnClickListener {
 			Log.e(TAG, "Error decoding image", e);
 		}
 		return null;
+	}
+
+	private void addToTweet(String text) {
+		String currentText = mTweetEditText.getText().toString();
+
+		if(currentText.length() == 0) {
+			mTweetEditText.append(text);
+		}
+		else if( currentText.charAt(currentText.length()-1) == ' ' ) {
+			mTweetEditText.append(text);
+		}
+		else {
+			mTweetEditText.append(" " + text);
+		}
 	}
 
 	private class MyTextWatcher implements TextWatcher {
@@ -430,66 +509,61 @@ implements OnClickListener {
 		}
 	}
 
-	private static class Tokenizer implements MultiAutoCompleteTextView.Tokenizer {
-		@Override
-		public int findTokenEnd(CharSequence text, int cursor) {
-			Log.i(TAG, "findTokenEnd: " + text.toString());
+	private class UrlShortenTask extends AsyncTask<Void, Void, Void> {
+		private String mOriginalUrl;
 
-			int i = cursor;
-			int len = text.length();
+		private String mNewUrl;
 
-			while (i < len) {
-				if (text.charAt(i) == ' ' || text.charAt(i) == '@') {
-					return i;
-				} else {
-					i++;
-				}
-			}
-			return len;
-		}
+		private String mUserName;
 
-		@Override
-		public int findTokenStart(CharSequence text, int cursor) {
-			Log.i(TAG, "findTokenStart: " + text.toString());
-			int i = cursor;
+		private String mKey;
 
-			while (i > 0 && text.charAt(i - 1) != '@') {
-				i--;
-			}
+		private boolean has_error = false;
 
-			return i;
-		}
-
-		@Override
-		public CharSequence terminateToken(CharSequence text) {
-			int i = text.length();
-
-			Log.i(TAG, "Terminate Token: " + text.toString());
-
-			while (i > 0 && text.charAt(i - 1) == ' ') {
-				i--;
-			}
-
-			if (i > 0 && text.charAt(0) == '@') {
-				return text;
-			} else {
-				if (text instanceof Spanned) {
-					SpannableString sp = new SpannableString(text+" ");
-					TextUtils.copySpansFrom((Spanned) text, 0, text.length(),
-							Object.class, sp, 0);
-					return sp;
-				} else {
-					return text + " ";
-				}
+		public UrlShortenTask(String url) {
+			mOriginalUrl = url;
+			
+			if(!mOriginalUrl.startsWith("http://")) {
+				mOriginalUrl = "http://".concat(mOriginalUrl);
 			}
 		}
 
+		@Override
+		protected void onPreExecute() {
+			mUserName = getActivity().getResources().getString(R.string.bitlyName);
+
+			mKey = getActivity().getResources().getString(R.string.bitlyKey);
+		}
+
+		@Override
+		protected Void doInBackground(Void... arg0) {
+			try{
+				Url url = as(mUserName, mKey).call(shorten(mOriginalUrl));
+
+				mNewUrl = url.getShortUrl();
+			}catch(BitlyException e) {
+				Log.e(TAG, "Error shortening URL", e);
+				has_error = true;
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void arg) {
+			if(has_error) {
+				Toast.makeText(getActivity(), 
+						"Error shortening url", Toast.LENGTH_SHORT).show();
+			}
+			else {
+				addToTweet(mNewUrl);
+			}
+		}
 	}
 
 	private class MediaUploadTask extends AsyncTask<Void, Void, Void> {
 
 		private File mFile;
-		
+
 		private File mImageFile;
 
 		private Bitmap mBitmap;
@@ -502,18 +576,28 @@ implements OnClickListener {
 
 		private int mType;
 
-		private static final int CAMERA_IMG = 0;
+		public static final int CAMERA_IMG = 0;
 
-		private static final int GALLERY_IMG = 1;
+		public static final int GALLERY_IMG = 1;
 
-		public MediaUploadTask(Bitmap b) {
-			mBitmap = b;
-			mType = CAMERA_IMG;
+		public static final int CAMERA_VIDEO = 2;
+
+		public MediaUploadTask(int type, Bitmap b) {
+			mType = type;
+			if(mType == CAMERA_IMG) {
+				mBitmap = b;
+			}
 		}
 
-		public MediaUploadTask(String filepath) {
-			mImageFile = new File(filepath);
-			mType = GALLERY_IMG;
+		public MediaUploadTask(int type, String filepath) {
+			mType = type;
+			if(mType == GALLERY_IMG) {
+				mImageFile = new File(filepath);
+			}
+			else if(mType == CAMERA_VIDEO) {
+				mFile = new File(filepath);
+
+			}
 		}
 
 
@@ -534,11 +618,13 @@ implements OnClickListener {
 			props.put(PropertyConfiguration.OAUTH_ACCESS_TOKEN_SECRET,mApplication.getAccessToken("account1").getTokenSecret());
 			props.put(PropertyConfiguration.OAUTH_CONSUMER_KEY,TTApplication.CONSUMER_KEY);
 			props.put(PropertyConfiguration.OAUTH_CONSUMER_SECRET,TTApplication.CONSUMER_SECRET);
-			props.put(PropertyConfiguration.MEDIA_PROVIDER_API_KEY,twitpicKey);
+			//props.put(PropertyConfiguration.MEDIA_PROVIDER_API_KEY,twitpicKey);
 
 			Configuration conf = new PropertyConfiguration(props);
 
-			ImageUpload upload = new ImageUploadFactory(conf).getInstance(MediaProvider.TWITPIC);
+			ImageUpload iUpload = new ImageUploadFactory(conf).getInstance(MediaProvider.TWITPIC);
+
+			ImageUpload vUpload = new ImageUploadFactory(conf).getInstance(MediaProvider.YFROG);
 
 			switch(mType) {
 				case CAMERA_IMG:
@@ -563,10 +649,14 @@ implements OnClickListener {
 						return null;
 					}
 					break;
+				case CAMERA_VIDEO:
+					//Nothing to do, we already have the file..
+					break;
 			}
 
 			try {
-				mUrl = upload.upload(mFile);
+				//mUrl = iUpload.upload(mFile);
+				mUrl = vUpload.upload(mFile);
 
 				if(mType == CAMERA_IMG) {
 					//Only if we started with a Bitmap (not an actual file) will 
@@ -599,20 +689,8 @@ implements OnClickListener {
 					mUrl = mUrl.substring(7);
 				}
 
-				//Add the url to the tweet
-				String currentText = mTweetEditText.getText().toString();
+				addToTweet(mUrl);
 
-				if(currentText.length() == 0) {
-					currentText += mUrl;
-				}
-				else if( currentText.charAt(currentText.length()-1) == ' ' ) {
-					currentText += mUrl;
-				}
-				else {
-					currentText += " " + mUrl;
-				}
-
-				mTweetEditText.setText(currentText);
 			}
 		}
 	}

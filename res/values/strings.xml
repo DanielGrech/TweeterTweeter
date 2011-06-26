@@ -5,6 +5,8 @@
     <string name="consumer_secret">HJiwIdO43SfOhxH1aZIfknNmhcN581kgScAhoN2Wbo</string>
     <string name="account_spinner">Choose an account</string>
     <string name="twitpic_key">a70b86c797017c351c09932423d14922</string>
+    <string name="bitlyKey">R_faa997c865c4d1fcfe37217c44c1cc21</string>
+    <string name="bitlyName">dgsoftwaredevelopment</string>
     
     <string-array name="view_types">
         <item>Home Timeline</item>

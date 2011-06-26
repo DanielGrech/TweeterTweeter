@@ -45,11 +45,10 @@
 - Manual Retweet editing 
 - 'Reply to all' 
 - Tweet Geotagging 
-- When composing tweets, select list to 'send as' (I.e choose an account)..
-- Photo & Video uploading 
+- Select account to send tweet as.
+- Video uploading 
     - From Gallery
     - From Camera
-- URL Shortening  
 
 ==== VIEW PROFILE FRAGMENT ====
 
