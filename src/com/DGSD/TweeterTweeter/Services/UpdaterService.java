@@ -44,10 +44,6 @@ public class UpdaterService extends Service {
 	public void onCreate() {
 		super.onCreate();
 		this.mApplication = (TTApplication) getApplication(); 
-		mTimelineUpdater = new TimelineUpdater();
-		mFollowersUpdater = new FollowersUpdater();
-		mFavouritesUpdater = new FavouritesUpdater();
-		mRetweetUpdater = new RetweetUpdater();
 
 		Log.d(TAG, "onCreated");
 	}
@@ -58,6 +54,11 @@ public class UpdaterService extends Service {
 
 		this.runFlag = true;
 
+		mTimelineUpdater = new TimelineUpdater();
+		mFollowersUpdater = new FollowersUpdater();
+		mFavouritesUpdater = new FavouritesUpdater();
+		mRetweetUpdater = new RetweetUpdater();
+		
 		//Start all updating threads
 		mTimelineUpdater.start();
 
