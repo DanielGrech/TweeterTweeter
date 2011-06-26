@@ -99,6 +99,10 @@ public final class R {
         public static final int bitlyName=0x7f050006;
         public static final int consumer_key=0x7f050001;
         public static final int consumer_secret=0x7f050002;
+        public static final int receive_data_description=0x7f050008;
+        public static final int receive_twitter_data=0x7f050007;
+        public static final int send_data_description=0x7f050009;
+        public static final int send_twitter_data=0x7f05000a;
         public static final int twitpic_key=0x7f050004;
     }
     public static final class style {

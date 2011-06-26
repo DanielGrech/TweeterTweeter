@@ -22,5 +22,9 @@
         <item>Search</item>
         <item>User Timeline</item>
     </string-array>
+        <string name="receive_twitter_data">Receive Twitter Data</string>
+        <string name="receive_data_description">Allow this app to fetch data from twitter</string>
+        <string name="send_data_description">Allow this application to use data from twitter</string>
+        <string name="send_twitter_data">Use data from twitter</string>
     
 </resources>

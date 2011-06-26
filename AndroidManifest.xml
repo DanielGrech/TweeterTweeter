@@ -12,22 +12,52 @@
 	   android:label="@string/app_name"
 	   android:name=".TTApplication">
 
-    <activity 
-        android:name=".TTActivity" 
-        android:label="@string/app_name">
+	    <activity 
+	        android:name=".TTActivity" 
+	        android:label="@string/app_name">
+	        <intent-filter>
+	            <action android:name="android.intent.action.MAIN" />
+	            <category android:name="android.intent.category.LAUNCHER" />
+	        </intent-filter>
+	    </activity>
+	
+	    <service android:name=".Services.UpdaterService" />
+	    
+	    <service android:name=".Services.NewStatusService" />
+
+        <receiver android:name=".Receivers.BootReceiver">
+			 <intent-filter>
+			    <action android:name="android.intent.action.BOOT_COMPLETED" />
+			 </intent-filter>
+		</receiver>
+		
         <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
-            <category android:name="android.intent.category.LAUNCHER" />
+            <action android:name="com.DGSD.TweeterTweeter.NEW_STATUS_UPDATES" />
         </intent-filter>
-    </activity>
-
-    <service android:name=".Services.UpdaterService" />
-    
-    <service android:name=".Services.NewStatusService" />
-
+        
+        <receiver android:name=".NetworkReceiver">
+			 <intent-filter>
+			    <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+			 </intent-filter>
+		</receiver>
+		
 	</application>
+	
+	<permission android:name="com.DGSD.TweeterTweeter.SEND_DATA" 
+		android:label="@string/send_twitter_data"
+		android:description="@string/send_data_description"
+		android:protectionLevel="normal" />
+	
+	<permission android:name="com.DGSD.TweeterTweeter.RECEIVE_DATA"
+		android:label="@string/receive_twitter_data"
+		android:description="@string/receive_data_description"
+		android:protectionLevel="normal" />
 	
 	<uses-permission android:name="android.permission.INTERNET" />
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+	<uses-permission android:name="com.DGSD.TweeterTweeter.SEND_DATA" />
+	<uses-permission android:name="com.DGSD.TweeterTweeter.RECEIVE_DATA" />
 	
 </manifest>

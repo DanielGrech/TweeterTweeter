@@ -6,11 +6,12 @@ import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 
+import com.DGSD.TweeterTweeter.Fragments.HomeTimelineFragment;
 import com.DGSD.TweeterTweeter.Fragments.LoginFragment;
-import com.DGSD.TweeterTweeter.Fragments.NewTweetFragment;
 import com.DGSD.TweeterTweeter.Services.UpdaterService;
 
 public class TTActivity extends FragmentActivity {
@@ -72,19 +73,15 @@ public class TTActivity extends FragmentActivity {
 					startService(new Intent(TTActivity.this, UpdaterService.class));
 					b.setText("Stop");
 					
-					getSupportFragmentManager().beginTransaction().replace(R.id.container, 
-							new NewTweetFragment()).commit();
-					
 				}
 				
 				
 			}
 		});
 		
-		//((ViewGroup)findViewById(R.id.container)).addView(b);
-		
 		getSupportFragmentManager().beginTransaction().replace(R.id.container, 
-				new NewTweetFragment()).commit();
+				HomeTimelineFragment.newInstance("account2")).commit();
+		((ViewGroup)findViewById(R.id.container)).addView(b);
 	}
 	
 }
