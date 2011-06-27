@@ -17,7 +17,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
+import com.DGSD.TweeterTweeter.Utils.Log;
 import android.view.Window;
 
 public class TwitterConnection {

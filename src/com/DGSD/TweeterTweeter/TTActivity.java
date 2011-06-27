@@ -3,7 +3,7 @@ package com.DGSD.TweeterTweeter;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
+import com.DGSD.TweeterTweeter.Utils.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;

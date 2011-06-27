@@ -9,7 +9,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
-import android.util.Log;
+import com.DGSD.TweeterTweeter.Utils.Log;
 import android.widget.RemoteViews;
 
 import com.DGSD.TweeterTweeter.R;

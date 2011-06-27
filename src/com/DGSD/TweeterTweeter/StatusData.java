@@ -6,7 +6,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
+import com.DGSD.TweeterTweeter.Utils.Log;
 
 public class StatusData { 
 	private static final String TAG = StatusData.class.getSimpleName();
@@ -270,7 +270,7 @@ public class StatusData {
 
 	/**
 	 *
-	 * @return Timestamp of the latest status we ahve it the database
+	 * @return Timestamp of the latest status we have it the database
 	 */
 	public long getLatestStatusCreatedAtTime(String accountId) {  
 		SQLiteDatabase db = this.dbHelper.getReadableDatabase();

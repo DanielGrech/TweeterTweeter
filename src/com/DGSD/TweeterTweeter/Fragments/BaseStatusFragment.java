@@ -11,7 +11,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.widget.SimpleCursorAdapter.ViewBinder;
 import android.text.format.DateUtils;
-import android.util.Log;
+import com.DGSD.TweeterTweeter.Utils.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -124,6 +124,10 @@ public abstract class BaseStatusFragment extends BaseFragment {
 			@Override
 			public void onReceive(Context context, Intent intent) {
 				Log.v(TAG, "Received UpdateTimelineIntent");
+				
+				//TODO: intent.getExtra(TYPE) .. 
+				//use to differentiate between 2 active fragments..
+				
 				new DataLoadingTask().execute();
 			}
 			
