@@ -250,10 +250,10 @@ OnSharedPreferenceChangeListener {
 				return fetchData(account);
 			} catch (TwitterException e) {
 				Log.e(TAG, "Error connecting to Twitter service", e);
-				return 0;
+				return -1;
 			} catch (RuntimeException e) {
 				Log.e(TAG, "Failed to fetch data", e);
-				return 0;
+				return -1;
 			} 
 		}
 	}
@@ -275,7 +275,6 @@ OnSharedPreferenceChangeListener {
 				getStatusData().insertOrIgnore(StatusData.TIMELINE_TABLE, values);
 
 				if (latestStatusCreatedAtTime < status.getCreatedAt().getTime()) {
-					Log.v(TAG, "WE HAVE A NEW STATUS: " + status.getText());
 					count++;
 				}
 			}

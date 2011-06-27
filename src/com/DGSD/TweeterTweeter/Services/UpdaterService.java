@@ -12,16 +12,16 @@ import com.DGSD.TweeterTweeter.TTApplication;
 public class UpdaterService extends Service {
 	private static final String TAG = UpdaterService.class.getSimpleName();
 
-	public static final String SEND_DATA= 
+	public static final String SEND_DATA = 
 		"com.DGSD.TweeterTweeter.SEND_DATA";
-
+	
 	private static final int TIMELINE_DELAY = 60000; // wait a minute
 
-	private static final int FAVOURITES_DELAY = 60000; // wait a minute
+	/*private static final int FAVOURITES_DELAY = 60000; // wait a minute
 
 	private static final int FOLLOWERS_DELAY = 60000; // wait a minute
 
-	private static final int RETWEET_DELAY = 60000; // wait a minute
+	private static final int RETWEET_DELAY = 60000; // wait a minute */
 
 	private boolean runFlag = false;
 
@@ -58,7 +58,7 @@ public class UpdaterService extends Service {
 		mFollowersUpdater = new FollowersUpdater();
 		mFavouritesUpdater = new FavouritesUpdater();
 		mRetweetUpdater = new RetweetUpdater();
-		
+
 		//Start all updating threads
 		mTimelineUpdater.start();
 
@@ -97,23 +97,23 @@ public class UpdaterService extends Service {
 	}
 
 	private abstract class Updater extends Thread {
-		
+
 		protected UpdaterService updaterService = UpdaterService.this;
-		
+
 		protected abstract void runUpdate(String account);
-		
+
 		@Override
 		public void run() {
 			while (updaterService.runFlag) {
 				HashSet<String> accounts = mApplication.getTwitterSession().getAccountList();
-			
+
 				try {
 					if(accounts != null) {
-							for(String a : accounts) {
-								runUpdate(a);
-							}
+						for(String a : accounts) {
+							runUpdate(a);
+						}
 					}
-					
+
 					Thread.sleep(TIMELINE_DELAY);
 				}catch (InterruptedException e) {
 					updaterService.runFlag = false;
@@ -121,7 +121,7 @@ public class UpdaterService extends Service {
 			}
 		}
 	}
-	
+
 	/**
 	 * Threads that performs the actual update from the online service
 	 */
@@ -135,7 +135,7 @@ public class UpdaterService extends Service {
 
 			if (newUpdates > 0) { 
 				Log.d(TAG, "We have new stat-i");
-				
+
 				Intent intent = new Intent(SEND_DATA); 
 				//intent.putExtra(NEW_STATUS_EXTRA_COUNT, newUpdates); 
 				updaterService.sendBroadcast(intent); 
@@ -148,14 +148,14 @@ public class UpdaterService extends Service {
 			mApplication.fetchFavourites(account);
 		}
 	} 
-	
+
 	private class RetweetUpdater extends Updater {
 		public void runUpdate(String account) {
 			mApplication.fetchRetweetsByMe(account);
 			mApplication.fetchRetweetsOfMe(account);
 		}
 	} 
-	
+
 	private class FollowersUpdater extends Updater {
 		public void runUpdate(String account) {
 			mApplication.fetchFollowers(account);

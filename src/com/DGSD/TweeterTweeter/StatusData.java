@@ -186,7 +186,7 @@ public class StatusData {
 		try{
 			values.put(C_TEXT, u.getStatus().getText() );
 		}catch(NullPointerException e) {
-			Log.w(TAG, "Null pointer getting tweet text", e);
+			Log.w(TAG, "Null pointer getting tweet text");
 			values.put(C_TEXT, "" );
 		}
 		try{

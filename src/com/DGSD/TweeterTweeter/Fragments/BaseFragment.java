@@ -26,8 +26,8 @@ public abstract class BaseFragment extends DialogFragment{
 	 * free to do network comms or loading from a db..
 	 */
 	public abstract void setupList() throws TwitterException;
-	//public abstract Cursor loadData();
-	//public abstract Cursor loadNewDataItems();
+	
+	public abstract void postSetup(boolean isUpdate);
 
 	protected TTApplication mApplication;
 
@@ -46,8 +46,7 @@ public abstract class BaseFragment extends DialogFragment{
 	public void onCreate(Bundle savedInstance){
 		super.onCreate(savedInstance);
 
-		mApplication = (TTApplication) getActivity().getApplication();
-
+		mApplication = (TTApplication) getActivity().getApplication();		
 	}
 
 	@Override
@@ -62,7 +61,7 @@ public abstract class BaseFragment extends DialogFragment{
 
 		return root;
 	}
-
+	
 	@Override
 	public void onSaveInstanceState(Bundle b){
 		super.onSaveInstanceState(b);
@@ -120,20 +119,14 @@ public abstract class BaseFragment extends DialogFragment{
 
 			return null;
 		}
-
+		
 		@Override
 		protected void onPostExecute(Void arg) {
 			if(hasError) {
 				Toast.makeText(getActivity(), "Error getting data", Toast.LENGTH_SHORT).show();
 			}	
 			else {
-				if(mIsUpdate) {
-					//TODO: Should call mAdapter.swapCursor(cursor); here instead
-					mListView.setAdapter(mAdapter);
-				}
-				else {
-					mListView.setAdapter(mAdapter);
-				}
+				postSetup(mIsUpdate);
 			}
 
 		}

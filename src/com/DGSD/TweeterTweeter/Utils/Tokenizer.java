@@ -6,7 +6,7 @@ import android.text.TextUtils;
 import android.widget.MultiAutoCompleteTextView;
 
 public class Tokenizer implements MultiAutoCompleteTextView.Tokenizer {
-	private static final String TAG = Tokenizer.class.getSimpleName();
+	//private static final String TAG = Tokenizer.class.getSimpleName();
 	
 	@Override
 	public int findTokenEnd(CharSequence text, int cursor) {

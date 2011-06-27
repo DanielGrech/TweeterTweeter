@@ -15,12 +15,8 @@ import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.RotateAnimation;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemLongClickListener;
-import android.widget.ImageView;
-import android.widget.ListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,7 +26,6 @@ import com.DGSD.TweeterTweeter.Receivers.PortableReceiver;
 import com.DGSD.TweeterTweeter.Receivers.PortableReceiver.Receiver;
 import com.DGSD.TweeterTweeter.Services.UpdaterService;
 import com.DGSD.TweeterTweeter.UI.ActionItem;
-import com.DGSD.TweeterTweeter.UI.EndlessAdapter;
 import com.DGSD.TweeterTweeter.UI.QuickAction;
 import com.DGSD.TweeterTweeter.Utils.Log;
 import com.github.droidfu.widgets.WebImageView;
@@ -258,6 +253,17 @@ public abstract class BaseStatusFragment extends BaseFragment {
 
 		//mShareAction.setTitle("Share");
 		mShareAction.setIcon(res.getDrawable(R.drawable.share));
+	}
+	
+	@Override
+	public void postSetup(boolean isUpdate) {
+		if(isUpdate) {
+			((SimpleCursorAdapter)mAdapter).changeCursor(mCursor);
+			((SimpleCursorAdapter)mAdapter).notifyDataSetChanged();
+		}
+		else {
+			mListView.setAdapter(mAdapter);
+		}
 	}
 
 }
