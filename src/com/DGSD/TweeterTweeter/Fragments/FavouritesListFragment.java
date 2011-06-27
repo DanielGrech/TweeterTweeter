@@ -3,13 +3,14 @@ package com.DGSD.TweeterTweeter.Fragments;
 import twitter4j.TwitterException;
 import android.os.Bundle;
 import android.support.v4.widget.SimpleCursorAdapter;
+
+import com.DGSD.TweeterTweeter.UI.TimelineAdapter;
 import com.DGSD.TweeterTweeter.Utils.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.DGSD.TweeterTweeter.R;
-import com.DGSD.TweeterTweeter.TimelineAdapter;
 
 public class FavouritesListFragment extends BaseStatusFragment {
 

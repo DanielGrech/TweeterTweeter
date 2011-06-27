@@ -4,16 +4,16 @@ import twitter4j.TwitterException;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import com.DGSD.TweeterTweeter.Utils.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.DGSD.TweeterTweeter.R;
 import com.DGSD.TweeterTweeter.TTApplication;
+import com.DGSD.TweeterTweeter.Utils.Log;
 
 public abstract class BaseFragment extends DialogFragment{
 
@@ -33,7 +33,7 @@ public abstract class BaseFragment extends DialogFragment{
 
 	protected ListView mListView;
 
-	protected BaseAdapter mAdapter;
+	protected ListAdapter mAdapter;
 	
 	protected String mAccountId;
 	
@@ -56,7 +56,7 @@ public abstract class BaseFragment extends DialogFragment{
 
 		mListView = (ListView) root.findViewById(R.id.list);
 		
-		new DataLoadingTask().execute();
+		new DataLoadingTask(false).execute();
 
 		Log.i(TAG, "Returning root from onCreateView");
 
@@ -84,7 +84,13 @@ public abstract class BaseFragment extends DialogFragment{
 		private boolean mRefreshing;
 
 		private boolean hasError = false;
-
+		
+		private boolean mIsUpdate;
+		
+		public DataLoadingTask(boolean isUpdate) {
+			mIsUpdate = isUpdate;
+		}
+		
 		@Override
 		protected void onPreExecute() {
 
@@ -121,7 +127,13 @@ public abstract class BaseFragment extends DialogFragment{
 				Toast.makeText(getActivity(), "Error getting data", Toast.LENGTH_SHORT).show();
 			}	
 			else {
-				mListView.setAdapter(mAdapter);
+				if(mIsUpdate) {
+					//TODO: Should call mAdapter.swapCursor(cursor); here instead
+					mListView.setAdapter(mAdapter);
+				}
+				else {
+					mListView.setAdapter(mAdapter);
+				}
 			}
 
 		}

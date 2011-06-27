@@ -235,7 +235,7 @@ OnSharedPreferenceChangeListener {
 	public abstract class Fetch {
 		public abstract int fetchData(String Account) throws TwitterException;
 		
-		protected int count = 0;
+		protected int count;
 		
 		protected Twitter twitter;
 		
@@ -246,6 +246,7 @@ OnSharedPreferenceChangeListener {
 				return 0;
 			}
 			try{
+				count = 0;
 				return fetchData(account);
 			} catch (TwitterException e) {
 				Log.e(TAG, "Error connecting to Twitter service", e);
@@ -274,6 +275,7 @@ OnSharedPreferenceChangeListener {
 				getStatusData().insertOrIgnore(StatusData.TIMELINE_TABLE, values);
 
 				if (latestStatusCreatedAtTime < status.getCreatedAt().getTime()) {
+					Log.v(TAG, "WE HAVE A NEW STATUS: " + status.getText());
 					count++;
 				}
 			}

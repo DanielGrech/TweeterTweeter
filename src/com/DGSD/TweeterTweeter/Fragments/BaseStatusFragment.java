@@ -9,14 +9,18 @@ import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v4.widget.SimpleCursorAdapter.ViewBinder;
 import android.text.format.DateUtils;
-import com.DGSD.TweeterTweeter.Utils.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.RotateAnimation;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.ImageView;
+import android.widget.ListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,13 +30,15 @@ import com.DGSD.TweeterTweeter.Receivers.PortableReceiver;
 import com.DGSD.TweeterTweeter.Receivers.PortableReceiver.Receiver;
 import com.DGSD.TweeterTweeter.Services.UpdaterService;
 import com.DGSD.TweeterTweeter.UI.ActionItem;
+import com.DGSD.TweeterTweeter.UI.EndlessAdapter;
 import com.DGSD.TweeterTweeter.UI.QuickAction;
+import com.DGSD.TweeterTweeter.Utils.Log;
 import com.github.droidfu.widgets.WebImageView;
 
 public abstract class BaseStatusFragment extends BaseFragment {
 
 	private static final String TAG = BaseStatusFragment.class.getSimpleName();
-	
+
 	private static final String RECEIVE_DATA = 
 		"com.DGSD.TweeterTweeter.RECEIVE_DATA";
 
@@ -119,18 +125,18 @@ public abstract class BaseStatusFragment extends BaseFragment {
 		createPopupActions();
 
 		mReceiver = new PortableReceiver();
-		
+
 		mReceiver.setReceiver(new Receiver() {
 			@Override
 			public void onReceive(Context context, Intent intent) {
 				Log.v(TAG, "Received UpdateTimelineIntent");
-				
+
 				//TODO: intent.getExtra(TYPE) .. 
 				//use to differentiate between 2 active fragments..
-				
-				new DataLoadingTask().execute();
+
+				new DataLoadingTask(true).execute();
 			}
-			
+
 		});
 
 		filter = new IntentFilter(UpdaterService.SEND_DATA);
@@ -227,6 +233,17 @@ public abstract class BaseStatusFragment extends BaseFragment {
 		getActivity().unregisterReceiver(mReceiver); 
 	}
 
+	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
+		
+		Log.v(TAG, "onDestroyView()");
+		
+		mCursor = null;
+		
+		mAdapter = null;
+	}
+	
 	private void createPopupActions(){
 		Resources res = getActivity().getResources();
 
@@ -242,4 +259,5 @@ public abstract class BaseStatusFragment extends BaseFragment {
 		//mShareAction.setTitle("Share");
 		mShareAction.setIcon(res.getDrawable(R.drawable.share));
 	}
+
 }
