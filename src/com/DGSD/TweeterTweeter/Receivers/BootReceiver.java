@@ -28,7 +28,7 @@ public class BootReceiver extends BroadcastReceiver {
 
 		// Create the pending intent
 		Intent intent = new Intent(context, UpdaterService.class);
-		intent.putExtra(UpdaterService.DATA_TYPE, UpdaterService.ALL_DATA);
+		intent.putExtra(UpdaterService.DATA_TYPE, UpdaterService.DATATYPES.ALL_DATA);
 		
 		PendingIntent pendingIntent = PendingIntent.getService(context, -1, intent,
 				PendingIntent.FLAG_UPDATE_CURRENT); 

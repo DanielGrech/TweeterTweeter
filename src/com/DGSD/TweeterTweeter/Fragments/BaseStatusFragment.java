@@ -127,17 +127,21 @@ public abstract class BaseStatusFragment extends BaseFragment {
 			@Override
 			public void onReceive(Context context, Intent intent) {
 				Log.v(TAG, "Received a Update Broadcast!");
-				int dataType = intent.getIntExtra(UpdaterService.DATA_TYPE, -1);
+				
+				int dataType = intent.getIntExtra(UpdaterService.DATA_TYPE, UpdaterService.DATATYPES.ALL_DATA);
+				
+				String account = intent.getStringExtra(UpdaterService.ACCOUNT);
+				
 				if(intent.getAction().equals(UpdaterService.SEND_DATA)) {
 					Log.v(TAG, "Data Received");
-					startRefresh(dataType);
+					startRefresh(dataType, account);
 				}
 				else if (intent.getAction().equals(UpdaterService.NO_DATA)) {
 					Log.v(TAG, "No Data Received");
-					stopRefresh(dataType);
+					stopRefresh(dataType, account);
 				}
 				else {
-					Log.v(TAG, "RECEIVED MYSTERY INTENT: " + intent.getAction());
+					Log.v(TAG, "Received Myster Intent: " + intent.getAction());
 				}
 			}
 
@@ -247,8 +251,8 @@ public abstract class BaseStatusFragment extends BaseFragment {
 		}
 	}
 
-	private void startRefresh(int type) {
-		if(mType == type) {
+	private void startRefresh(int type, String account) {
+		if(mType == type && account != null && mAccountId.equals(account)) {
 			new DataLoadingTask(true).execute();
 		} else {
 			Log.i(TAG, "Received Irrelevant broadcast: " 
@@ -256,8 +260,8 @@ public abstract class BaseStatusFragment extends BaseFragment {
 		}
 	}
 	
-	private void stopRefresh(int type) {
-		if(mType == type) {
+	private void stopRefresh(int type, String account) {
+		if(mType == type && account != null && mAccountId.equals(account)) {
     		if(mListView.isRefreshing()) {
     			mListView.onRefreshComplete();
     		}

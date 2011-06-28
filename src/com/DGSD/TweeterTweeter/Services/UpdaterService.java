@@ -11,8 +11,6 @@ import com.DGSD.TweeterTweeter.Utils.Log;
 public class UpdaterService extends IntentService {
 	private static final String TAG = UpdaterService.class.getSimpleName();
 
-	public static final int ALL_DATA = -1;
-
 	public static final String DATA_TYPE = "data_type";
 	
 	public static final String ACCOUNT = "account";
@@ -39,7 +37,7 @@ public class UpdaterService extends IntentService {
 
 	@Override
 	protected void onHandleIntent(Intent inIntent) {
-		int dataType = inIntent.getIntExtra(DATA_TYPE, ALL_DATA);
+		int dataType = inIntent.getIntExtra(DATA_TYPE, DATATYPES.ALL_DATA);
 		
 		String requestedAccount = inIntent.getStringExtra(ACCOUNT);
 
@@ -53,7 +51,7 @@ public class UpdaterService extends IntentService {
 						break;
 				}
 				switch(dataType) {
-					case ALL_DATA : //Update all data.
+					case DATATYPES.ALL_DATA : //Update all data.
 						updateHomeTimeline(account);
 						updateMentions(account);
 						updateFavourites(account);
@@ -92,79 +90,81 @@ public class UpdaterService extends IntentService {
 		}
 	}
 
-	protected void sendData(int type) {
+	protected void sendData(int type, String account) {
 		Intent intent = new Intent(SEND_DATA);
 		intent.putExtra(DATA_TYPE, type);
+		intent.putExtra(ACCOUNT, account);
 		sendBroadcast(intent);
 	}
 
-	protected void sendNoData(int type) {
+	protected void sendNoData(int type, String account) {
 		Intent intent = new Intent(NO_DATA);
 		intent.putExtra(DATA_TYPE, type);
+		intent.putExtra(ACCOUNT, account);
 		sendBroadcast(intent);
 	}
 
 	private void updateHomeTimeline(String account) {
 		if(mApplication.fetchStatusUpdates(account) > 0) {
-			sendData(DATATYPES.HOME_TIMELINE);
+			sendData(DATATYPES.HOME_TIMELINE, account);
 		} else {
-			sendNoData(DATATYPES.HOME_TIMELINE);
+			sendNoData(DATATYPES.HOME_TIMELINE, account);
 		}
 	}
 
 	private void updateMentions(String account) {
 		if(mApplication.fetchMentions(account) > 0 ) {
-			sendData(DATATYPES.MENTIONS);
+			sendData(DATATYPES.MENTIONS, account);
 		} else {
-			sendNoData(DATATYPES.MENTIONS);
+			sendNoData(DATATYPES.MENTIONS, account);
 		}
 	}
 
 	private void updateFavourites(String account) {
 		if(mApplication.fetchFavourites(account) > 0) {
-			sendData(DATATYPES.FAVOURITES);
+			sendData(DATATYPES.FAVOURITES, account);
 		} else {
-			sendNoData(DATATYPES.FAVOURITES);
+			sendNoData(DATATYPES.FAVOURITES, account);
 		}
 	}
 
 	private void updateRetweetsByMe(String account) {
 		if(mApplication.fetchRetweetsByMe(account) > 0){
-			sendData(DATATYPES.RETWEETS_BY);
+			sendData(DATATYPES.RETWEETS_BY, account);
 		} else {
-			sendNoData(DATATYPES.RETWEETS_BY);
+			sendNoData(DATATYPES.RETWEETS_BY, account);
 		}
 	}
 
 	private void updateRetweetsOfMe(String account) {
 		if(mApplication.fetchRetweetsOfMe(account) > 0){
-			sendData(DATATYPES.RETWEETS_OF);
+			sendData(DATATYPES.RETWEETS_OF, account);
 		} else {
-			sendNoData(DATATYPES.RETWEETS_OF);
+			sendNoData(DATATYPES.RETWEETS_OF, account);
 		}
 	}
 
 	private void updateFollowers(String account) {
 		if(mApplication.fetchFollowers(account) > 0) {
-			sendData(DATATYPES.FOLLOWERS);
+			sendData(DATATYPES.FOLLOWERS, account);
 		} else {
-			sendNoData(DATATYPES.FOLLOWERS);
+			sendNoData(DATATYPES.FOLLOWERS, account);
 		}
 	}
 
 	private void updateFollowing(String account) {
 		if(mApplication.fetchFollowing(account) > 0) {
-			sendData(DATATYPES.FOLLOWING);
+			sendData(DATATYPES.FOLLOWING, account);
 		} else {
-			sendNoData(DATATYPES.FOLLOWING);
+			sendNoData(DATATYPES.FOLLOWING, account);
 		}
 	}
 
 	private void updateProfileInfo(String account) {
 		if(mApplication.fetchProfileInfo(account) > 0) {
-			sendData(DATATYPES.PROFILE_INFO);
+			sendData(DATATYPES.PROFILE_INFO, account);
 		} else {
-			sendNoData(DATATYPES.PROFILE_INFO);
+			sendNoData(DATATYPES.PROFILE_INFO, account);
 		}
 	}
 
