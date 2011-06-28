@@ -266,8 +266,9 @@ public abstract class BaseStatusFragment extends BaseFragment {
     			mListView.onRefreshComplete();
     		}
 		} else {
-			Log.i(TAG, "Received Irrelevant broadcast: " 
-					+ type + "(My type=" + mType + ")");
+			Log.i(TAG, "Received Irrelevant broadcast - TYPE: " 
+					+ type + " ACCOUNT: " + account 
+					+ "(My type=" + mType + " My Account = " + mAccountId + ")");
 		}
 	}
 	
