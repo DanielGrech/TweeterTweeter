@@ -18,6 +18,7 @@ public class MentionsListFragment extends BaseStatusFragment {
 
 		// Supply index input as an argument.
 		Bundle args = new Bundle();
+		
 		args.putString("accountId", accountId);
 
 		f.setArguments(args);

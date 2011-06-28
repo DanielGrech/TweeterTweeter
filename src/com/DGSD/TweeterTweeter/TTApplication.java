@@ -262,8 +262,8 @@ OnSharedPreferenceChangeListener {
 		public int fetchData(String account) throws TwitterException {
 			ResponseList<Status> timeline = twitter.getHomeTimeline();
 
-			long latestStatusCreatedAtTime = getStatusData()
-				.getLatestStatusCreatedAtTime(account);
+			long latestCreatedAtTime = getStatusData()
+				.getLatestCreatedAtTime(StatusData.TIMELINE_TABLE, account);
 			
 			ContentValues values;
 			for (Status status : timeline) {
@@ -274,13 +274,10 @@ OnSharedPreferenceChangeListener {
 
 				getStatusData().insertOrIgnore(StatusData.TIMELINE_TABLE, values);
 
-				if (latestStatusCreatedAtTime < status.getCreatedAt().getTime()) {
+				if (latestCreatedAtTime < status.getCreatedAt().getTime()) {
 					count++;
 				}
 			}
-
-			Log.d(TAG, count > 0 ? "Got " + count + " status updates"
-					: "No new status updates");
 
 			return count;
 		}
@@ -290,6 +287,9 @@ OnSharedPreferenceChangeListener {
 		public int fetchData(String account) throws TwitterException {
 			ResponseList<Status> timeline = twitter.getMentions();
 
+			long latestCreatedAtTime = getStatusData()
+				.getLatestCreatedAtTime(StatusData.MENTIONS_TABLE, account);
+			
 			ContentValues values;
 			for (Status status : timeline) {
 				values = StatusData.createTimelineContentValues(account, Long.toString(status.getId()), 
@@ -298,6 +298,10 @@ OnSharedPreferenceChangeListener {
 						status.isFavorited(), status.getSource());
 
 				getStatusData().insertOrIgnore(StatusData.MENTIONS_TABLE, values);
+				
+				if (latestCreatedAtTime < status.getCreatedAt().getTime()) {
+					count++;
+				}
 			}
 
 			Log.d(TAG, "Finished getting mentions");
@@ -309,6 +313,9 @@ OnSharedPreferenceChangeListener {
 		public int fetchData(String account) throws TwitterException {
 			ResponseList<Status> timeline = twitter.getRetweetsOfMe();
 
+			long latestCreatedAtTime = getStatusData()
+				.getLatestCreatedAtTime(StatusData.RT_OF_TABLE, account);
+			
 			ContentValues values;
 			for (Status status : timeline) {
 				values = StatusData.createTimelineContentValues(account, Long.toString(status.getId()), 
@@ -317,6 +324,10 @@ OnSharedPreferenceChangeListener {
 						status.isFavorited(), status.getSource());
 
 				getStatusData().insertOrIgnore(StatusData.RT_OF_TABLE, values);
+				
+				if (latestCreatedAtTime < status.getCreatedAt().getTime()) {
+					count++;
+				}
 			}
 
 			Log.d(TAG, "Finished getting retweets of me");
@@ -329,6 +340,9 @@ OnSharedPreferenceChangeListener {
 		public int fetchData(String account) throws TwitterException {
 			ResponseList<Status> timeline = twitter.getRetweetedByMe();
 
+			long latestCreatedAtTime = getStatusData()
+				.getLatestCreatedAtTime(StatusData.RT_BY_TABLE, account);
+			
 			ContentValues values;
 			for (Status status : timeline) {
 				values = StatusData.createTimelineContentValues(account, Long.toString(status.getId()), 
@@ -337,6 +351,10 @@ OnSharedPreferenceChangeListener {
 						status.isFavorited(), status.getSource());
 
 				getStatusData().insertOrIgnore(StatusData.RT_BY_TABLE, values);
+				
+				if (latestCreatedAtTime < status.getCreatedAt().getTime()) {
+					count++;
+				}
 			}
 
 			Log.d(TAG, "Finished getting retweets by me");
@@ -349,6 +367,9 @@ OnSharedPreferenceChangeListener {
 		public int fetchData(String account) throws TwitterException {
 			ResponseList<Status> timeline = twitter.getFavorites();
 
+			long latestCreatedAtTime = getStatusData()
+				.getLatestCreatedAtTime(StatusData.FAVOURITES_TABLE, account);
+			
 			ContentValues values;
 			for (Status status : timeline) {
 				values = StatusData.createTimelineContentValues(account, Long.toString(status.getId()), 
@@ -357,6 +378,10 @@ OnSharedPreferenceChangeListener {
 						status.isFavorited(), status.getSource());
 
 				getStatusData().insertOrIgnore(StatusData.FAVOURITES_TABLE, values);
+				
+				if (latestCreatedAtTime < status.getCreatedAt().getTime()) {
+					count++;
+				}
 			}
 
 			Log.d(TAG, "Finished getting favourites");

@@ -272,10 +272,11 @@ public class StatusData {
 	 *
 	 * @return Timestamp of the latest status we have it the database
 	 */
-	public long getLatestStatusCreatedAtTime(String accountId) {  
+	public long getLatestCreatedAtTime(String table, String accountId) {  
 		SQLiteDatabase db = this.dbHelper.getReadableDatabase();
 		try {
-			Cursor cursor = db.query(TIMELINE_TABLE, MAX_CREATED_AT_COLUMNS, null, null, null,
+			Cursor cursor = db.query(table, MAX_CREATED_AT_COLUMNS, 
+					C_ACCOUNT + "=\"" + accountId + "\"", null, null,
 					null, null);
 			try {
 				return cursor.moveToNext() ? cursor.getLong(0) : Long.MIN_VALUE;

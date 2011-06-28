@@ -3,16 +3,16 @@ package com.DGSD.TweeterTweeter;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import com.DGSD.TweeterTweeter.Utils.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 
-import com.DGSD.TweeterTweeter.Fragments.HomeTimelineFragment;
 import com.DGSD.TweeterTweeter.Fragments.LoginFragment;
+import com.DGSD.TweeterTweeter.Fragments.MentionsListFragment;
 import com.DGSD.TweeterTweeter.Services.UpdaterService;
+import com.DGSD.TweeterTweeter.Utils.Log;
 
 public class TTActivity extends FragmentActivity {
 	
@@ -80,7 +80,7 @@ public class TTActivity extends FragmentActivity {
 		});
 		
 		getSupportFragmentManager().beginTransaction().replace(R.id.container, 
-				HomeTimelineFragment.newInstance("account2")).commit();
+				MentionsListFragment.newInstance("account2")).commit();
 		((ViewGroup)findViewById(R.id.container)).addView(b);
 	}
 	

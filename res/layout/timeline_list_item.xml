@@ -8,9 +8,9 @@
     android:focusable="false">
     <com.github.droidfu.widgets.WebImageView
         android:id="@+id/timeline_profile_image"
-        android:layout_width="60dip"
-        android:layout_height="60dip"
-        android:scaleType="centerInside"
+        android:layout_width="80dip"
+        android:layout_height="80dip"
+        android:scaleType="center"
         android:layout_margin="6dip"
         android:adjustViewBounds="true"
         android:gravity="center_vertical"

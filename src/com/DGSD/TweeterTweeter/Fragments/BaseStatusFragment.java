@@ -61,7 +61,9 @@ public abstract class BaseStatusFragment extends BaseFragment {
 
 	protected PortableReceiver mReceiver;
 
-	protected IntentFilter filter;
+	protected IntentFilter mDataFilter;
+
+	protected IntentFilter mNoDataFilter;
 
 	//Adjust data from database for display
 	protected static final ViewBinder mViewBinder = new ViewBinder() { 
@@ -124,17 +126,26 @@ public abstract class BaseStatusFragment extends BaseFragment {
 		mReceiver.setReceiver(new Receiver() {
 			@Override
 			public void onReceive(Context context, Intent intent) {
-				Log.v(TAG, "Received UpdateTimelineIntent");
-
-				//TODO: intent.getExtra(TYPE) .. 
-				//use to differentiate between 2 active fragments..
-
-				new DataLoadingTask(true).execute();
+				Log.v(TAG, "Received a Update Broadcast!");
+				int dataType = intent.getIntExtra(UpdaterService.DATA_TYPE, -1);
+				if(intent.getAction().equals(UpdaterService.SEND_DATA)) {
+					Log.v(TAG, "Data Received");
+					startRefresh(dataType);
+				}
+				else if (intent.getAction().equals(UpdaterService.NO_DATA)) {
+					Log.v(TAG, "No Data Received");
+					stopRefresh(dataType);
+				}
+				else {
+					Log.v(TAG, "RECEIVED MYSTERY INTENT: " + intent.getAction());
+				}
 			}
 
 		});
 
-		filter = new IntentFilter(UpdaterService.SEND_DATA);
+		mDataFilter = new IntentFilter(UpdaterService.SEND_DATA);
+
+		mNoDataFilter = new IntentFilter(UpdaterService.NO_DATA);
 	}
 
 	@Override
@@ -155,7 +166,7 @@ public abstract class BaseStatusFragment extends BaseFragment {
 				/*
 				 * TODO: Should just return a whole data structure with all details possible
 				 */
-				long tweet_id = getTweetId(pos);
+				long tweet_id = getTweetId(pos-1);
 
 				if(tweet_id == -1) {
 					//We couldn't get a tweet id :(
@@ -188,24 +199,7 @@ public abstract class BaseStatusFragment extends BaseFragment {
 
 		});
 	}
-
-	private long getTweetId(int pos) {
-		long retval = -1;
-
-		try{
-			if(mCursor != null && mCursor.moveToPosition(pos)) {
-				retval = Long.valueOf(mCursor.getString(TWEET_ID_COLUMN));
-			}
-			else if(mDataList != null) {
-				retval = mDataList.get(pos).getId();
-			}
-		}catch(RuntimeException e) {
-			Log.e(TAG, "Error getting tweet id", e);
-		}
-
-		return retval;
-	}
-
+	
 	@Override
 	public void onResume() {
 		super.onResume();
@@ -217,7 +211,10 @@ public abstract class BaseStatusFragment extends BaseFragment {
 		}
 
 		// Register the receiver
-		getActivity().registerReceiver(mReceiver, filter,
+		getActivity().registerReceiver(mReceiver, mDataFilter,
+				RECEIVE_DATA, null);
+
+		getActivity().registerReceiver(mReceiver, mNoDataFilter,
 				RECEIVE_DATA, null);
 	}
 
@@ -231,14 +228,65 @@ public abstract class BaseStatusFragment extends BaseFragment {
 	@Override
 	public void onDestroyView() {
 		super.onDestroyView();
-		
+
 		Log.v(TAG, "onDestroyView()");
-		
+
 		mCursor = null;
-		
+
 		mAdapter = null;
 	}
 	
+	@Override
+	public void postSetup(boolean isUpdate) {
+		if(isUpdate) {
+			((SimpleCursorAdapter)mAdapter).changeCursor(mCursor);
+			((SimpleCursorAdapter)mAdapter).notifyDataSetChanged();
+		}
+		else {
+			mListView.setAdapter(mAdapter);
+		}
+	}
+
+	private void startRefresh(int type) {
+		if(mType == type) {
+			new DataLoadingTask(true).execute();
+		} else {
+			Log.i(TAG, "Received Irrelevant broadcast: " 
+					+ type + "(My type=" + mType + ")");
+		}
+	}
+	
+	private void stopRefresh(int type) {
+		if(mType == type) {
+    		if(mListView.isRefreshing()) {
+    			mListView.onRefreshComplete();
+    		}
+		} else {
+			Log.i(TAG, "Received Irrelevant broadcast: " 
+					+ type + "(My type=" + mType + ")");
+		}
+	}
+	
+	private long getTweetId(int pos) {
+		long retval = -1;
+
+		try{
+			if(mCursor != null && mCursor.moveToPosition(pos)) {
+				retval = Long.valueOf(mCursor.getString(TWEET_ID_COLUMN));
+			}
+			else if(mDataList != null) {
+				retval = mDataList.get(pos).getId();
+			}
+			else {
+				Log.d(TAG,"No Tweet at position: " + pos);
+			}
+		}catch(RuntimeException e) {
+			Log.e(TAG, "Error getting tweet id", e);
+		}
+
+		return retval;
+	}
+
 	private void createPopupActions(){
 		Resources res = getActivity().getResources();
 
@@ -254,16 +302,4 @@ public abstract class BaseStatusFragment extends BaseFragment {
 		//mShareAction.setTitle("Share");
 		mShareAction.setIcon(res.getDrawable(R.drawable.share));
 	}
-	
-	@Override
-	public void postSetup(boolean isUpdate) {
-		if(isUpdate) {
-			((SimpleCursorAdapter)mAdapter).changeCursor(mCursor);
-			((SimpleCursorAdapter)mAdapter).notifyDataSetChanged();
-		}
-		else {
-			mListView.setAdapter(mAdapter);
-		}
-	}
-
 }
