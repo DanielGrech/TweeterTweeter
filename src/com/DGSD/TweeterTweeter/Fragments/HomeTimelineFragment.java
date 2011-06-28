@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.DGSD.TweeterTweeter.R;
+import com.DGSD.TweeterTweeter.Services.UpdaterService;
 import com.DGSD.TweeterTweeter.Utils.Log;
 
 public class HomeTimelineFragment extends BaseStatusFragment {
@@ -18,6 +19,7 @@ public class HomeTimelineFragment extends BaseStatusFragment {
 
 		// Supply index input as an argument.
 		Bundle args = new Bundle();
+		
 		args.putString("accountId", accountId);
 
 		f.setArguments(args);
@@ -32,6 +34,8 @@ public class HomeTimelineFragment extends BaseStatusFragment {
 
 		mAccountId = getArguments().getString("accountId");
 
+		mType = UpdaterService.DATATYPES.HOME_TIMELINE;
+		
 		Log.i(TAG, "onCreate");
 	}
 

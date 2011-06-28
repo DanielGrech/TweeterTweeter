@@ -2,6 +2,8 @@ package com.DGSD.TweeterTweeter.Fragments;
 
 import android.os.Bundle;
 import android.support.v4.widget.SimpleCursorAdapter;
+
+import com.DGSD.TweeterTweeter.Services.UpdaterService;
 import com.DGSD.TweeterTweeter.Utils.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,6 +34,8 @@ public class MentionsListFragment extends BaseStatusFragment {
 		super.onCreate(savedInstance);
 		
 		mAccountId = getArguments().getString("accountId");
+		
+		mType = UpdaterService.DATATYPES.MENTIONS;
 		
 		Log.i(TAG, "onCreate");
 	}

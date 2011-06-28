@@ -14,6 +14,7 @@ import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
 import twitter4j.User;
 import twitter4j.auth.AccessToken;
+import android.app.AlarmManager;
 import android.app.Application;
 import android.content.ContentValues;
 import android.content.SharedPreferences;
@@ -28,6 +29,8 @@ OnSharedPreferenceChangeListener {
 
 	private static final String TAG = TTApplication.class.getSimpleName();
 
+	public static final int INTERVAL_NEVER = -1;
+	
 	public static String CONSUMER_KEY;
 	
 	public static String CONSUMER_SECRET;
@@ -45,6 +48,8 @@ OnSharedPreferenceChangeListener {
 	private SharedPreferences mPrefs;
 
 	private StatusData mStatusData;
+	
+	private long mInterval = AlarmManager.INTERVAL_HOUR;
 	
 	/* Interface to updaters which fetch data from network */
 	private FetchStatusUpdates mFetchStatusUpdates;
@@ -182,6 +187,10 @@ OnSharedPreferenceChangeListener {
 		return mStatusData;
 	}
 
+	public long getInterval() {
+		return mInterval;
+	}
+	
 	public void updateStatus(String accountId, String tweet, 
 			GeoLocation location) throws TwitterException {
 		Twitter twitter = mTwitterList.get(accountId);

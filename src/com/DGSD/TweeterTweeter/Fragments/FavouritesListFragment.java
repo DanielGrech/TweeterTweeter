@@ -4,6 +4,7 @@ import twitter4j.TwitterException;
 import android.os.Bundle;
 import android.support.v4.widget.SimpleCursorAdapter;
 
+import com.DGSD.TweeterTweeter.Services.UpdaterService;
 import com.DGSD.TweeterTweeter.UI.TimelineAdapter;
 import com.DGSD.TweeterTweeter.Utils.Log;
 import android.view.LayoutInflater;
@@ -38,6 +39,8 @@ public class FavouritesListFragment extends BaseStatusFragment {
 		mAccountId = getArguments().getString("accountId");
 
 		mUserName = getArguments().getString("username");
+		
+		mType = UpdaterService.DATATYPES.FAVOURITES;
 
 		Log.i(TAG, "onCreate");
 	}

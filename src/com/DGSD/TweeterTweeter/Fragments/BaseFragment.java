@@ -43,7 +43,7 @@ public abstract class BaseFragment extends DialogFragment{
 	protected String mUserName;
 	
 	//The type of data returned from the updater service
-	protected int mType;
+	protected int mType = -1;
 	
 	//What page of tweets we want to load..
 	protected int pageNum = 1;
@@ -76,8 +76,11 @@ public abstract class BaseFragment extends DialogFragment{
 		mListView.setOnRefreshListener(new OnRefreshListener() {
 		    @Override
 		    public void onRefresh() {
-		    	Log.i(TAG, "STARTING A REFRESH!");
-		    	getActivity().startService(new Intent(getActivity(), UpdaterService.class));
+		    	Log.i(TAG, "STARTING A REFRESH FOR TYPE: " + mType + " ACCOUNT: " + mAccountId);
+		    	Intent intent = new Intent(getActivity(), UpdaterService.class);
+		    	intent.putExtra(UpdaterService.DATA_TYPE, mType);
+		    	intent.putExtra(UpdaterService.ACCOUNT, mAccountId);
+		    	getActivity().startService(intent);
 		    }
 		});
 
