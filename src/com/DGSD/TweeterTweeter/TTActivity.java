@@ -6,7 +6,6 @@ import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.Button;
 
 import com.DGSD.TweeterTweeter.Fragments.FavouritesListFragment;
@@ -23,10 +22,6 @@ public class TTActivity extends FragmentActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-		//TODO: This should be part of the theme!
-		// Hide the Title Bar
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		
 		setContentView(R.layout.main);
 		
@@ -72,7 +67,6 @@ public class TTActivity extends FragmentActivity {
 				}else {
 					startService(new Intent(TTActivity.this, UpdaterService.class));
 					b.setText("Stop");
-					
 				}
 				
 				

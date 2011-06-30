@@ -10,7 +10,8 @@
 	<application 
 	   android:icon="@drawable/icon" 
 	   android:label="@string/app_name"
-	   android:name="TTApplication">
+	   android:name="TTApplication"
+	   android:theme="@style/Theme.NoBackground">
 
 	    <activity 
 	        android:name="TTActivity" 

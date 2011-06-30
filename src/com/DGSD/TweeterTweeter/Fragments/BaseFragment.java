@@ -80,6 +80,7 @@ public abstract class BaseFragment extends DialogFragment{
 		    	Intent intent = new Intent(getActivity(), UpdaterService.class);
 		    	intent.putExtra(UpdaterService.DATA_TYPE, mType);
 		    	intent.putExtra(UpdaterService.ACCOUNT, mAccountId);
+		    	intent.putExtra(UpdaterService.USER, mUserName);
 		    	getActivity().startService(intent);
 		    }
 		});

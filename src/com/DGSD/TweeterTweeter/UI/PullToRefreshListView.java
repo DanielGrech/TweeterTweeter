@@ -434,6 +434,13 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     	return (mRefreshState == REFRESHING);
     }
     
+    public void refresh() {
+    	if (mRefreshState != REFRESHING) {
+            prepareForRefresh();
+            onRefresh();
+        }
+    }
+    
     /**
      * Invoked when the refresh view is clicked on. This is mainly used when
      * there's only a few items in the list and it's not possible to drag the

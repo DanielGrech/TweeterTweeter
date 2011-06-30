@@ -55,11 +55,13 @@ public class TimelineFragment extends BaseStatusFragment {
 		if(mUserName == null) {
 			//We have this info in the db already..
 			mCursor = mApplication.getStatusData().getStatusUpdates(mAccountId);
-			
+
 			getActivity().startManagingCursor(mCursor);
 
-			mAdapter = new SimpleCursorAdapter(getActivity(), R.layout.timeline_list_item, 
-					mCursor, FROM, TO, 0);
+			if(mAdapter == null) {
+				mAdapter = new SimpleCursorAdapter(getActivity(), R.layout.timeline_list_item, 
+						mCursor, FROM, TO, 0);
+			}
 
 			((SimpleCursorAdapter)mAdapter).setViewBinder(mViewBinder);
 		}
@@ -68,7 +70,7 @@ public class TimelineFragment extends BaseStatusFragment {
 			Paging p = new Paging(pageNum, ELEMENTS_PER_PAGE);
 			mDataList = mApplication.getTwitter(mAccountId).getUserTimeline(mUserName, p);
 			pageNum++;
-			
+
 			mAdapter = new TimelineAdapter(getActivity(), mDataList);
 		}
 	}

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+	<color name="list_item_start_color">#D9D9D9</color>
+	<color name="list_item_center_color">#E6E6E6</color>
+	<color name="list_item_end_color">#D9D9D9</color>
+</resources>

@@ -1,11 +1,18 @@
 package com.DGSD.TweeterTweeter;
 
+import twitter4j.HashtagEntity;
+import twitter4j.MediaEntity;
+import twitter4j.Status;
+import twitter4j.URLEntity;
 import twitter4j.User;
+import twitter4j.UserMentionEntity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
 import com.DGSD.TweeterTweeter.Utils.Log;
 
 public class StatusData { 
@@ -18,68 +25,60 @@ public class StatusData {
 	/*
 	 * Various database tables
 	 */
+	public static final String TABLE_NAME_TEMPLTE = "<!@#TABLENAME!@#>";
 	public static final String TIMELINE_TABLE = "timeline_table";
-	
 	public static final String FAVOURITES_TABLE = "favourites_table";
-	
 	public static final String MENTIONS_TABLE = "mentions_table";
-	
 	public static final String FOLLOWERS_TABLE = "followers_table";
-	
 	public static final String FOLLOWING_TABLE = "following_table";
-	
 	public static final String PROFILE_TABLE = "profile_table";
-	
 	public static final String RT_OF_TABLE = "rt_of_me_table";
-	
 	public static final String RT_BY_TABLE = "rt_by_me_table";
-	
-	
+
+
 	/*
 	 * Various database columns.
 	 */
-	
+
 	public static final String C_ACCOUNT = "account";
-	
 	public static final String C_ID = "_id";
-
 	public static final String C_CREATED_AT = "created_at";
-
 	public static final String C_TEXT = "txt";
-
-	public static final String C_USER = "user_name";
-
+	public static final String C_USER = "user";
+	public static final String C_USER_NAME = "user_name";
 	public static final String C_IMG = "imageurl";
-	
 	public static final String C_FAV = "isFavourite";
-	
 	public static final String C_SRC = "source";
-	
 	public static final String C_NAME = "user_name";
-	
 	public static final String C_SCREEN_NAME = "screen_name";
-	
 	public static final String C_DESC = "description";
-	
 	public static final String C_FOLLOWERS = "follower_count";
-	
 	public static final String C_FRIENDS = "friends_count";
-	
 	public static final String C_NUM_STAT = "num_of_status";
-	
+	public static final String C_IN_REPLY = "in_reply_to_screenname";
+	public static final String C_ORIG_TWEET = "orig_tweeter_name";
+	public static final String C_RETWEET_COUNT = "retweet_count";
+	public static final String C_PLACE_NAME = "place_name";
+	public static final String C_LAT = "latitude";
+	public static final String C_LONG = "longitude";
+	public static final String C_MEDIA_ENT = "media_entities";
+	public static final String C_HASH_ENT = "hastag_entities";
+	public static final String C_URL_ENT = "url_entities";
+	public static final String C_USER_ENT = "user_entities";
+
 	/*
 	 * Various database operations.
 	 */
 	private static final String GET_ALL_ORDER_BY = C_CREATED_AT + " DESC";
-	
+
 	private static final String GET_ALL_ORDER_BY_ALPHA = C_NAME + " DESC";
 
 	private static final String[] MAX_CREATED_AT_COLUMNS = { "max("
-		+ StatusData.C_CREATED_AT + ")" };
+		+ C_CREATED_AT + ")" };
 
 	private static final String[] DB_TEXT_COLUMNS = { C_TEXT };
 
-	
+
 	// DbHelper implementations
 	class DbHelper extends SQLiteOpenHelper {
 
@@ -90,39 +89,51 @@ public class StatusData {
 		@Override
 		public void onCreate(SQLiteDatabase db) {
 			Log.i(TAG, "Creating database: " + DATABASE);
-			
-			db.execSQL("create table " + TIMELINE_TABLE + " (" + C_ACCOUNT + " text, " + C_ID + " text primary key, "
-					+ C_CREATED_AT + " text, " + C_USER + " text, " + C_TEXT + " text, " 
-					+ C_IMG + " text, " + C_FAV + " int, " + C_SRC + " text)");
-			
-			db.execSQL("create table " + FAVOURITES_TABLE + " (" + C_ACCOUNT + " text, " + C_ID + " text primary key, "
-					+ C_CREATED_AT + " text, " + C_USER + " text, " + C_TEXT + " text, " 
-					+ C_IMG + " text, " + C_FAV + " int, " + C_SRC + " text)");
-			
-			db.execSQL("create table " + MENTIONS_TABLE + " (" + C_ACCOUNT + " text, " + C_ID + " text primary key, "
-					+ C_CREATED_AT + " text, " + C_USER + " text, " + C_TEXT + " text, " 
-					+ C_IMG + " text, " + C_FAV + " int, " + C_SRC + " text)");
-			
-			db.execSQL("create table " + RT_BY_TABLE + " (" + C_ACCOUNT + " text, " + C_ID + " text primary key, "
-					+ C_CREATED_AT + " text, " + C_USER + " text, " + C_TEXT + " text, " 
-					+ C_IMG + " text, " + C_FAV + " int, " + C_SRC + " text)");
-			
-			db.execSQL("create table " + RT_OF_TABLE + " (" + C_ACCOUNT + " text, " + C_ID + " text primary key, "
-					+ C_CREATED_AT + " text, " + C_USER + " text, " + C_TEXT + " text, " 
-					+ C_IMG + " text, " + C_FAV + " int, " + C_SRC + " text)");
-			
+
+			String statusTemp = "create table " + TABLE_NAME_TEMPLTE + " (" + 
+			C_ACCOUNT + " text, " + 
+			C_USER + " text, " + 
+			C_ID + " text primary key, " + 
+			C_CREATED_AT + " text, " + 
+			C_TEXT + " text, " + 
+			C_USER_NAME + " text, " + 
+			C_SCREEN_NAME + " text, "+ 
+			C_IMG + " text, " + 
+			C_FAV + " int, " + 
+			C_SRC + " text, " + 
+			C_IN_REPLY + " text, " + 
+			C_ORIG_TWEET + " text, " + 
+			C_RETWEET_COUNT + " int, " + 
+			C_PLACE_NAME + " text, " + 
+			C_LAT + " text, " + 
+			C_LONG + " text, " + 
+			C_MEDIA_ENT + " text, " + 
+			C_HASH_ENT + " text, " + 
+			C_URL_ENT + " text, " + 
+			C_USER_ENT + " text)";
+
+			db.execSQL(statusTemp.replace(TABLE_NAME_TEMPLTE, TIMELINE_TABLE));
+
+			db.execSQL(statusTemp.replace(TABLE_NAME_TEMPLTE, FAVOURITES_TABLE));
+
+			db.execSQL(statusTemp.replace(TABLE_NAME_TEMPLTE, MENTIONS_TABLE));
+
+			db.execSQL(statusTemp.replace(TABLE_NAME_TEMPLTE, RT_BY_TABLE));
+
+			db.execSQL(statusTemp.replace(TABLE_NAME_TEMPLTE, RT_OF_TABLE));
+
 			db.execSQL("create table " + FOLLOWERS_TABLE + " (" + C_ACCOUNT + " text, " + C_ID + " text primary key, "
 					+ C_CREATED_AT + " text, " + C_NAME + " text, " + C_SCREEN_NAME + " text, "
 					+ C_DESC + " text, " + C_FAV + " int, " + C_FOLLOWERS + " int, "
 					+ C_FRIENDS + " int, " + C_NUM_STAT + " int, " + C_TEXT + " text, " 
 					+ C_IMG + " text)");
-			
+
 			db.execSQL("create table " + FOLLOWING_TABLE + " (" + C_ACCOUNT + " text, " + C_ID + " text primary key, "
 					+ C_CREATED_AT + " text, " + C_NAME + " text, " + C_SCREEN_NAME + " text, "
 					+ C_DESC + " text, " + C_FAV + " int, " + C_FOLLOWERS + " int, "
 					+ C_FRIENDS + " int, " + C_NUM_STAT + " int, " + C_TEXT + " text, " 
 					+ C_IMG + " text)");
-			
+
 			db.execSQL("create table " + PROFILE_TABLE + " (" + C_ACCOUNT + " text, " + C_ID + " text primary key, "
 					+ C_CREATED_AT + " text, " + C_NAME + " text, " + C_SCREEN_NAME + " text, "
 					+ C_DESC + " text, " + C_FAV + " int, " + C_FOLLOWERS + " int, "
@@ -140,7 +151,7 @@ public class StatusData {
 			db.execSQL("drop table " + FOLLOWERS_TABLE);
 			db.execSQL("drop table " + FOLLOWING_TABLE);
 			db.execSQL("drop table " + PROFILE_TABLE);
-			
+
 			this.onCreate(db);
 		}
 	}
@@ -152,26 +163,87 @@ public class StatusData {
 		Log.i(TAG, "Initialized data");
 	}
 
-	public static synchronized ContentValues createTimelineContentValues(String account,
-			String id, String createdAt, String user, String text, String imgUrl, 
-			boolean isFav, String source) {
+	public static synchronized ContentValues 
+	createTimelineContentValues(String account, String user, Status status) {
 		ContentValues values = new ContentValues();
 
+
+		String mediaEntities = "";
+		String hashtagEntities = "";
+		String urlEntities = "";
+		String userEntities = "";
+
+		if(status.getMediaEntities() != null) {
+			for(MediaEntity me: status.getMediaEntities()) {
+				mediaEntities += me.getMediaURL().toString() + ",";
+			}
+		}
+
+		if(status.getHashtagEntities() != null) {
+			for(HashtagEntity ht: status.getHashtagEntities()) {
+				hashtagEntities += ht.getText()+ ",";
+			}
+		}
+
+		if(status.getURLEntities() != null) {
+			for(URLEntity url: status.getURLEntities()) {
+				urlEntities += url.getExpandedURL() + ",";
+			}
+		}
+
+		if(status.getUserMentionEntities() != null) {
+			for(UserMentionEntity um : status.getUserMentionEntities()) {
+				userEntities += um.getScreenName()+ ",";
+			}
+		}
+
+		String placeName = "";
+		String latitude = "";
+		String longitude = "";
+		String retweetedScreenName = "";
+
+		if( status.getPlace() != null ) {
+			placeName = status.getPlace().getName();
+		}
+
+		if(status.getGeoLocation() != null) {
+			latitude = Double.toString(status.getGeoLocation().getLatitude());
+			longitude = Double.toString(status.getGeoLocation().getLongitude());
+		}
+
+		if(status.getRetweetedStatus() != null) {
+			retweetedScreenName = 
+				status.getRetweetedStatus().getUser().getScreenName();
+		}
+
 		values.put(C_ACCOUNT, account);
-		values.put(C_ID, id);
-		values.put(C_CREATED_AT, createdAt);
-		values.put(C_TEXT, text);
 		values.put(C_USER, user);
-		values.put(C_IMG, imgUrl);
-		values.put(C_FAV, isFav ? 1 : 0);
-		values.put(C_SRC, source);
-		
+		values.put(C_ID, Long.toString(status.getId()));
+		values.put(C_CREATED_AT, Long.toString(status.getCreatedAt().getTime()));
+		values.put(C_TEXT, status.getText());
+		values.put(C_USER_NAME, status.getUser().getName());
+		values.put(C_SCREEN_NAME, status.getUser().getScreenName());
+		values.put(C_IMG, status.getUser().getProfileImageURL().toString());
+		values.put(C_FAV, status.isFavorited() ? 1 : 0);
+		values.put(C_SRC, status.getSource());
+		values.put(C_IN_REPLY, status.getInReplyToScreenName());
+		values.put(C_ORIG_TWEET, retweetedScreenName);
+		values.put(C_RETWEET_COUNT, status.getRetweetCount());
+		values.put(C_PLACE_NAME, placeName);
+		values.put(C_LAT, latitude);
+		values.put(C_LONG, longitude);
+		values.put(C_MEDIA_ENT, mediaEntities);
+		values.put(C_HASH_ENT, hashtagEntities);
+		values.put(C_URL_ENT, urlEntities);
+		values.put(C_USER_ENT, userEntities);
+
+
 		return values;
 	}
 
 	public static synchronized ContentValues createUserContentValues(String account, User u) {
 		ContentValues values = new ContentValues();
-		
+
 		values.put(C_ACCOUNT, account);
 		values.put(C_ID, Long.toString(u.getId()) );
 		values.put(C_CREATED_AT, Long.toString(u.getCreatedAt().getTime()) );
@@ -182,7 +254,7 @@ public class StatusData {
 		values.put(C_FOLLOWERS, u.getFollowersCount() );
 		values.put(C_FRIENDS, u.getFriendsCount() );
 		values.put(C_NUM_STAT, u.getStatusesCount() );
-		
+
 		try{
 			values.put(C_TEXT, u.getStatus().getText() );
 		}catch(NullPointerException e) {
@@ -195,10 +267,10 @@ public class StatusData {
 			Log.w(TAG, "Null pointer getting profile image", e);
 			values.put(C_TEXT, "" );
 		}
-		
+
 		return values;
 	}
-	
+
 	public void close() {  
 		this.dbHelper.close();
 	}
@@ -213,6 +285,18 @@ public class StatusData {
 		}
 	}
 
+	public boolean insert(String table, ContentValues values) {  
+		SQLiteDatabase db = this.dbHelper.getWritableDatabase();  
+		try {
+			db.insertOrThrow(table, null, values);  
+			return true;
+		} catch(SQLException e) { 
+			return false;
+		} finally {
+			db.close(); 
+		}
+	}
+
 	/**
 	 *
 	 * @return Cursor where the columns are _id, created_at, user, txt, usrImgUrl
@@ -222,46 +306,53 @@ public class StatusData {
 		return db.query(TIMELINE_TABLE, null, C_ACCOUNT + "=\"" + accountId + "\"", 
 				null, null, null, GET_ALL_ORDER_BY);
 	}
-	
-	public Cursor getFavourites(String accountId) {   
+
+	public Cursor getFavourites(String accountId, String screenName) {   
 		SQLiteDatabase db = this.dbHelper.getReadableDatabase();
-		return db.query(FAVOURITES_TABLE, null, C_ACCOUNT + "=\"" + accountId + "\"", 
-				null, null, null, GET_ALL_ORDER_BY);
+
+		if(screenName == null) {
+			return db.query(FAVOURITES_TABLE, null, C_ACCOUNT + "=\"" + accountId + "\"", 
+					null, null, null, GET_ALL_ORDER_BY);
+		} else {
+			return db.query(FAVOURITES_TABLE, null, 
+					C_ACCOUNT + "=\"" + accountId + "\" AND " + C_USER + "=\"" + screenName + "\"", 
+					null, null, null, GET_ALL_ORDER_BY);
+		}
 	}
-	
+
 	public Cursor getMentions(String accountId) {   
 		SQLiteDatabase db = this.dbHelper.getReadableDatabase();
 		return db.query(MENTIONS_TABLE, null, C_ACCOUNT + "=\"" + accountId + "\"", 
 				null, null, null, GET_ALL_ORDER_BY);
 	}
-	
+
 	public Cursor getRetweetsOf(String accountId) {   
 		SQLiteDatabase db = this.dbHelper.getReadableDatabase();
 		return db.query(RT_OF_TABLE, null, C_ACCOUNT + "=\"" + accountId + "\"", 
 				null, null, null, GET_ALL_ORDER_BY);
 	}
-	
-		public Cursor getRetweetsBy(String accountId) {   
+
+	public Cursor getRetweetsBy(String accountId) {   
 		SQLiteDatabase db = this.dbHelper.getReadableDatabase();
 		return db.query(RT_BY_TABLE, null, C_ACCOUNT + "=\"" + accountId + "\"", 
 				null, null, null, GET_ALL_ORDER_BY);
 	}
-	
+
 	public Cursor getFriends(String accountId, String whereClause) {   
 		SQLiteDatabase db = this.dbHelper.getReadableDatabase();
 		return db.query(FOLLOWING_TABLE, null, 
 				C_ACCOUNT + "=\"" + accountId + "\" AND " + whereClause, 
 				null, null, null, GET_ALL_ORDER_BY_ALPHA);
-		
+
 	}	
-		
+
 	public Cursor getFriends(String accountId) {   
 		SQLiteDatabase db = this.dbHelper.getReadableDatabase();
 		return db.query(FOLLOWING_TABLE, null, C_ACCOUNT + "=\"" + accountId + "\"", 
 				null, null, null, GET_ALL_ORDER_BY_ALPHA);
-		
+
 	}
-	
+
 	public Cursor getFollowers(String accountId) {   
 		SQLiteDatabase db = this.dbHelper.getReadableDatabase();
 		return db.query(FOLLOWERS_TABLE, null, C_ACCOUNT + "=\"" + accountId + "\"", 

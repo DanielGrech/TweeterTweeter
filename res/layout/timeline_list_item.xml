@@ -5,13 +5,13 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:padding="6dip"
-    android:focusable="false">
+    android:focusable="false"
+    android:background="@drawable/list_item_background">
     <com.github.droidfu.widgets.WebImageView
         android:id="@+id/timeline_profile_image"
         android:layout_width="80dip"
         android:layout_height="80dip"
-        android:scaleType="center"
-        android:layout_margin="6dip"
+        android:scaleType="fitCenter"
         android:adjustViewBounds="true"
         android:gravity="center_vertical"
         droidfu:autoLoad="false"
@@ -56,15 +56,4 @@
         android:singleLine="false"
         android:textSize="14.0sp" 
         android:textColor="#ff888888"/>
-   
-    <ImageView
-        android:id="@+id/timeline_favourite_star"
-        android:layout_width="25px"
-        android:layout_height="fill_parent"
-        android:scaleType="centerInside"
-        android:layout_below="@id/timeline_date"
-        android:layout_alignRight="@id/timeline_date"
-        android:gravity="center_vertical"
-        android:visibility="gone"
-        android:src="@drawable/favourite_gold"/>
 </RelativeLayout>

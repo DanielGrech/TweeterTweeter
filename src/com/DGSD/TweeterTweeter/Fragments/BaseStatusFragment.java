@@ -37,13 +37,11 @@ public abstract class BaseStatusFragment extends BaseFragment {
 	private static final String RECEIVE_DATA = 
 		"com.DGSD.TweeterTweeter.RECEIVE_DATA";
 
-	protected static final String[] FROM = { StatusData.C_CREATED_AT, StatusData.C_USER,
-		StatusData.C_TEXT, StatusData.C_IMG, StatusData.C_FAV };
+	protected static final String[] FROM = { StatusData.C_CREATED_AT, StatusData.C_SCREEN_NAME,
+		StatusData.C_TEXT, StatusData.C_IMG};
 
 	protected static final int[] TO = {R.id.timeline_date, R.id.timeline_source, R.id.timeline_tweet,
-		R.id.timeline_profile_image, R.id.timeline_favourite_star }; 
-
-	private static final int TWEET_ID_COLUMN = 1;
+		R.id.timeline_profile_image }; 
 
 	protected QuickAction mQuickAction;
 
@@ -64,6 +62,8 @@ public abstract class BaseStatusFragment extends BaseFragment {
 	protected IntentFilter mDataFilter;
 
 	protected IntentFilter mNoDataFilter;
+	
+	protected IntentFilter mErrorFilter;
 
 	//Adjust data from database for display
 	protected static final ViewBinder mViewBinder = new ViewBinder() { 
@@ -82,16 +82,6 @@ public abstract class BaseStatusFragment extends BaseFragment {
 
 					((TextView)view).setText( 
 							DateUtils.getRelativeTimeSpanString(view.getContext(), timestamp) );
-
-					return true;
-
-				case R.id.timeline_favourite_star:
-					if(cursor.getInt(columnIndex) == 1) {
-						view.setVisibility(View.VISIBLE);
-					}
-					else {
-						view.setVisibility(View.GONE);
-					}
 
 					return true;
 
@@ -126,22 +116,27 @@ public abstract class BaseStatusFragment extends BaseFragment {
 		mReceiver.setReceiver(new Receiver() {
 			@Override
 			public void onReceive(Context context, Intent intent) {
-				Log.v(TAG, "Received a Update Broadcast!");
-				
 				int dataType = intent.getIntExtra(UpdaterService.DATA_TYPE, UpdaterService.DATATYPES.ALL_DATA);
-				
+
 				String account = intent.getStringExtra(UpdaterService.ACCOUNT);
-				
+
 				if(intent.getAction().equals(UpdaterService.SEND_DATA)) {
 					Log.v(TAG, "Data Received");
 					startRefresh(dataType, account);
 				}
-				else if (intent.getAction().equals(UpdaterService.NO_DATA)) {
+				else if(intent.getAction().equals(UpdaterService.NO_DATA)) {
 					Log.v(TAG, "No Data Received");
+					stopRefresh(dataType, account);
+				} 
+				else if(intent.getAction().equals(UpdaterService.ERROR)) {
+					if(mType == dataType && account != null && mAccountId.equals(account)) {
+						Toast.makeText(getActivity(), "Error refreshing data", 
+								Toast.LENGTH_SHORT).show();
+					}
 					stopRefresh(dataType, account);
 				}
 				else {
-					Log.v(TAG, "Received Myster Intent: " + intent.getAction());
+					Log.v(TAG, "Received Mystery Intent: " + intent.getAction());
 				}
 			}
 
@@ -150,6 +145,8 @@ public abstract class BaseStatusFragment extends BaseFragment {
 		mDataFilter = new IntentFilter(UpdaterService.SEND_DATA);
 
 		mNoDataFilter = new IntentFilter(UpdaterService.NO_DATA);
+		
+		mErrorFilter = new IntentFilter(UpdaterService.ERROR);
 	}
 
 	@Override
@@ -203,7 +200,7 @@ public abstract class BaseStatusFragment extends BaseFragment {
 
 		});
 	}
-	
+
 	@Override
 	public void onResume() {
 		super.onResume();
@@ -220,6 +217,9 @@ public abstract class BaseStatusFragment extends BaseFragment {
 
 		getActivity().registerReceiver(mReceiver, mNoDataFilter,
 				RECEIVE_DATA, null);
+		
+		getActivity().registerReceiver(mReceiver, mErrorFilter,
+				RECEIVE_DATA, null);
 	}
 
 	@Override
@@ -235,18 +235,23 @@ public abstract class BaseStatusFragment extends BaseFragment {
 
 		Log.v(TAG, "onDestroyView()");
 
-		mCursor = null;
+		if(mCursor != null) {
+			mCursor.close();
+			mCursor = null;
+		}
 
 		mAdapter = null;
 	}
-	
+
 	@Override
 	public void postSetup(boolean isUpdate) {
 		if(isUpdate) {
+			Log.i(TAG, "SETTING CURSOR");
 			((SimpleCursorAdapter)mAdapter).changeCursor(mCursor);
 			((SimpleCursorAdapter)mAdapter).notifyDataSetChanged();
 		}
 		else {
+			Log.i(TAG, "SETTING ADAPTER");
 			mListView.setAdapter(mAdapter);
 		}
 	}
@@ -259,25 +264,25 @@ public abstract class BaseStatusFragment extends BaseFragment {
 					+ type + "(My type=" + mType + ")");
 		}
 	}
-	
+
 	private void stopRefresh(int type, String account) {
 		if(mType == type && account != null && mAccountId.equals(account)) {
-    		if(mListView.isRefreshing()) {
-    			mListView.onRefreshComplete();
-    		}
+			if(mListView.isRefreshing()) {
+				mListView.onRefreshComplete();
+			}
 		} else {
 			Log.i(TAG, "Received Irrelevant broadcast - TYPE: " 
 					+ type + " ACCOUNT: " + account 
 					+ "(My type=" + mType + " My Account = " + mAccountId + ")");
 		}
 	}
-	
+
 	private long getTweetId(int pos) {
 		long retval = -1;
 
 		try{
 			if(mCursor != null && mCursor.moveToPosition(pos)) {
-				retval = Long.valueOf(mCursor.getString(TWEET_ID_COLUMN));
+				retval = Long.valueOf(mCursor.getString(mCursor.getColumnIndex(StatusData.C_ID)));
 			}
 			else if(mDataList != null) {
 				retval = mDataList.get(pos).getId();

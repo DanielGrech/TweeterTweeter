@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.DGSD.TweeterTweeter.R;
@@ -46,10 +45,9 @@ public class TimelineAdapter  extends ArrayAdapter<Object> {
 			root = inflater.inflate(R.layout.timeline_list_item, null);
 
 			rowItem = new RowItem();
-			rowItem.tweet = (LinkEnabledTextView) root.findViewById(R.id.timeline_tweet);
+			rowItem.tweet = (TextView) root.findViewById(R.id.timeline_tweet);
 			rowItem.tweet_details = (TextView) root.findViewById(R.id.timeline_source);
 			rowItem.img  = (WebImageView) root.findViewById(R.id.timeline_profile_image);
-			rowItem.favourite  = (ImageView) root.findViewById(R.id.timeline_favourite_star);
 			rowItem.date = (TextView) root.findViewById(R.id.timeline_date);
 
 			root.setTag(rowItem);
@@ -67,14 +65,6 @@ public class TimelineAdapter  extends ArrayAdapter<Object> {
 		rowItem.img.setImageUrl(imageUrl);
 		if(imageUrl != "")
 			rowItem.img.loadImage();
-		
-		//Set the favourite status ----------
-		if(s.isFavorited()) {
-			rowItem.favourite.setVisibility(View.VISIBLE);
-		}
-		else {
-			rowItem.favourite.setVisibility(View.GONE);
-		}
 		
 		//Set the details ----------
 		rowItem.tweet_details.setText(s.getUser().getScreenName());
@@ -94,10 +84,9 @@ public class TimelineAdapter  extends ArrayAdapter<Object> {
 	}
 	
 	protected class RowItem {
-		public LinkEnabledTextView tweet;
+		public TextView tweet;
 		public TextView tweet_details;
 		public WebImageView img;
-		public ImageView favourite;
 		public TextView date;
 	}
 

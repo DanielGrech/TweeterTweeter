@@ -6,6 +6,7 @@
     android:paddingTop="10dip"
     android:paddingBottom="15dip"
     android:gravity="center_vertical|center_horizontal"
+    android:background="@drawable/list_item_background"
     >
     <RelativeLayout
         android:layout_width="fill_parent"

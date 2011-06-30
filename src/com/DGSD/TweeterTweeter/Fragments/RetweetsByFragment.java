@@ -61,8 +61,10 @@ public class RetweetsByFragment extends BaseStatusFragment {
 			
 			getActivity().startManagingCursor(mCursor);
 
-			mAdapter = new SimpleCursorAdapter(getActivity(), R.layout.timeline_list_item, 
-					mCursor, FROM, TO, 0);
+			if(mAdapter == null) {
+    			mAdapter = new SimpleCursorAdapter(getActivity(), R.layout.timeline_list_item, 
+    					mCursor, FROM, TO, 0);
+			}
 
 			((SimpleCursorAdapter)mAdapter).setViewBinder(mViewBinder);
 		}
