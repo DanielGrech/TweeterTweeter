@@ -5,14 +5,12 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:padding="6dip"
-    android:focusable="false"
-    android:background="@drawable/list_item_background">
+    android:focusable="false">
     <com.github.droidfu.widgets.WebImageView
         android:id="@+id/timeline_profile_image"
-        android:layout_width="80dip"
-        android:layout_height="80dip"
-        android:scaleType="fitCenter"
-        android:adjustViewBounds="true"
+        android:layout_width="100dip"
+        android:layout_height="100dip"
+        android:scaleType="fitXY"
         android:gravity="center_vertical"
         droidfu:autoLoad="false"
         droidfu:progressDrawable="@drawable/ic_contact_picture"/>
@@ -48,7 +46,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/timeline_profile_image" 
-        android:layout_toLeftOf="@+id/favourite_star"
         android:layout_below="@id/timeline_source"
         android:layout_marginLeft="6.0dip" 
         android:layout_marginRight="7.0dip"

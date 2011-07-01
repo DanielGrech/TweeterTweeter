@@ -70,18 +70,18 @@ public abstract class BaseStatusFragment extends BaseFragment {
 
 		@Override
 		public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-
 			switch(view.getId()){
 				case R.id.timeline_date:
-					long timestamp = -1;
 					try{
-						timestamp = Long.valueOf( cursor.getString(columnIndex) );
-					}catch(NumberFormatException e){
+						((TextView)view).setText( 
+								DateUtils.getRelativeTimeSpanString(view.getContext(), 
+										Long.valueOf( cursor.getString(columnIndex) )) );
+						
+					} catch(NumberFormatException e){
 						Log.e(TAG, "Error converting time string", e);
+					} catch(ClassCastException e) {
+						Log.e(TAG, "Error casting to textview", e);
 					}
-
-					((TextView)view).setText( 
-							DateUtils.getRelativeTimeSpanString(view.getContext(), timestamp) );
 
 					return true;
 
@@ -89,11 +89,9 @@ public abstract class BaseStatusFragment extends BaseFragment {
 					String url = "";
 					url = cursor.getString(columnIndex);
 
-					WebImageView wiv = (WebImageView) view;
-
-					wiv.setImageUrl(url);
+					((WebImageView) view).setImageUrl(url);
 					if(url != "") {
-						wiv.loadImage();
+						((WebImageView) view).loadImage();
 					}
 
 					return true;

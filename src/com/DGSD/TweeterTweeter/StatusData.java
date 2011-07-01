@@ -303,7 +303,7 @@ public class StatusData {
 	 */
 	public Cursor getStatusUpdates(String accountId) {   
 		SQLiteDatabase db = this.dbHelper.getReadableDatabase();
-		return db.query(TIMELINE_TABLE, null, C_ACCOUNT + "=\"" + accountId + "\"", 
+		return db.query(TIMELINE_TABLE, null, C_ACCOUNT + " IN (\"" + accountId + "\")", 
 				null, null, null, GET_ALL_ORDER_BY);
 	}
 
@@ -311,18 +311,18 @@ public class StatusData {
 		SQLiteDatabase db = this.dbHelper.getReadableDatabase();
 
 		if(screenName == null) {
-			return db.query(FAVOURITES_TABLE, null, C_ACCOUNT + "=\"" + accountId + "\"", 
+			return db.query(FAVOURITES_TABLE, null, C_ACCOUNT + " IN (\"" + accountId + "\")", 
 					null, null, null, GET_ALL_ORDER_BY);
 		} else {
 			return db.query(FAVOURITES_TABLE, null, 
-					C_ACCOUNT + "=\"" + accountId + "\" AND " + C_USER + "=\"" + screenName + "\"", 
+					C_ACCOUNT + " IN (\"" + accountId + "\") AND " + C_USER + "=\"" + screenName + "\"", 
 					null, null, null, GET_ALL_ORDER_BY);
 		}
 	}
 
 	public Cursor getMentions(String accountId) {   
 		SQLiteDatabase db = this.dbHelper.getReadableDatabase();
-		return db.query(MENTIONS_TABLE, null, C_ACCOUNT + "=\"" + accountId + "\"", 
+		return db.query(MENTIONS_TABLE, null, C_ACCOUNT + " IN (\"" + accountId + "\")", 
 				null, null, null, GET_ALL_ORDER_BY);
 	}
 
@@ -334,21 +334,21 @@ public class StatusData {
 
 	public Cursor getRetweetsBy(String accountId) {   
 		SQLiteDatabase db = this.dbHelper.getReadableDatabase();
-		return db.query(RT_BY_TABLE, null, C_ACCOUNT + "=\"" + accountId + "\"", 
+		return db.query(RT_BY_TABLE, null, C_ACCOUNT + " IN (\"" + accountId + "\")", 
 				null, null, null, GET_ALL_ORDER_BY);
 	}
 
 	public Cursor getFriends(String accountId, String whereClause) {   
 		SQLiteDatabase db = this.dbHelper.getReadableDatabase();
 		return db.query(FOLLOWING_TABLE, null, 
-				C_ACCOUNT + "=\"" + accountId + "\" AND " + whereClause, 
+				C_ACCOUNT + " IN (\"" + accountId + "\") AND " + whereClause, 
 				null, null, null, GET_ALL_ORDER_BY_ALPHA);
 
 	}	
 
 	public Cursor getFriends(String accountId) {   
 		SQLiteDatabase db = this.dbHelper.getReadableDatabase();
-		return db.query(FOLLOWING_TABLE, null, C_ACCOUNT + "=\"" + accountId + "\"", 
+		return db.query(FOLLOWING_TABLE, null, C_ACCOUNT + " IN (\"" + accountId + "\")", 
 				null, null, null, GET_ALL_ORDER_BY_ALPHA);
 
 	}
@@ -367,7 +367,7 @@ public class StatusData {
 		SQLiteDatabase db = this.dbHelper.getReadableDatabase();
 		try {
 			Cursor cursor = db.query(table, MAX_CREATED_AT_COLUMNS, 
-					C_ACCOUNT + "=\"" + accountId + "\"", null, null,
+					C_ACCOUNT + " IN (\"" + accountId + "\")", null, null,
 					null, null);
 			try {
 				return cursor.moveToNext() ? cursor.getLong(0) : Long.MIN_VALUE;

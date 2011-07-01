@@ -62,7 +62,6 @@ public final class R {
         public static final int arrow_down=0x7f090015;
         public static final int arrow_up=0x7f090014;
         public static final int container=0x7f090006;
-        public static final int favourite_star=0x7f090020;
         public static final int icon=0x7f090000;
         public static final int image=0x7f09001a;
         public static final int list=0x7f090002;
