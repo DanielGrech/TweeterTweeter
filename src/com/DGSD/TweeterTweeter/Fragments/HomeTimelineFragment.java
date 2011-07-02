@@ -62,7 +62,8 @@ public class HomeTimelineFragment extends BaseStatusFragment {
 	public synchronized void setupList() {
 		Log.i(TAG, "Setting up list");
 
-		mCursor = mApplication.getStatusData().getStatusUpdates(mAccountId);
+		//Gets the status' already in the database..
+		mCursor = mApplication.getStatusData().getStatusUpdates(mAccountId, FROM);
 		
 		if(mAdapter == null) {
 			mAdapter = new SimpleCursorAdapter(getActivity(), R.layout.timeline_list_item, 

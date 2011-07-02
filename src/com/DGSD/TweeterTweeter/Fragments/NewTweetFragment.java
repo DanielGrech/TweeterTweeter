@@ -44,7 +44,6 @@ import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextWatcher;
-import com.DGSD.TweeterTweeter.Utils.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -61,6 +60,7 @@ import com.DGSD.TweeterTweeter.R;
 import com.DGSD.TweeterTweeter.StatusData;
 import com.DGSD.TweeterTweeter.TTApplication;
 import com.DGSD.TweeterTweeter.Services.NewStatusService;
+import com.DGSD.TweeterTweeter.Utils.Log;
 import com.DGSD.TweeterTweeter.Utils.Tokenizer;
 import com.github.droidfu.widgets.WebImageView;
 import com.rosaloves.bitlyj.BitlyException;
@@ -111,7 +111,7 @@ implements OnClickListener {
 	private long mLongitude = -1;
 
 	protected static final String[] FROM = 
-	{ StatusData.C_SCREEN_NAME, StatusData.C_IMG };
+	{ StatusData.C_SCREEN_NAME, StatusData.C_IMG, StatusData.C_ID };
 
 	protected static final int[] TO = {R.id.profile_name, R.id.profile_image};
 
@@ -348,7 +348,7 @@ implements OnClickListener {
 
 	private void setupMentionCompletion() {
 		//Setup the completion for '@'
-		Cursor cursor = mApplication.getStatusData().getFriends(mAccountId);
+		Cursor cursor = mApplication.getStatusData().getFriends(mAccountId, FROM);
 		SimpleCursorAdapter adapter = new SimpleCursorAdapter(getActivity(), 
 				R.layout.people_list_item,cursor, FROM, TO, 0);
 
@@ -368,7 +368,7 @@ implements OnClickListener {
 			@Override
 			public Cursor runQuery(CharSequence constraint) {
 				String where = StatusData.C_SCREEN_NAME + " LIKE '" + constraint + "%'";
-				return mApplication.getStatusData().getFriends(mAccountId,where);
+				return mApplication.getStatusData().getFriends(mAccountId, where, FROM);
 			}
 		});
 

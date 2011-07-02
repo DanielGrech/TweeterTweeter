@@ -54,10 +54,10 @@ public class FavouritesListFragment extends BaseStatusFragment {
 
 		//We have this info in the db already..
 		if(mUserName != null) {
-			mCursor = mApplication.getStatusData().getFavourites(mAccountId, mUserName);
+			mCursor = mApplication.getStatusData().getFavourites(mAccountId, mUserName, FROM);
 		} else {
 			mCursor = mApplication.getStatusData().getFavourites(mAccountId, 
-					mApplication.getTwitter(mAccountId).getScreenName());
+					mApplication.getTwitter(mAccountId).getScreenName(), FROM);
 		}
 		
 		if(mCursor.getCount() == 0) {

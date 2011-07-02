@@ -38,7 +38,7 @@ public abstract class BaseStatusFragment extends BaseFragment {
 		"com.DGSD.TweeterTweeter.RECEIVE_DATA";
 
 	protected static final String[] FROM = { StatusData.C_CREATED_AT, StatusData.C_SCREEN_NAME,
-		StatusData.C_TEXT, StatusData.C_IMG};
+		StatusData.C_TEXT, StatusData.C_IMG, StatusData.C_ID};
 
 	protected static final int[] TO = {R.id.timeline_date, R.id.timeline_source, R.id.timeline_tweet,
 		R.id.timeline_profile_image }; 

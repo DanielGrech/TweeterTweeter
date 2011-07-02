@@ -54,7 +54,7 @@ public class TimelineFragment extends BaseStatusFragment {
 
 		if(mUserName == null) {
 			//We have this info in the db already..
-			mCursor = mApplication.getStatusData().getStatusUpdates(mAccountId);
+			mCursor = mApplication.getStatusData().getStatusUpdates(mAccountId, FROM);
 
 			getActivity().startManagingCursor(mCursor);
 

@@ -10,8 +10,7 @@
         android:id="@+id/timeline_profile_image"
         android:layout_width="100dip"
         android:layout_height="100dip"
-        android:scaleType="fitXY"
-        android:gravity="center_vertical"
+        android:layout_alignParentTop="true"
         droidfu:autoLoad="false"
         droidfu:progressDrawable="@drawable/ic_contact_picture"/>
 

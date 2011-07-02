@@ -49,7 +49,7 @@ public class RetweetsOfFragment extends BaseStatusFragment {
 	public synchronized void setupList() {
 		Log.i(TAG, "Setting up list");
 
-		mCursor = mApplication.getStatusData().getRetweetsOf(mAccountId);
+		mCursor = mApplication.getStatusData().getRetweetsOf(mAccountId, FROM);
 		getActivity().startManagingCursor(mCursor);
 
 		if(mAdapter == null) {
