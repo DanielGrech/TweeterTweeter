@@ -51,13 +51,6 @@ public class MentionsListFragment extends BaseStatusFragment {
 		Log.i(TAG, "Setting up list");
 		
 		mCursor = mApplication.getStatusData().getMentions(mAccountId, FROM);
-		
-		if(mAdapter == null) {
-    		mAdapter = new SimpleCursorAdapter(getActivity(), R.layout.timeline_list_item, 
-    				mCursor, FROM, TO, 0);
-		}
-		
-		((SimpleCursorAdapter)mAdapter).setViewBinder(mViewBinder);
 	}
 
 }

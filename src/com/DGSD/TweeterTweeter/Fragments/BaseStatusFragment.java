@@ -243,6 +243,17 @@ public abstract class BaseStatusFragment extends BaseFragment {
 
 	@Override
 	public void postSetup(boolean isUpdate) {
+		if(mCursor.getCount() == 0) {
+			mListView.refresh();
+		}
+		
+		if(mAdapter == null) {
+			mAdapter = new SimpleCursorAdapter(getActivity(), R.layout.timeline_list_item, 
+					mCursor, FROM, TO, 0);
+		}
+
+		((SimpleCursorAdapter)mAdapter).setViewBinder(mViewBinder);
+		
 		if(isUpdate) {
 			Log.i(TAG, "SETTING CURSOR");
 			((SimpleCursorAdapter)mAdapter).changeCursor(mCursor);

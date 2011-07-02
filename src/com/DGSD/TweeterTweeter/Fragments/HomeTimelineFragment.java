@@ -1,12 +1,10 @@
 package com.DGSD.TweeterTweeter.Fragments;
 
 import android.os.Bundle;
-import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.DGSD.TweeterTweeter.R;
 import com.DGSD.TweeterTweeter.Services.UpdaterService;
 import com.DGSD.TweeterTweeter.Utils.Log;
 
@@ -64,13 +62,6 @@ public class HomeTimelineFragment extends BaseStatusFragment {
 
 		//Gets the status' already in the database..
 		mCursor = mApplication.getStatusData().getStatusUpdates(mAccountId, FROM);
-		
-		if(mAdapter == null) {
-			mAdapter = new SimpleCursorAdapter(getActivity(), R.layout.timeline_list_item, 
-					mCursor, FROM, TO, 0);
-		}
-
-		((SimpleCursorAdapter)mAdapter).setViewBinder(mViewBinder);
 	}
 
 }

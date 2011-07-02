@@ -2,12 +2,10 @@ package com.DGSD.TweeterTweeter.Fragments;
 
 import twitter4j.TwitterException;
 import android.os.Bundle;
-import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.DGSD.TweeterTweeter.R;
 import com.DGSD.TweeterTweeter.Services.UpdaterService;
 import com.DGSD.TweeterTweeter.Utils.Log;
 
@@ -59,16 +57,5 @@ public class FavouritesListFragment extends BaseStatusFragment {
 			mCursor = mApplication.getStatusData().getFavourites(mAccountId, 
 					mApplication.getTwitter(mAccountId).getScreenName(), FROM);
 		}
-		
-		if(mCursor.getCount() == 0) {
-			mListView.refresh();
-		}
-		
-		if(mAdapter == null) {
-			mAdapter = new SimpleCursorAdapter(getActivity(), R.layout.timeline_list_item, 
-					mCursor, FROM, TO, 0);
-		}
-
-		((SimpleCursorAdapter)mAdapter).setViewBinder(mViewBinder);
 	}
 }
