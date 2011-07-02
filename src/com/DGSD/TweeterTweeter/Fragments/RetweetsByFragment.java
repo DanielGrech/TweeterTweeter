@@ -70,9 +70,9 @@ public class RetweetsByFragment extends BaseStatusFragment {
 		}
 		else {
 			//We need to download the info from the network..
-			Paging p = new Paging(pageNum, ELEMENTS_PER_PAGE);
+			Paging p = new Paging(mPage, ELEMENTS_PER_PAGE);
 			mDataList = mApplication.getTwitter(mAccountId).getRetweetedByUser(mUserName, p);
-			pageNum++;
+			mPage++;
 			
 			mAdapter = new TimelineAdapter(getActivity(), mDataList);
 		}

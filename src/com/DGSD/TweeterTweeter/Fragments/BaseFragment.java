@@ -8,7 +8,9 @@ import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.ListAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.DGSD.TweeterTweeter.R;
@@ -22,38 +24,40 @@ public abstract class BaseFragment extends DialogFragment{
 
 	private static final String TAG = BaseFragment.class.getSimpleName();
 
-	protected static final int ELEMENTS_PER_PAGE = 100;
-	
+	public static final int ELEMENTS_PER_PAGE = 100;
+
 	/*
 	 * This method MUST be called from a background thread, as it is
 	 * free to do network comms or loading from a db..
 	 */
 	public abstract void setupList() throws TwitterException;
-	
+
 	public abstract void postSetup(boolean isUpdate);
 
 	protected TTApplication mApplication;
 
 	protected PullToRefreshListView mListView;
+	
+	protected TextView mPopupText;
 
 	protected ListAdapter mAdapter;
 	
 	protected String mAccountId;
-	
+
 	protected String mUserName;
-	
+
 	//The type of data returned from the updater service
 	protected int mType = -1;
-	
+
 	//What page of tweets we want to load..
-	protected int pageNum = 1;
+	protected int mPage = 1;
 
 	@Override
 	public void onCreate(Bundle savedInstance){
 		super.onCreate(savedInstance);
 
 		mApplication = (TTApplication) getActivity().getApplication();		
-		
+
 	}
 
 	@Override
@@ -61,6 +65,8 @@ public abstract class BaseFragment extends DialogFragment{
 		View root = inflater.inflate(R.layout.list_fragment_layout, container, false);
 
 		mListView = (PullToRefreshListView) root.findViewById(R.id.list);
+
+		mPopupText = (TextView) root.findViewById(R.id.bottomPopup);
 		
 		new DataLoadingTask(false).execute();
 
@@ -68,25 +74,25 @@ public abstract class BaseFragment extends DialogFragment{
 
 		return root;
 	}
-	
+
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		
-		mListView.setOnRefreshListener(new OnRefreshListener() {
-		    @Override
-		    public void onRefresh() {
-		    	Log.i(TAG, "STARTING A REFRESH FOR TYPE: " + mType + " ACCOUNT: " + mAccountId);
-		    	Intent intent = new Intent(getActivity(), UpdaterService.class);
-		    	intent.putExtra(UpdaterService.DATA_TYPE, mType);
-		    	intent.putExtra(UpdaterService.ACCOUNT, mAccountId);
-		    	intent.putExtra(UpdaterService.USER, mUserName);
-		    	getActivity().startService(intent);
-		    }
-		});
 
+		mListView.setOnRefreshListener(new OnRefreshListener() {
+			@Override
+			public void onRefresh() {
+				Log.i(TAG, "STARTING A REFRESH FOR TYPE: " + mType + " ACCOUNT: " + mAccountId);
+				Intent intent = new Intent(getActivity(), UpdaterService.class);
+				intent.putExtra(UpdaterService.DATA_TYPE, mType);
+				intent.putExtra(UpdaterService.ACCOUNT, mAccountId);
+				intent.putExtra(UpdaterService.USER, mUserName);
+				intent.putExtra(UpdaterService.PAGE, mPage);
+				getActivity().startService(intent);
+			}
+		});
 	}
-	
+
 	@Override
 	public void onSaveInstanceState(Bundle b){
 		super.onSaveInstanceState(b);
@@ -97,22 +103,33 @@ public abstract class BaseFragment extends DialogFragment{
 		super.onDestroyView();
 
 		mAdapter = null;
-		
+
 		mListView = null;
 
 		Log.i(TAG, "Destroying view");
 	}
 
+	protected void showPanel(View panel, boolean slideUp) {
+        panel.startAnimation(AnimationUtils.loadAnimation(getActivity(),
+                slideUp ? R.anim.slide_in : R.anim.slide_out_top));
+        panel.setVisibility(View.VISIBLE);
+    }
+
+	protected void hidePanel(View panel, boolean slideDown) {
+        panel.startAnimation(AnimationUtils.loadAnimation(getActivity(),
+                slideDown ? R.anim.slide_out : R.anim.slide_in_top));
+        panel.setVisibility(View.GONE);
+    }
 
 	protected class DataLoadingTask extends AsyncTask<Void, Void, Void> {
 		private boolean hasError = false;
-		
+
 		private boolean mIsUpdate;
-		
+
 		public DataLoadingTask(boolean isUpdate) {
 			mIsUpdate = isUpdate;
 		}
-		
+
 		@Override
 		protected void onPreExecute() {
 
@@ -139,7 +156,7 @@ public abstract class BaseFragment extends DialogFragment{
 
 			return null;
 		}
-		
+
 		@Override
 		protected void onPostExecute(Void arg) {
 			Log.i(TAG, "POST EXECUTING");
@@ -147,14 +164,13 @@ public abstract class BaseFragment extends DialogFragment{
 			if(mListView.isRefreshing()) {
 				mListView.onRefreshComplete();
 			}
-			
+
 			if(hasError) {
 				Toast.makeText(getActivity(), "Error getting data", Toast.LENGTH_SHORT).show();
 			}	
 			else {
 				postSetup(mIsUpdate);
 			}
-
 		}
 	}
 }

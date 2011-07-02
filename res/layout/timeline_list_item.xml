@@ -11,6 +11,7 @@
         android:layout_width="100dip"
         android:layout_height="100dip"
         android:layout_alignParentTop="true"
+        android:scaleType="fitXY"
         droidfu:autoLoad="false"
         droidfu:progressDrawable="@drawable/ic_contact_picture"/>
 

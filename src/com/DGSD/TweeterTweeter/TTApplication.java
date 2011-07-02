@@ -24,6 +24,7 @@ import android.content.res.Configuration;
 import android.os.Build;
 import android.preference.PreferenceManager;
 
+import com.DGSD.TweeterTweeter.Fragments.BaseFragment;
 import com.DGSD.TweeterTweeter.Utils.Log;
 
 public class TTApplication extends Application implements
@@ -212,53 +213,63 @@ OnSharedPreferenceChangeListener {
 		twitter.updateStatus(status);
 	}
 
-	public synchronized int fetchStatusUpdates(String accountId, String user) { 
-		return mFetchStatusUpdates.fetch(accountId, user);
+	public synchronized int fetchStatusUpdates(String accountId, String user, 
+			int page) { 
+		return mFetchStatusUpdates.fetch(accountId, user, page);
 	}
 	
-	public synchronized int fetchTimeline(String accountId, String user) { 
-		return mFetchTimeline.fetch(accountId, user);
+	public synchronized int fetchTimeline(String accountId, String user, 
+			int page) { 
+		return mFetchTimeline.fetch(accountId, user, page);
 	}
 
-	public synchronized int fetchFavourites(String accountId, String user) {  
-		return mFetchFavourites.fetch(accountId, user);
+	public synchronized int fetchFavourites(String accountId, String user, 
+			int page) {  
+		return mFetchFavourites.fetch(accountId, user, page);
 	}
 
-	public synchronized int fetchMentions(String accountId, String user) {  
-		return mFetchMentions.fetch(accountId, user);
+	public synchronized int fetchMentions(String accountId, String user, 
+			int page) {  
+		return mFetchMentions.fetch(accountId, user, page);
 	}
 
-	public synchronized int fetchRetweetsOf(String accountId, String user) {  
-		return mFetchRetweetsOf.fetch(accountId, user);
+	public synchronized int fetchRetweetsOf(String accountId, String user, 
+			int page) {  
+		return mFetchRetweetsOf.fetch(accountId, user, page);
 	}
 
-	public synchronized int fetchRetweetsBy(String accountId, String user) {  
-		return mFetchRetweetsBy.fetch(accountId, user);
+	public synchronized int fetchRetweetsBy(String accountId, String user, 
+			int page) {  
+		return mFetchRetweetsBy.fetch(accountId, user, page);
 	}
 
-	public synchronized int fetchFollowers(String accountId, String user) {
-		return mFetchFollowers.fetch(accountId, user);
+	public synchronized int fetchFollowers(String accountId, String user, 
+			int page) {
+		return mFetchFollowers.fetch(accountId, user, page);
 	}
 
-	public synchronized int fetchFollowing(String accountId, String user) {
-		return mFetchFollowing.fetch(accountId, user);
+	public synchronized int fetchFollowing(String accountId, String user, 
+			int page) {
+		return mFetchFollowing.fetch(accountId, user, page);
 	}
 
-	public synchronized int fetchProfileInfo(String accountId, String user) {  
-		return mFetchProfileInfo.fetch(accountId, user);
+	public synchronized int fetchProfileInfo(String accountId, String user, 
+			int page) {  
+		return mFetchProfileInfo.fetch(accountId, user, page);
 	}
 
 	/*
 	 * Utilities to fetch data from the network
 	 */
 	public abstract class Fetch {
-		public abstract int fetchData(String account, String user) throws TwitterException;
+		public abstract int fetchData(String account, String user, 
+				int page) throws TwitterException;
 
 		protected int count;
 
 		protected Twitter twitter;
 
-		protected int fetch(String account, String user) {
+		protected int fetch(String account, String user, int page) {
 			twitter = mTwitterList.get(account);
 			if (twitter == null) {
 				Log.d(TAG, "Twitter connection info not initialized");
@@ -266,7 +277,7 @@ OnSharedPreferenceChangeListener {
 			}
 			try{
 				count = 0;
-				return fetchData(account, user);
+				return fetchData(account, user, page);
 			} catch (TwitterException e) {
 				Log.e(TAG, "Error connecting to Twitter service", e);
 				return -1;
@@ -278,8 +289,10 @@ OnSharedPreferenceChangeListener {
 	}
 
 	public class FetchStatusUpdates extends Fetch {
-		public int fetchData(String account, String user) throws TwitterException {
-			ResponseList<Status> timeline = twitter.getHomeTimeline();
+		public int fetchData(String account, String user,
+				int page) throws TwitterException {
+			ResponseList<Status> timeline = 
+				twitter.getHomeTimeline(new Paging(page, BaseFragment.ELEMENTS_PER_PAGE));
 
 			long latestCreatedAtTime = getStatusData()
 			.getLatestCreatedAtTime(StatusData.HOME_TIMELINE_TABLE, account);
@@ -298,8 +311,10 @@ OnSharedPreferenceChangeListener {
 	}
 	
 	public class FetchTimeline extends Fetch {
-		public int fetchData(String account, String user) throws TwitterException {
-			ResponseList<Status> timeline = twitter.getUserTimeline(user);
+		public int fetchData(String account, String user,
+				int page) throws TwitterException {
+			ResponseList<Status> timeline = 
+				twitter.getUserTimeline(user, new Paging(page, BaseFragment.ELEMENTS_PER_PAGE));
 
 			long latestCreatedAtTime = getStatusData()
 			.getLatestCreatedAtTime(StatusData.TIMELINE_TABLE, account);
@@ -318,7 +333,8 @@ OnSharedPreferenceChangeListener {
 	}
 
 	public class FetchMentions extends Fetch {
-		public int fetchData(String account, String user) throws TwitterException {
+		public int fetchData(String account, String user,
+				int page) throws TwitterException {
 			ResponseList<Status> timeline = twitter.getMentions();
 
 			for (Status status : timeline) {
@@ -335,8 +351,10 @@ OnSharedPreferenceChangeListener {
 	}
 
 	public class FetchRetweetsOf extends Fetch {
-		public int fetchData(String account, String user) throws TwitterException {
-			ResponseList<Status> timeline = twitter.getRetweetsOfMe();
+		public int fetchData(String account, String user,
+				int page) throws TwitterException {
+			ResponseList<Status> timeline = 
+				twitter.getRetweetsOfMe(new Paging(page, BaseFragment.ELEMENTS_PER_PAGE));
 
 			for (Status status : timeline) {
 				//Returns true if new rows were added..
@@ -353,13 +371,16 @@ OnSharedPreferenceChangeListener {
 	}
 
 	public class FetchRetweetsBy extends Fetch {
-		public int fetchData(String account, String user) throws TwitterException {
+		public int fetchData(String account, String user,
+				int page) throws TwitterException {
 			ResponseList<Status> timeline;
 
 			if(user == null) {
-				timeline = twitter.getRetweetedByMe();
+				timeline = 
+					twitter.getRetweetedByMe(new Paging(page, BaseFragment.ELEMENTS_PER_PAGE));
 			} else {
-				timeline = twitter.getRetweetedByUser(user, new Paging());
+				timeline = 
+					twitter.getRetweetedByUser(user, new Paging(page, BaseFragment.ELEMENTS_PER_PAGE));
 			}
 
 			for (Status status : timeline) {
@@ -377,13 +398,14 @@ OnSharedPreferenceChangeListener {
 	}
 
 	public class FetchFavourites extends Fetch {
-		public int fetchData(String account, String user) throws TwitterException {			
+		public int fetchData(String account, String user,
+				int page) throws TwitterException {			
 			ResponseList<Status> timeline;
 			
 			if(user == null) {
-				timeline = twitter.getFavorites();
+				timeline = twitter.getFavorites(page);
 			} else {
-				timeline = twitter.getFavorites(user);
+				timeline = twitter.getFavorites(user, page);
 			}
 
 			for (Status status : timeline) {
@@ -402,7 +424,8 @@ OnSharedPreferenceChangeListener {
 	}
 
 	public class FetchFollowers extends Fetch {
-		public int fetchData(String account, String user) throws TwitterException {
+		public int fetchData(String account, String user,
+				int page) throws TwitterException {
 			ArrayList<Long> mIds = new ArrayList<Long>();
 			long cursor = -1;
 
@@ -437,7 +460,8 @@ OnSharedPreferenceChangeListener {
 	}
 
 	public class FetchFollowing extends Fetch {
-		public int fetchData(String account, String user) throws TwitterException {
+		public int fetchData(String account, String user,
+				int page) throws TwitterException {
 			ArrayList<Long> mIds = new ArrayList<Long>();
 			long cursor = -1;
 
@@ -471,7 +495,8 @@ OnSharedPreferenceChangeListener {
 	}
 
 	public class FetchProfileInfo extends Fetch {
-		public int fetchData(String account, String user) throws TwitterException {
+		public int fetchData(String account, String user,
+				int page) throws TwitterException {
 			User u = twitter.showUser(twitter.getId());
 
 			if(u != null){

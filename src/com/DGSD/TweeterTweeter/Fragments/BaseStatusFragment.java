@@ -117,7 +117,7 @@ public abstract class BaseStatusFragment extends BaseFragment {
 				int dataType = intent.getIntExtra(UpdaterService.DATA_TYPE, UpdaterService.DATATYPES.ALL_DATA);
 
 				String account = intent.getStringExtra(UpdaterService.ACCOUNT);
-
+				
 				if(intent.getAction().equals(UpdaterService.SEND_DATA)) {
 					Log.v(TAG, "Data Received");
 					startRefresh(dataType, account);
@@ -288,7 +288,7 @@ public abstract class BaseStatusFragment extends BaseFragment {
 
 	private long getTweetId(int pos) {
 		long retval = -1;
-
+		
 		try{
 			if(mCursor != null && mCursor.moveToPosition(pos)) {
 				retval = Long.valueOf(mCursor.getString(mCursor.getColumnIndex(StatusData.C_ID)));
