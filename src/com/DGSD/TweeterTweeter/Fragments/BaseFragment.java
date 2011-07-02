@@ -2,15 +2,15 @@ package com.DGSD.TweeterTweeter.Fragments;
 
 import twitter4j.TwitterException;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
-import android.widget.ListAdapter;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.DGSD.TweeterTweeter.R;
@@ -38,9 +38,9 @@ public abstract class BaseFragment extends DialogFragment{
 
 	protected PullToRefreshListView mListView;
 	
-	protected TextView mPopupText;
-
-	protected ListAdapter mAdapter;
+	protected SimpleCursorAdapter mAdapter;
+	
+	protected Cursor mCursor;
 	
 	protected String mAccountId;
 
@@ -50,7 +50,6 @@ public abstract class BaseFragment extends DialogFragment{
 	protected int mType = -1;
 
 	//What page of tweets we want to load..
-	protected int mPage = 1;
 
 	@Override
 	public void onCreate(Bundle savedInstance){
@@ -66,8 +65,6 @@ public abstract class BaseFragment extends DialogFragment{
 
 		mListView = (PullToRefreshListView) root.findViewById(R.id.list);
 
-		mPopupText = (TextView) root.findViewById(R.id.bottomPopup);
-		
 		new DataLoadingTask(false).execute();
 
 		Log.i(TAG, "Returning root from onCreateView");
@@ -87,7 +84,6 @@ public abstract class BaseFragment extends DialogFragment{
 				intent.putExtra(UpdaterService.DATA_TYPE, mType);
 				intent.putExtra(UpdaterService.ACCOUNT, mAccountId);
 				intent.putExtra(UpdaterService.USER, mUserName);
-				intent.putExtra(UpdaterService.PAGE, mPage);
 				getActivity().startService(intent);
 			}
 		});
@@ -104,6 +100,8 @@ public abstract class BaseFragment extends DialogFragment{
 
 		mAdapter = null;
 
+		mCursor = null;
+		
 		mListView = null;
 
 		Log.i(TAG, "Destroying view");
@@ -161,7 +159,7 @@ public abstract class BaseFragment extends DialogFragment{
 		protected void onPostExecute(Void arg) {
 			Log.i(TAG, "POST EXECUTING");
 			//Check if the refresh view is showing..
-			if(mListView.isRefreshing()) {
+			if(mListView != null && mListView.isRefreshing()) {
 				mListView.onRefreshComplete();
 			}
 

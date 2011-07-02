@@ -1,8 +1,5 @@
 package com.DGSD.TweeterTweeter.Fragments;
 
-import twitter4j.ResponseList;
-import twitter4j.Status;
-import twitter4j.TwitterException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -53,16 +50,12 @@ public abstract class BaseStatusFragment extends BaseFragment {
 
 	protected final ActionItem mShareAction = new ActionItem();
 
-	protected Cursor mCursor;
-
-	protected ResponseList<Status> mDataList;
-
 	protected PortableReceiver mReceiver;
 
 	protected IntentFilter mDataFilter;
 
 	protected IntentFilter mNoDataFilter;
-	
+
 	protected IntentFilter mErrorFilter;
 
 	//Adjust data from database for display
@@ -76,7 +69,7 @@ public abstract class BaseStatusFragment extends BaseFragment {
 						((TextView)view).setText( 
 								DateUtils.getRelativeTimeSpanString(view.getContext(), 
 										Long.valueOf( cursor.getString(columnIndex) )) );
-						
+
 					} catch(NumberFormatException e){
 						Log.e(TAG, "Error converting time string", e);
 					} catch(ClassCastException e) {
@@ -117,7 +110,7 @@ public abstract class BaseStatusFragment extends BaseFragment {
 				int dataType = intent.getIntExtra(UpdaterService.DATA_TYPE, UpdaterService.DATATYPES.ALL_DATA);
 
 				String account = intent.getStringExtra(UpdaterService.ACCOUNT);
-				
+
 				if(intent.getAction().equals(UpdaterService.SEND_DATA)) {
 					Log.v(TAG, "Data Received");
 					startRefresh(dataType, account);
@@ -143,7 +136,7 @@ public abstract class BaseStatusFragment extends BaseFragment {
 		mDataFilter = new IntentFilter(UpdaterService.SEND_DATA);
 
 		mNoDataFilter = new IntentFilter(UpdaterService.NO_DATA);
-		
+
 		mErrorFilter = new IntentFilter(UpdaterService.ERROR);
 	}
 
@@ -203,11 +196,11 @@ public abstract class BaseStatusFragment extends BaseFragment {
 	public void onResume() {
 		super.onResume();
 		Log.v(TAG, "onResume()");
-		try {
+		/*try {
 			setupList();
 		} catch (TwitterException e) {
 			Log.e(TAG, "Error resuming list", e);
-		}
+		}*/
 
 		// Register the receiver
 		getActivity().registerReceiver(mReceiver, mDataFilter,
@@ -215,7 +208,7 @@ public abstract class BaseStatusFragment extends BaseFragment {
 
 		getActivity().registerReceiver(mReceiver, mNoDataFilter,
 				RECEIVE_DATA, null);
-		
+
 		getActivity().registerReceiver(mReceiver, mErrorFilter,
 				RECEIVE_DATA, null);
 	}
@@ -246,16 +239,18 @@ public abstract class BaseStatusFragment extends BaseFragment {
 		if(mCursor.getCount() == 0) {
 			mListView.refresh();
 		}
-		
+
 		if(mAdapter == null) {
 			mAdapter = new SimpleCursorAdapter(getActivity(), R.layout.timeline_list_item, 
 					mCursor, FROM, TO, 0);
+			
+			mAdapter.setViewBinder(mViewBinder);
 		}
 
-		((SimpleCursorAdapter)mAdapter).setViewBinder(mViewBinder);
-		
 		if(isUpdate) {
 			Log.i(TAG, "SETTING CURSOR");
+			
+			//Epic casting..!
 			((SimpleCursorAdapter)mAdapter).changeCursor(mCursor);
 			((SimpleCursorAdapter)mAdapter).notifyDataSetChanged();
 		}
@@ -288,15 +283,11 @@ public abstract class BaseStatusFragment extends BaseFragment {
 
 	private long getTweetId(int pos) {
 		long retval = -1;
-		
+
 		try{
 			if(mCursor != null && mCursor.moveToPosition(pos)) {
 				retval = Long.valueOf(mCursor.getString(mCursor.getColumnIndex(StatusData.C_ID)));
-			}
-			else if(mDataList != null) {
-				retval = mDataList.get(pos).getId();
-			}
-			else {
+			} else {
 				Log.d(TAG,"No Tweet at position: " + pos);
 			}
 		}catch(RuntimeException e) {

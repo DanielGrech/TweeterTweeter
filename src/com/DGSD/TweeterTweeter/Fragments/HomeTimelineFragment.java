@@ -63,5 +63,4 @@ public class HomeTimelineFragment extends BaseStatusFragment {
 		//Gets the status' already in the database..
 		mCursor = mApplication.getStatusData().getStatusUpdates(mAccountId, FROM);
 	}
-
 }

@@ -55,7 +55,9 @@ public class FavouritesListFragment extends BaseStatusFragment {
 			mCursor = mApplication.getStatusData().getFavourites(mAccountId, mUserName, FROM);
 		} else {
 			mCursor = mApplication.getStatusData().getFavourites(mAccountId, 
-					mApplication.getTwitter(mAccountId).getScreenName(), FROM);
+					mApplication.getTwitterSession().getUsername(mAccountId), FROM);
 		}
+		Log.i(TAG, "Finished setting up list!");
+				
 	}
 }

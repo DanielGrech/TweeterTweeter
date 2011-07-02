@@ -52,7 +52,7 @@ abstract public class EndlessAdapter extends AdapterWrapper {
 	abstract protected void appendCachedData();
 
 	private View pendingView=null;
-	private AtomicBoolean keepOnAppending=new AtomicBoolean(true);
+	protected AtomicBoolean keepOnAppending=new AtomicBoolean(true);
 	private Context context;
 	private int pendingResource=-1;
 
@@ -75,6 +75,12 @@ abstract public class EndlessAdapter extends AdapterWrapper {
 		this.pendingResource=pendingResource;
 	}
 
+	public void setKeepApending(boolean appending) {
+		if(keepOnAppending != null) {
+			keepOnAppending.set(appending);
+		}
+	}
+	
 	/**
 	 * How many items are in the data set represented by this
 	 * Adapter.

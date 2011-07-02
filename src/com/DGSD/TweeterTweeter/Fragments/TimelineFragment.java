@@ -1,17 +1,12 @@
 package com.DGSD.TweeterTweeter.Fragments;
 
-import twitter4j.Paging;
 import twitter4j.TwitterException;
 import android.os.Bundle;
-import android.support.v4.widget.SimpleCursorAdapter;
-
-import com.DGSD.TweeterTweeter.UI.TimelineAdapter;
-import com.DGSD.TweeterTweeter.Utils.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.DGSD.TweeterTweeter.R;
+import com.DGSD.TweeterTweeter.Utils.Log;
 
 public class TimelineFragment extends BaseStatusFragment {
 
@@ -54,25 +49,10 @@ public class TimelineFragment extends BaseStatusFragment {
 
 		if(mUserName == null) {
 			//We have this info in the db already..
-			mCursor = mApplication.getStatusData().getStatusUpdates(mAccountId, FROM);
-
-			getActivity().startManagingCursor(mCursor);
-
-			if(mAdapter == null) {
-				mAdapter = new SimpleCursorAdapter(getActivity(), R.layout.timeline_list_item, 
-						mCursor, FROM, TO, 0);
-			}
-
-			((SimpleCursorAdapter)mAdapter).setViewBinder(mViewBinder);
-		}
-		else {
-			//We need to download the info from the network..
-			Paging p = new Paging(mPage, ELEMENTS_PER_PAGE);
-			mDataList = mApplication.getTwitter(mAccountId).getUserTimeline(mUserName, p);
-			mPage++;
-
-			mAdapter = new TimelineAdapter(getActivity(), mDataList);
+			mCursor = mApplication.getStatusData().getTimeline(mAccountId, mUserName, FROM);
+		} else {
+			mCursor = mApplication.getStatusData().getTimeline(mAccountId, 
+					mApplication.getTwitterSession().getUsername(mAccountId), FROM);
 		}
 	}
-
 }

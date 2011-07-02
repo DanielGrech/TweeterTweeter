@@ -19,7 +19,7 @@ public class StatusData {
 	private static final String TAG = StatusData.class.getSimpleName();
 
 	private static final int VERSION = 1;
-
+	
 	private static final String DATABASE = "twitter.db";
 
 	/*
@@ -304,7 +304,7 @@ public class StatusData {
 			db.close(); 
 		}
 	}
-
+	
 	/**
 	 *
 	 * @return Cursor where the columns are _id, created_at, user, txt, usrImgUrl

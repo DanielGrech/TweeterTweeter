@@ -1,15 +1,12 @@
 package com.DGSD.TweeterTweeter.Fragments;
 
 import android.os.Bundle;
-import android.support.v4.widget.SimpleCursorAdapter;
-
-import com.DGSD.TweeterTweeter.Services.UpdaterService;
-import com.DGSD.TweeterTweeter.Utils.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.DGSD.TweeterTweeter.R;
+import com.DGSD.TweeterTweeter.Services.UpdaterService;
+import com.DGSD.TweeterTweeter.Utils.Log;
 
 public class MentionsListFragment extends BaseStatusFragment {
 
@@ -52,5 +49,4 @@ public class MentionsListFragment extends BaseStatusFragment {
 		
 		mCursor = mApplication.getStatusData().getMentions(mAccountId, FROM);
 	}
-
 }

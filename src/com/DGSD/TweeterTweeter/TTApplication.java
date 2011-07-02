@@ -22,6 +22,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.res.Configuration;
 import android.os.Build;
+import android.os.StrictMode;
 import android.preference.PreferenceManager;
 
 import com.DGSD.TweeterTweeter.Fragments.BaseFragment;
@@ -56,7 +57,7 @@ OnSharedPreferenceChangeListener {
 
 	/* Interface to updaters which fetch data from network */
 	private FetchStatusUpdates mFetchStatusUpdates;
-	
+
 	private FetchTimeline mFetchTimeline;
 
 	private FetchFavourites    mFetchFavourites;
@@ -76,6 +77,26 @@ OnSharedPreferenceChangeListener {
 	@Override
 	public void onCreate() {  
 		super.onCreate();
+
+		/*
+		 * SET STRICT MODE!
+		 */
+		/*if(Log.LOG) {
+			StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+			.detectDiskReads()
+			.detectDiskWrites()
+			.detectNetwork()   // or .detectAll() for all detectable problems
+			.penaltyLog()
+			.build());
+
+			StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+			.detectLeakedSqlLiteObjects()
+			.penaltyLog()
+			.penaltyDeath()
+			.build());
+		}*/
+
+
 
 		CONSUMER_KEY = getResources().getString(R.string.consumer_key);
 		CONSUMER_SECRET = getResources().getString(R.string.consumer_secret);
@@ -113,7 +134,7 @@ OnSharedPreferenceChangeListener {
 		}
 
 		mFetchStatusUpdates = new FetchStatusUpdates();
-		
+
 		mFetchTimeline = new FetchTimeline();
 
 		mFetchFavourites = new FetchFavourites();
@@ -217,7 +238,7 @@ OnSharedPreferenceChangeListener {
 			int page) { 
 		return mFetchStatusUpdates.fetch(accountId, user, page);
 	}
-	
+
 	public synchronized int fetchTimeline(String accountId, String user, 
 			int page) { 
 		return mFetchTimeline.fetch(accountId, user, page);
@@ -279,10 +300,10 @@ OnSharedPreferenceChangeListener {
 				count = 0;
 				return fetchData(account, user, page);
 			} catch (TwitterException e) {
-				Log.e(TAG, "Error connecting to Twitter service", e);
+				Log.e(TAG, "Error connecting to Twitter service");
 				return -1;
 			} catch (RuntimeException e) {
-				Log.e(TAG, "Failed to fetch data", e);
+				Log.e(TAG, "Failed to fetch data");
 				return -1;
 			} 
 		}
@@ -309,7 +330,7 @@ OnSharedPreferenceChangeListener {
 			return count;
 		}
 	}
-	
+
 	public class FetchTimeline extends Fetch {
 		public int fetchData(String account, String user,
 				int page) throws TwitterException {
@@ -401,7 +422,7 @@ OnSharedPreferenceChangeListener {
 		public int fetchData(String account, String user,
 				int page) throws TwitterException {			
 			ResponseList<Status> timeline;
-			
+
 			if(user == null) {
 				timeline = twitter.getFavorites(page);
 			} else {
