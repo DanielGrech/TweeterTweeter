@@ -57,7 +57,7 @@ public class RetweetsByFragment extends BaseStatusFragment {
 
 		if(mUserName == null) {
 			//We have this info in the db already..
-			mCursor = mApplication.getStatusData().getRetweetsBy(mAccountId);
+			mCursor = mApplication.getStatusData().getRetweetsBy(mAccountId, mUserName);
 			
 			getActivity().startManagingCursor(mCursor);
 

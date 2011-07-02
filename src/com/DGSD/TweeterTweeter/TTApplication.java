@@ -55,6 +55,8 @@ OnSharedPreferenceChangeListener {
 
 	/* Interface to updaters which fetch data from network */
 	private FetchStatusUpdates mFetchStatusUpdates;
+	
+	private FetchTimeline mFetchTimeline;
 
 	private FetchFavourites    mFetchFavourites;
 
@@ -110,6 +112,8 @@ OnSharedPreferenceChangeListener {
 		}
 
 		mFetchStatusUpdates = new FetchStatusUpdates();
+		
+		mFetchTimeline = new FetchTimeline();
 
 		mFetchFavourites = new FetchFavourites();
 
@@ -211,6 +215,10 @@ OnSharedPreferenceChangeListener {
 	public synchronized int fetchStatusUpdates(String accountId, String user) { 
 		return mFetchStatusUpdates.fetch(accountId, user);
 	}
+	
+	public synchronized int fetchTimeline(String accountId, String user) { 
+		return mFetchTimeline.fetch(accountId, user);
+	}
 
 	public synchronized int fetchFavourites(String accountId, String user) {  
 		return mFetchFavourites.fetch(accountId, user);
@@ -272,6 +280,26 @@ OnSharedPreferenceChangeListener {
 	public class FetchStatusUpdates extends Fetch {
 		public int fetchData(String account, String user) throws TwitterException {
 			ResponseList<Status> timeline = twitter.getHomeTimeline();
+
+			long latestCreatedAtTime = getStatusData()
+			.getLatestCreatedAtTime(StatusData.HOME_TIMELINE_TABLE, account);
+
+			for (Status status : timeline) {
+				getStatusData().insertOrIgnore(StatusData.HOME_TIMELINE_TABLE, 
+						StatusData.createTimelineContentValues(account, user, status));
+
+				if (latestCreatedAtTime < status.getCreatedAt().getTime()) {
+					count++;
+				}
+			}
+
+			return count;
+		}
+	}
+	
+	public class FetchTimeline extends Fetch {
+		public int fetchData(String account, String user) throws TwitterException {
+			ResponseList<Status> timeline = twitter.getUserTimeline(user);
 
 			long latestCreatedAtTime = getStatusData()
 			.getLatestCreatedAtTime(StatusData.TIMELINE_TABLE, account);

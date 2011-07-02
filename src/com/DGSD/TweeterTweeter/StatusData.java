@@ -26,6 +26,7 @@ public class StatusData {
 	 * Various database tables
 	 */
 	public static final String TABLE_NAME_TEMPLTE = "<!@#TABLENAME!@#>";
+	public static final String HOME_TIMELINE_TABLE = "home_timeline_table";
 	public static final String TIMELINE_TABLE = "timeline_table";
 	public static final String FAVOURITES_TABLE = "favourites_table";
 	public static final String MENTIONS_TABLE = "mentions_table";
@@ -80,7 +81,7 @@ public class StatusData {
 
 
 	// DbHelper implementations
-	class DbHelper extends SQLiteOpenHelper {
+	public class DbHelper extends SQLiteOpenHelper {
 
 		public DbHelper(Context context) {
 			super(context, DATABASE, null, VERSION);
@@ -112,6 +113,8 @@ public class StatusData {
 			C_URL_ENT + " text, " + 
 			C_USER_ENT + " text)";
 
+			db.execSQL(statusTemp.replace(TABLE_NAME_TEMPLTE, HOME_TIMELINE_TABLE));
+			
 			db.execSQL(statusTemp.replace(TABLE_NAME_TEMPLTE, TIMELINE_TABLE));
 
 			db.execSQL(statusTemp.replace(TABLE_NAME_TEMPLTE, FAVOURITES_TABLE));
@@ -143,6 +146,7 @@ public class StatusData {
 
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+			db.execSQL("drop table " + HOME_TIMELINE_TABLE);
 			db.execSQL("drop table " + TIMELINE_TABLE);
 			db.execSQL("drop table " + FAVOURITES_TABLE);
 			db.execSQL("drop table " + MENTIONS_TABLE);
@@ -161,6 +165,10 @@ public class StatusData {
 	public StatusData(Context context) { 
 		this.dbHelper = new DbHelper(context);
 		Log.i(TAG, "Initialized data");
+	}
+	
+	public DbHelper getDbHelper() {
+		return dbHelper;
 	}
 
 	public static synchronized ContentValues 
@@ -303,7 +311,7 @@ public class StatusData {
 	 */
 	public Cursor getStatusUpdates(String accountId) {   
 		SQLiteDatabase db = this.dbHelper.getReadableDatabase();
-		return db.query(TIMELINE_TABLE, null, C_ACCOUNT + " IN (\"" + accountId + "\")", 
+		return db.query(HOME_TIMELINE_TABLE, null, C_ACCOUNT + " IN (\"" + accountId + "\")", 
 				null, null, null, GET_ALL_ORDER_BY);
 	}
 
@@ -332,10 +340,30 @@ public class StatusData {
 				null, null, null, GET_ALL_ORDER_BY);
 	}
 
-	public Cursor getRetweetsBy(String accountId) {   
+	public Cursor getRetweetsBy(String accountId, String screenName) {   
 		SQLiteDatabase db = this.dbHelper.getReadableDatabase();
+		
+		if(screenName == null) {
 		return db.query(RT_BY_TABLE, null, C_ACCOUNT + " IN (\"" + accountId + "\")", 
 				null, null, null, GET_ALL_ORDER_BY);
+		} else {
+			return db.query(RT_BY_TABLE, null, 
+					C_ACCOUNT + " IN (\"" + accountId + "\") AND " + C_USER + "=\"" + screenName + "\"", 
+					null, null, null, GET_ALL_ORDER_BY);
+		}
+	}
+	
+	public Cursor getTimeline(String accountId, String screenName) {   
+		SQLiteDatabase db = this.dbHelper.getReadableDatabase();
+		
+		if(screenName == null) {
+		return db.query(TIMELINE_TABLE, null, C_ACCOUNT + " IN (\"" + accountId + "\")", 
+				null, null, null, GET_ALL_ORDER_BY);
+		} else {
+			return db.query(TIMELINE_TABLE, null, 
+					C_ACCOUNT + " IN (\"" + accountId + "\") AND " + C_USER + "=\"" + screenName + "\"", 
+					null, null, null, GET_ALL_ORDER_BY);
+		}
 	}
 
 	public Cursor getFriends(String accountId, String whereClause) {   
@@ -387,7 +415,7 @@ public class StatusData {
 	public String getStatusTextById(String accountId, long id) {  // 
 		SQLiteDatabase db = this.dbHelper.getReadableDatabase();
 		try {
-			Cursor cursor = db.query(TIMELINE_TABLE, DB_TEXT_COLUMNS, C_ID + "=" + id, null,
+			Cursor cursor = db.query(HOME_TIMELINE_TABLE, DB_TEXT_COLUMNS, C_ID + "=" + id, null,
 					null, null, null);
 			try {
 				return cursor.moveToNext() ? cursor.getString(0) : null;

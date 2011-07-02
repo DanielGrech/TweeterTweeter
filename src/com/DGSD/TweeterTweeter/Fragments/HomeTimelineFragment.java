@@ -63,8 +63,7 @@ public class HomeTimelineFragment extends BaseStatusFragment {
 		Log.i(TAG, "Setting up list");
 
 		mCursor = mApplication.getStatusData().getStatusUpdates(mAccountId);
-		//getActivity().startManagingCursor(mCursor);
-
+		
 		if(mAdapter == null) {
 			mAdapter = new SimpleCursorAdapter(getActivity(), R.layout.timeline_list_item, 
 					mCursor, FROM, TO, 0);
