@@ -1,31 +1,18 @@
 package com.DGSD.TweeterTweeter.Fragments;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Properties;
-import java.util.Random;
 
-import twitter4j.TwitterException;
-import twitter4j.conf.Configuration;
-import twitter4j.conf.PropertyConfiguration;
-import twitter4j.media.ImageUpload;
-import twitter4j.media.ImageUploadFactory;
-import twitter4j.media.MediaProvider;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -46,13 +33,13 @@ import android.widget.FilterQueryProvider;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
-import android.widget.Toast;
 
 import com.DGSD.TweeterTweeter.R;
 import com.DGSD.TweeterTweeter.StatusData;
 import com.DGSD.TweeterTweeter.TTApplication;
 import com.DGSD.TweeterTweeter.Services.NewStatusService;
 import com.DGSD.TweeterTweeter.Utils.Log;
+import com.DGSD.TweeterTweeter.Utils.MediaUploadTask;
 import com.DGSD.TweeterTweeter.Utils.Tokenizer;
 import com.DGSD.TweeterTweeter.Utils.UrlShortenTask;
 import com.github.droidfu.widgets.WebImageView;
@@ -218,7 +205,7 @@ implements OnClickListener {
 			}
 		});
 		
-		addToTweet(getArguments().getString("tweet"));
+		addToTweet(mTweetEditText, getArguments().getString("tweet"));
 	}
 
 	@Override
@@ -238,8 +225,10 @@ implements OnClickListener {
 					try {
 						Bitmap captureBmp = Media.getBitmap(
 								getActivity().getContentResolver(), Uri.fromFile(file) );
-						new MediaUploadTask(MediaUploadTask.CAMERA_IMG, 
-								captureBmp).execute();
+						
+						new MediaUploadTask(getActivity(), mTweetEditText, 
+								MediaUploadTask.CAMERA_IMG,	captureBmp).execute();
+						
 					} catch (FileNotFoundException e) {
 						Log.e(TAG, "File not found", e);
 					} catch (IOException e) {
@@ -254,23 +243,11 @@ implements OnClickListener {
 				if (resultCode == Activity.RESULT_OK) {
 					Uri imageUri = intent.getData();
 
-					new MediaUploadTask(MediaUploadTask.GALLERY_IMG,
-							getPath(imageUri)).execute();
+					new MediaUploadTask(getActivity(), mTweetEditText,
+							MediaUploadTask.GALLERY_IMG, getPath(imageUri)).execute();
 				}
 				else {
 					Log.i(TAG, "Picture not chosen!");
-				}
-				break;
-
-			case GET_CAMERA_VIDEO:
-				if (resultCode == Activity.RESULT_OK) {
-					Uri imageUri = intent.getData();
-
-					new MediaUploadTask(MediaUploadTask.CAMERA_VIDEO,
-							getPath(imageUri)).execute();
-				}
-				else {
-					Log.i(TAG, "Video not taken!");
 				}
 				break;
 		}
@@ -374,7 +351,7 @@ implements OnClickListener {
 
 			@Override
 			public Cursor runQuery(CharSequence constraint) {
-				String where = StatusData.C_SCREEN_NAME + " LIKE '" + constraint + "%'";
+				String where = StatusData.C_SCREEN_NAME + " LIKE \"" + constraint + "%\"";
 				return mApplication.getStatusData().getFriends(mAccountId, where, FROM);
 			}
 		});
@@ -434,58 +411,21 @@ implements OnClickListener {
 		return new File(path, "image.tmp");
 	}
 
-	private void writeBitmapToFile(Bitmap b, File f) throws IOException {
-		final FileOutputStream out = new FileOutputStream(f);
-
-		b.compress(Bitmap.CompressFormat.JPEG, 90, out);
-
-		out.close();	
-	}
-
-	private Bitmap decodeFile(File f){
-		try {
-			//decode image size
-			BitmapFactory.Options o = new BitmapFactory.Options();
-			o.inJustDecodeBounds = true;
-			BitmapFactory.decodeStream(new FileInputStream(f),null,o);
-
-			//Find the correct scale value. It should be the power of 2.
-			final int REQUIRED_SIZE=70;
-			int width_tmp=o.outWidth, height_tmp=o.outHeight;
-			int scale=1;
-			while(true){
-				if(width_tmp/2<REQUIRED_SIZE || height_tmp/2<REQUIRED_SIZE)
-					break;
-				width_tmp/=2;
-				height_tmp/=2;
-				scale++;
-			}
-
-			//decode with inSampleSize
-			BitmapFactory.Options o2 = new BitmapFactory.Options();
-			o2.inSampleSize=scale;
-			return BitmapFactory.decodeStream(new FileInputStream(f), null, o2);
-		} catch (FileNotFoundException e) {
-			Log.e(TAG, "Error decoding image", e);
-		}
-		return null;
-	}
-
-	private void addToTweet(String text) {
+	public static void addToTweet(TextView tv, String text) {
 		if(text == null) {
 			return;
 		}
 		
-		String currentText = mTweetEditText.getText().toString();
+		String currentText = tv.getText().toString();
 
 		if(currentText.length() == 0) {
-			mTweetEditText.append(text);
+			tv.append(text);
 		}
 		else if( currentText.charAt(currentText.length()-1) == ' ' ) {
-			mTweetEditText.append(text);
+			tv.append(text);
 		}
 		else {
-			mTweetEditText.append(" " + text);
+			tv.append(" " + text);
 		}
 	}
 
@@ -515,139 +455,4 @@ implements OnClickListener {
 
 		}
 	}
-
-	
-
-	private class MediaUploadTask extends AsyncTask<Void, Void, Void> {
-
-		private File mFile;
-
-		private File mImageFile;
-
-		private Bitmap mBitmap;
-
-		private ProgressDialog mProgressDialog;
-
-		private String mUrl;
-
-		private boolean has_error;
-
-		private int mType;
-
-		public static final int CAMERA_IMG = 0;
-
-		public static final int GALLERY_IMG = 1;
-
-		public static final int CAMERA_VIDEO = 2;
-
-		public MediaUploadTask(int type, Bitmap b) {
-			mType = type;
-			if(mType == CAMERA_IMG) {
-				mBitmap = b;
-			}
-		}
-
-		public MediaUploadTask(int type, String filepath) {
-			mType = type;
-			if(mType == GALLERY_IMG) {
-				mImageFile = new File(filepath);
-			}
-			else if(mType == CAMERA_VIDEO) {
-				mFile = new File(filepath);
-
-			}
-		}
-
-
-		@Override
-		protected void onPreExecute() {
-			mProgressDialog = ProgressDialog.show(getActivity(), "", 
-					"Uploading image. Please wait...", true);
-		}
-
-		@Override
-		protected Void doInBackground(Void... arg0) {
-			String twitpicKey = getActivity().getResources().getString(R.string.twitpic_key);
-
-			Properties props = new Properties();
-
-			props.put(PropertyConfiguration.MEDIA_PROVIDER,MediaProvider.TWITPIC);
-			props.put(PropertyConfiguration.OAUTH_ACCESS_TOKEN,mApplication.getAccessToken("account1").getToken());
-			props.put(PropertyConfiguration.OAUTH_ACCESS_TOKEN_SECRET,mApplication.getAccessToken("account1").getTokenSecret());
-			props.put(PropertyConfiguration.OAUTH_CONSUMER_KEY,TTApplication.CONSUMER_KEY);
-			props.put(PropertyConfiguration.OAUTH_CONSUMER_SECRET,TTApplication.CONSUMER_SECRET);
-			//props.put(PropertyConfiguration.MEDIA_PROVIDER_API_KEY,twitpicKey);
-
-			Configuration conf = new PropertyConfiguration(props);
-
-			ImageUpload iUpload = new ImageUploadFactory(conf).getInstance(MediaProvider.TWITPIC);
-
-			ImageUpload vUpload = new ImageUploadFactory(conf).getInstance(MediaProvider.YFROG);
-
-			switch(mType) {
-				case CAMERA_IMG:
-					try {
-						mFile = File.createTempFile(Integer.toString(new Random().nextInt()), ".jpg");
-						writeBitmapToFile(mBitmap, mFile);
-					} catch(Exception e){
-						Log.e(TAG, "Error saving image", e);
-						has_error = true;
-						return null;
-					}
-					break;
-				case GALLERY_IMG:
-					try {
-						//We need to make the image smaller!
-						Bitmap b = decodeFile(mImageFile);
-						mFile = File.createTempFile(Integer.toString(new Random().nextInt()), ".jpg");
-						writeBitmapToFile(b, mFile);
-					} catch (IOException e) {
-						Log.e(TAG, "Error saving image", e);
-						has_error = true;
-						return null;
-					}
-					break;
-				case CAMERA_VIDEO:
-					//Nothing to do, we already have the file..
-					break;
-			}
-
-			try {
-				//mUrl = iUpload.upload(mFile);
-				mUrl = vUpload.upload(mFile);
-
-				if(mType == CAMERA_IMG) {
-					//Only if we started with a Bitmap (not an actual file) will 
-					//we delete this..
-					if (!mFile.delete()) {
-						Log.i(TAG, "Failed to delete " + mFile.getAbsolutePath());
-					}
-				}
-			} catch (TwitterException e) {
-				Log.e(TAG, "Error uploading image", e);
-				has_error = true;
-			} catch(RuntimeException e) {
-				Log.e(TAG, "Error uploading image", e);
-				has_error = true;
-			}
-
-			return null;
-		}
-
-		@Override
-		protected void onPostExecute(Void arg) {
-			mProgressDialog.dismiss();
-			if(has_error) {
-				Toast.makeText(getActivity(), "Error occured!", Toast.LENGTH_LONG).show();
-				Log.i(TAG, "Error occured!");
-			}
-			else {
-				Log.i(TAG, "Photo at " + mUrl);
-
-				addToTweet(mUrl);
-
-			}
-		}
-	}
-
 }
