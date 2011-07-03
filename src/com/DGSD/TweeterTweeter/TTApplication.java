@@ -285,7 +285,7 @@ OnSharedPreferenceChangeListener {
 
 
 	public synchronized void addNewFavourite(String account, 
-			long tweetid) throws TwitterException{
+			String tweetid) throws TwitterException{
 
 		Twitter twitter = mTwitterList.get(account);
 
@@ -294,7 +294,7 @@ OnSharedPreferenceChangeListener {
 		}
 
 		//Get the requested status
-		Status status = twitter.showStatus(tweetid);
+		Status status = twitter.showStatus(Long.valueOf(tweetid));
 
 		if(status == null) {
 			throw new TwitterException("Cant find requested status");

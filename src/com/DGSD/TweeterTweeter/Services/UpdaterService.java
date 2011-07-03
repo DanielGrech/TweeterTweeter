@@ -55,7 +55,7 @@ public class UpdaterService extends IntentService {
 
 		int page = inIntent.getIntExtra(PAGE, 1);
 		
-		long tweetId = inIntent.getLongExtra(TWEETID, -1);
+		String tweetId = inIntent.getStringExtra(TWEETID);
 
 		boolean hasRequestedUser = true;
 		if(requestedUser == null) {
