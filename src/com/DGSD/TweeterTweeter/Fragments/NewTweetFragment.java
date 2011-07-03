@@ -59,13 +59,7 @@ implements OnClickListener {
 
 	private static final int GET_GALLERY_IMAGE = 1;
 
-	private static final int GET_CAMERA_VIDEO = 2;
-
 	public static final int MAX_TWEET_SIZE = 140;
-
-	private static final int MAXIMUM_VIDEO_SIZE = 2; //2Mb
-
-	private static final int LOW_QUALITY_VIDEO = 0;
 
 	private TTApplication mApplication;
 
@@ -280,9 +274,6 @@ implements OnClickListener {
 								//Gallery Picture
 								getGalleryPhoto();
 								break;
-							case 2:
-								takeVideo();
-								break;
 						}
 					}
 				});
@@ -364,16 +355,6 @@ implements OnClickListener {
 		mTweetEditText.setThreshold(1);
 
 		mTweetEditText.setTokenizer(new Tokenizer());
-	}
-
-	private void takeVideo() {
-		Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
-
-		intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, LOW_QUALITY_VIDEO);
-
-		intent.putExtra(MediaStore.EXTRA_SIZE_LIMIT, MAXIMUM_VIDEO_SIZE);  
-
-		startActivityForResult(intent, GET_CAMERA_VIDEO) ;
 	}
 
 	private void getGalleryPhoto() {
