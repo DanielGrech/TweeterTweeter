@@ -1,8 +1,5 @@
 package com.DGSD.TweeterTweeter.Fragments;
 
-import static com.rosaloves.bitlyj.Bitly.as;
-import static com.rosaloves.bitlyj.Bitly.shorten;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -10,9 +7,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.Random;
-import java.util.Vector;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import twitter4j.TwitterException;
 import twitter4j.conf.Configuration;
@@ -41,8 +35,6 @@ import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v4.widget.SimpleCursorAdapter.CursorToStringConverter;
 import android.support.v4.widget.SimpleCursorAdapter.ViewBinder;
 import android.text.Editable;
-import android.text.Spannable;
-import android.text.SpannableString;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -62,8 +54,8 @@ import com.DGSD.TweeterTweeter.TTApplication;
 import com.DGSD.TweeterTweeter.Services.NewStatusService;
 import com.DGSD.TweeterTweeter.Utils.Log;
 import com.DGSD.TweeterTweeter.Utils.Tokenizer;
+import com.DGSD.TweeterTweeter.Utils.UrlShortenTask;
 import com.github.droidfu.widgets.WebImageView;
-import com.rosaloves.bitlyj.BitlyException;
 
 /*
  * TODO: 
@@ -288,7 +280,7 @@ implements OnClickListener {
 	public void onClick(View v) {
 		switch(v.getId()) {
 			case R.id.new_tweet_url_shorten:
-				new UrlShortenTask().execute();
+				new UrlShortenTask(getActivity(), mTweetEditText ).execute();
 				break;
 
 			case R.id.new_tweet_media:
@@ -524,112 +516,7 @@ implements OnClickListener {
 		}
 	}
 
-	private class UrlShortenTask extends AsyncTask<Void, Void, Void> {
-		private String mText;
-
-		private String mUserName;
-
-		private String mKey;
-
-		private boolean has_error = false;
-
-		private ProgressDialog mProgressDialog;
-
-		private Vector<Hyperlink> mLinkList;
-
-		Pattern hyperLinksPattern = 
-			Pattern.compile("\\(?\\b(http://|www[.])[-A-Za-z0-9+&@#/%?=~_()|!:,.;]*[-A-Za-z0-9+&@#/%=~_()|]");
-		
-		public UrlShortenTask() {
-			mLinkList = new Vector<Hyperlink>();
-		}
-
-		@Override
-		protected void onPreExecute() {
-			mUserName = getActivity().getResources().getString(R.string.bitlyName);
-
-			mKey = getActivity().getResources().getString(R.string.bitlyKey);
-
-			mProgressDialog = ProgressDialog.show(getActivity(), "", 
-					"Shortening urls", true);
-			
-			mText = mTweetEditText.getText().toString();
-		}
-
-		@Override
-		protected Void doInBackground(Void... arg0) {
-			try{
-				SpannableString linkableText = new SpannableString(mText);
-
-				gatherLinks(linkableText, hyperLinksPattern);
-
-				for(Hyperlink link : mLinkList) {
-					String url = link.foundUrl.toString();
-					if(!url.startsWith("http://")) {
-						url = "http://".concat(url);
-					}
-					
-					link.newUrl = as(mUserName, mKey)
-							.call(shorten(url)).getShortUrl();
-				}
-			}catch(BitlyException e) {
-				Log.e(TAG, "Error shortening URL", e);
-				has_error = true;
-			}
-			return null;
-		}
-
-		@Override
-		protected void onPostExecute(Void arg) {
-			mProgressDialog.dismiss();
-
-			if(has_error) {
-				Toast.makeText(getActivity(), 
-						"Error shortening url", Toast.LENGTH_SHORT).show();
-			}
-			else {
-				for(Hyperlink link : mLinkList) {
-					System.err.println("NEW LINK: " + link.newUrl);
-					
-					if( link.newUrl.startsWith("http://")) {
-						link.newUrl = link.newUrl.substring(7);
-					}
-					
-					if( link.newUrl.startsWith("www.")) {
-						link.newUrl = link.newUrl.substring(4);
-					}
-						
-					
-					mText = mText.replace(link.foundUrl, link.newUrl);
-				}
-				
-				mTweetEditText.setText("");
-				
-				mTweetEditText.append(mText);
-			}
-		}
-
-		private final void gatherLinks(Spannable s, Pattern pattern){
-			// Matcher matching the pattern
-			Matcher m = pattern.matcher(s);
-
-			while (m.find()){
-				int start = m.start();
-				int end = m.end();
-
-				Hyperlink spec = new Hyperlink();
-
-				spec.foundUrl = s.subSequence(start, end);
-
-				mLinkList.add(spec);
-			}
-		}
-
-		private class Hyperlink{
-			CharSequence foundUrl;
-			String newUrl;
-		}
-	}
+	
 
 	private class MediaUploadTask extends AsyncTask<Void, Void, Void> {
 
