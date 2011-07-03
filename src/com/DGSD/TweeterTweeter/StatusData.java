@@ -35,6 +35,8 @@ public class StatusData {
 	public static final String PROFILE_TABLE = "profile_table";
 	public static final String RT_OF_TABLE = "rt_of_me_table";
 	public static final String RT_BY_TABLE = "rt_by_me_table";
+	public static final String FAVOURITES_PENDING_TABLE = "favourites_pending_table";
+	public static final String UNFAVOURITES_PENDING_TABLE = "unfavourites_pending_table";
 
 
 	/*
@@ -119,6 +121,10 @@ public class StatusData {
 
 			db.execSQL(statusTemp.replace(TABLE_NAME_TEMPLTE, FAVOURITES_TABLE));
 
+			db.execSQL(statusTemp.replace(TABLE_NAME_TEMPLTE, FAVOURITES_PENDING_TABLE));
+			
+			db.execSQL(statusTemp.replace(TABLE_NAME_TEMPLTE, UNFAVOURITES_PENDING_TABLE));
+			
 			db.execSQL(statusTemp.replace(TABLE_NAME_TEMPLTE, MENTIONS_TABLE));
 
 			db.execSQL(statusTemp.replace(TABLE_NAME_TEMPLTE, RT_BY_TABLE));
@@ -149,6 +155,8 @@ public class StatusData {
 			db.execSQL("drop table " + HOME_TIMELINE_TABLE);
 			db.execSQL("drop table " + TIMELINE_TABLE);
 			db.execSQL("drop table " + FAVOURITES_TABLE);
+			db.execSQL("drop table " + FAVOURITES_PENDING_TABLE);
+			db.execSQL("drop table " + UNFAVOURITES_PENDING_TABLE);
 			db.execSQL("drop table " + MENTIONS_TABLE);
 			db.execSQL("drop table " + RT_BY_TABLE);
 			db.execSQL("drop table " + RT_OF_TABLE);
@@ -180,6 +188,10 @@ public class StatusData {
 		String hashtagEntities = "";
 		String urlEntities = "";
 		String userEntities = "";
+		String placeName = "";
+		String latitude = "";
+		String longitude = "";
+		String retweetedScreenName = "";
 
 		if(status.getMediaEntities() != null) {
 			for(MediaEntity me: status.getMediaEntities()) {
@@ -204,12 +216,7 @@ public class StatusData {
 				userEntities += um.getScreenName()+ ",";
 			}
 		}
-
-		String placeName = "";
-		String latitude = "";
-		String longitude = "";
-		String retweetedScreenName = "";
-
+		
 		if( status.getPlace() != null ) {
 			placeName = status.getPlace().getName();
 		}
@@ -305,14 +312,61 @@ public class StatusData {
 		}
 	}
 	
-	/**
-	 *
-	 * @return Cursor where the columns are _id, created_at, user, txt, usrImgUrl
-	 */
+	
 	public Cursor getStatusUpdates(String accountId, String[] columns) {   
 		SQLiteDatabase db = this.dbHelper.getReadableDatabase();
 		return db.query(HOME_TIMELINE_TABLE, columns, C_ACCOUNT + " IN (\"" + accountId + "\")", 
 				null, null, null, GET_ALL_ORDER_BY);
+	}
+	
+	public Cursor getPendingFavourites(String accountId, String[] columns) {
+		SQLiteDatabase db = this.dbHelper.getReadableDatabase();
+		
+		return db.query(FAVOURITES_PENDING_TABLE, columns, C_ACCOUNT + " IN (\"" + accountId + "\")", 
+				null, null, null, GET_ALL_ORDER_BY);
+	}
+	
+	public void removeFavourite(String account, String tweetid) {
+		SQLiteDatabase db = this.dbHelper.getWritableDatabase();
+		
+		if( db.delete(FAVOURITES_TABLE, 
+				C_ACCOUNT + " IN (\"" + account + "\") AND " + 
+				C_ID + " IN (\"" + tweetid + "\")", null) <= 0 ) {
+			Log.i(TAG, "Couldnt find favourite pending to delete");
+		} else {
+			Log.i(TAG, "Favourite pending deleted!");
+		}
+	}
+	
+	public void removePendingFavourite(String account, String tweetid) {
+		SQLiteDatabase db = this.dbHelper.getWritableDatabase();
+		
+		if( db.delete(FAVOURITES_PENDING_TABLE, 
+				C_ACCOUNT + " IN (\"" + account + "\") AND " + 
+				C_ID + " IN (\"" + tweetid + "\")", null) <= 0 ) {
+			Log.i(TAG, "Couldnt find favourite pending to delete");
+		} else {
+			Log.i(TAG, "Favourite pending deleted!");
+		}
+	}
+	
+	public Cursor getPendingUnfavourites(String accountId, String[] columns) {
+		SQLiteDatabase db = this.dbHelper.getReadableDatabase();
+		
+		return db.query(UNFAVOURITES_PENDING_TABLE, columns, C_ACCOUNT + " IN (\"" + accountId + "\")", 
+				null, null, null, GET_ALL_ORDER_BY);
+	}
+	
+	public void removePendingUnfavourite(String account, String tweetid) {
+		SQLiteDatabase db = this.dbHelper.getWritableDatabase();
+		
+		if( db.delete(UNFAVOURITES_PENDING_TABLE, 
+				C_ACCOUNT + " IN (\"" + account + "\") AND " + 
+				C_ID + " IN (\"" + tweetid + "\")", null) <= 0 ) {
+			Log.i(TAG, "Couldnt find favourite pending to delete");
+		} else {
+			Log.i(TAG, "Favourite pending deleted!");
+		}
 	}
 
 	public Cursor getFavourites(String accountId, String screenName, String[] columns) {   

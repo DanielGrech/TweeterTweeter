@@ -1,6 +1,8 @@
 package com.DGSD.TweeterTweeter.Fragments;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
@@ -11,6 +13,7 @@ import android.support.v4.widget.SimpleCursorAdapter.ViewBinder;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemLongClickListener;
@@ -170,11 +173,6 @@ public abstract class BaseStatusFragment extends BaseFragment {
 
 				Log.i(TAG, "TWEET ID: " + tweet_id);
 
-				//Set the listeners for each item
-				/*
-				 * TODO: Set OnClickListeners for each ActionItem
-				 */
-
 				//Add action items to the popup and display!
 				mQuickAction = new QuickAction(view);
 
@@ -183,6 +181,9 @@ public abstract class BaseStatusFragment extends BaseFragment {
 				mQuickAction.addActionItem(mFavouriteAction);
 				mQuickAction.addActionItem(mShareAction);
 				mQuickAction.setAnimStyle(QuickAction.ANIM_AUTO);
+
+				setQuickActionListeners(tweet_id, getTweetText(pos-1), 
+						getTweeterName(pos-1), getUserEntities(pos-1));
 
 				mQuickAction.show();
 
@@ -196,11 +197,6 @@ public abstract class BaseStatusFragment extends BaseFragment {
 	public void onResume() {
 		super.onResume();
 		Log.v(TAG, "onResume()");
-		/*try {
-			setupList();
-		} catch (TwitterException e) {
-			Log.e(TAG, "Error resuming list", e);
-		}*/
 
 		// Register the receiver
 		getActivity().registerReceiver(mReceiver, mDataFilter,
@@ -243,13 +239,13 @@ public abstract class BaseStatusFragment extends BaseFragment {
 		if(mAdapter == null) {
 			mAdapter = new SimpleCursorAdapter(getActivity(), R.layout.timeline_list_item, 
 					mCursor, FROM, TO, 0);
-			
+
 			mAdapter.setViewBinder(mViewBinder);
 		}
 
 		if(isUpdate) {
 			Log.i(TAG, "SETTING CURSOR");
-			
+
 			//Epic casting..!
 			((SimpleCursorAdapter)mAdapter).changeCursor(mCursor);
 			((SimpleCursorAdapter)mAdapter).notifyDataSetChanged();
@@ -297,6 +293,56 @@ public abstract class BaseStatusFragment extends BaseFragment {
 		return retval;
 	}
 
+	private String getTweetText(int pos) {
+		String retval = "";
+
+		try{
+			if(mCursor != null && mCursor.moveToPosition(pos)) {
+				retval = mCursor.getString(mCursor.getColumnIndex(StatusData.C_TEXT));
+			} else {
+				Log.d(TAG,"No Tweet at position: " + pos);
+			}
+		}catch(RuntimeException e) {
+			Log.e(TAG, "Error getting tweet id", e);
+		}
+
+
+		return retval;
+	}
+
+	private String getTweeterName(int pos) {
+		String retval = "";
+
+		try{
+			if(mCursor != null && mCursor.moveToPosition(pos)) {
+				retval = mCursor.getString(mCursor.getColumnIndex(StatusData.C_SCREEN_NAME));
+			} else {
+				Log.d(TAG,"No Tweet at position: " + pos);
+			}
+		}catch(RuntimeException e) {
+			Log.e(TAG, "Error getting tweet id", e);
+		}
+
+
+		return retval;
+	}
+
+	private String[] getUserEntities(int pos) {
+		String retval = "";
+
+		try{
+			if(mCursor != null && mCursor.moveToPosition(pos)) {
+				retval = mCursor.getString(mCursor.getColumnIndex(StatusData.C_USER_ENT));
+			} else {
+				Log.d(TAG,"No Tweet at position: " + pos);
+			}
+		}catch(RuntimeException e) {
+			Log.e(TAG, "Error getting tweet id", e);
+		}
+
+		return retval.split(",");
+	}
+
 	private void createPopupActions(){
 		Resources res = getActivity().getResources();
 
@@ -311,5 +357,124 @@ public abstract class BaseStatusFragment extends BaseFragment {
 
 		//mShareAction.setTitle("Share");
 		mShareAction.setIcon(res.getDrawable(R.drawable.share));
+	}
+
+	public void setQuickActionListeners(final long tweetid, final String tweetText, 
+			final String screenName, final String[] userEntities) {
+		mFavouriteAction.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				System.err.println("FAVOURITE FOR: " + tweetid);
+				Intent intent = new Intent(getActivity(), UpdaterService.class);
+				intent.putExtra(UpdaterService.DATA_TYPE, UpdaterService.DATATYPES.NEW_FAVOURITE);
+				intent.putExtra(UpdaterService.ACCOUNT, mAccountId);
+				intent.putExtra(UpdaterService.TWEETID, tweetid);
+				getActivity().startService(intent);
+
+				if(mQuickAction != null) {
+					mQuickAction.dismiss();
+				}
+			}
+		});
+
+		mShareAction.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+
+				Intent sharingIntent = new Intent(Intent.ACTION_SEND);
+				sharingIntent.setType("text/plain");
+				sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, tweetText);
+				sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Tweet by " + screenName);
+				startActivity(Intent.createChooser(sharingIntent, "Share tweet"));
+
+				if(mQuickAction != null) {
+					mQuickAction.dismiss();
+				}
+			}
+		});
+
+		mReplyAction.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if(userEntities.length > 0 && userEntities[0].length() > 0) {
+					//We might want to reply to all mentioned users?
+					final CharSequence[] choices = {"Reply", "Reply to all"};
+
+					AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+					builder.setTitle("Reply");
+
+					builder.setItems(choices, new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int item) {
+							String val = "";
+							switch(item) {
+								case 0: 
+									//Reply
+									val = "@" + screenName;
+									break;
+								case 1:
+									//Reply to all
+									val = "@" + screenName;
+									for(String s : userEntities) {
+										if(s.length() > 0) {
+											val += " @" + s;
+										}
+									}
+									break;
+							}
+
+							getFragmentManager().beginTransaction().replace(R.id.container, 
+									NewTweetFragment.newInstance(val + " ")).commit();
+
+						}
+					});
+
+					builder.create().show();
+				} else {
+					//There are no other mentioned users, lets just reply
+					getFragmentManager().beginTransaction().replace(R.id.container, 
+							NewTweetFragment.newInstance("@" + screenName + " ")).commit();
+				}
+
+				if(mQuickAction != null) {
+					mQuickAction.dismiss();
+				}
+			}
+
+		});
+
+		mRetweetAction.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				final CharSequence[] choices = {"Retweet", "Retweet and edit"};
+
+				AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+				builder.setTitle("Retweet");
+
+				builder.setItems(choices, new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int item) {
+						switch(item) {
+							case 0: 
+								Toast.makeText(getActivity(), "Retweet!", 
+										Toast.LENGTH_SHORT).show();
+								break;
+							case 1:
+								//Retweet & edit
+								getFragmentManager().beginTransaction().replace(R.id.container, 
+										NewTweetFragment.newInstance("RT " + tweetText)).commit();
+								break;
+						}
+					}
+				});
+
+				builder.create().show();
+
+
+				if(mQuickAction != null) {
+					mQuickAction.dismiss();
+				}
+			}
+
+		});
+
 	}
 }

@@ -15,14 +15,15 @@ import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
 import twitter4j.User;
 import twitter4j.auth.AccessToken;
+import twitter4j.conf.ConfigurationBuilder;
 import android.app.AlarmManager;
 import android.app.Application;
 import android.content.ContentValues;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.os.Build;
-import android.os.StrictMode;
 import android.preference.PreferenceManager;
 
 import com.DGSD.TweeterTweeter.Fragments.BaseFragment;
@@ -123,7 +124,10 @@ OnSharedPreferenceChangeListener {
 			if(mAccountList != null) {
 				for(String account : mAccountList) {
 					AccessToken at = mSession.getAccessToken(account);
-					Twitter t = new TwitterFactory().getInstance();
+					
+					Twitter t = 
+						new TwitterFactory(new ConfigurationBuilder().setIncludeEntitiesEnabled(true)
+                    						.build() ).getInstance();
 
 					mAccessTokenList.put(account,at);
 					mTwitterList.put(account,t);
@@ -277,6 +281,103 @@ OnSharedPreferenceChangeListener {
 	public synchronized int fetchProfileInfo(String accountId, String user, 
 			int page) {  
 		return mFetchProfileInfo.fetch(accountId, user, page);
+	}
+
+
+	public synchronized void addNewFavourite(String account, 
+			long tweetid) throws TwitterException{
+
+		Twitter twitter = mTwitterList.get(account);
+
+		if (twitter == null) {
+			throw new TwitterException("Twitter connection info not initialized");
+		}
+
+		//Get the requested status
+		Status status = twitter.showStatus(tweetid);
+
+		if(status == null) {
+			throw new TwitterException("Cant find requested status");
+		}
+
+		//Insert status into pending favourites.
+		getStatusData().insertOrIgnore(StatusData.FAVOURITES_PENDING_TABLE, 
+				StatusData.createTimelineContentValues(account, null, status));
+
+		//Insert status into local favourites.
+		getStatusData().insertOrIgnore(StatusData.FAVOURITES_TABLE, 
+				StatusData.createTimelineContentValues(account, null, status));
+	}
+
+	public synchronized void removeFavourite(String account, 
+			String tweetid) throws TwitterException{
+
+		//Remove favourite from local db..
+		getStatusData().removeFavourite(account, tweetid);
+
+		//Insert into pending unfavourite table
+		ContentValues values = new ContentValues();
+		values.put(StatusData.C_ID, tweetid);
+		
+		getStatusData().insertOrIgnore(StatusData.UNFAVOURITES_PENDING_TABLE, values);
+	}
+	
+	public void updateCurrentFavourites(String account) throws TwitterException {
+		Twitter twitter = mTwitterList.get(account);
+
+		if (twitter == null) {
+			throw new TwitterException("Twitter connection info not initialized");
+		}
+
+		//Get currently pending favourites
+		Cursor cursor = getStatusData().getPendingFavourites(account, 
+				new String[]{StatusData.C_ID});
+
+		try{
+			if(cursor != null) {
+				if (cursor.moveToFirst()) {
+					do {
+						Log.i(TAG, "Syncing new favourite");
+						//For each new pending favourite, add it to favourites
+						twitter.createFavorite(Long.valueOf(cursor.getString(0)));
+						
+						//Remove from pending list..
+						getStatusData().removePendingFavourite(account, 
+								cursor.getString(0));
+						
+					} while (cursor.moveToNext());
+				}
+			}
+		} catch(RuntimeException e) {
+			Log.e(TAG, "Error creating favourite", e);
+		} finally {
+			cursor.close();
+		}
+		
+		//Get currently pending unfavourite.
+		cursor = getStatusData().getPendingUnfavourites(account, 
+				new String[]{StatusData.C_ID});
+		
+		try{
+			if(cursor != null) {
+				if (cursor.moveToFirst()) {
+					do {
+						Log.i(TAG, "Syncing new unfavourites");
+						
+						//For each new pending favourite, add it to favourites
+						twitter.destroyFavorite(Long.valueOf(cursor.getString(0)));
+						
+						//Remove from pending list..
+						getStatusData().removePendingUnfavourite(account, 
+								cursor.getString(0));
+					} while (cursor.moveToNext());
+				}
+			}
+		} catch(RuntimeException e) {
+			Log.e(TAG, "Error creating favourite", e);
+		} finally {
+			cursor.close();
+		}
 	}
 
 	/*

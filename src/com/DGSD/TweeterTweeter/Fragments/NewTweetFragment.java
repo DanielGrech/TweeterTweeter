@@ -147,6 +147,20 @@ implements OnClickListener {
 		}
 	};
 
+	public static NewTweetFragment newInstance(String tweetText){
+		NewTweetFragment f = new NewTweetFragment();
+
+		// Supply index input as an argument.
+		Bundle args = new Bundle();
+		
+		args.putString("tweet", tweetText);
+
+		f.setArguments(args);
+
+		return f;
+	}
+	
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -211,6 +225,8 @@ implements OnClickListener {
 				return false;
 			}
 		});
+		
+		addToTweet(getArguments().getString("tweet"));
 	}
 
 	@Override
@@ -357,8 +373,7 @@ implements OnClickListener {
 			@Override
 			public CharSequence convertToString(Cursor cursor) {
 				Log.i(TAG, "Converting Cursor String");
-				int desiredColumn = 4;//screen name in StatusData.FOLLOWERS_TABLE
-				return cursor.getString(desiredColumn);
+				return cursor.getString(cursor.getColumnIndex(StatusData.C_SCREEN_NAME));
 			}
 		});
 
@@ -465,6 +480,10 @@ implements OnClickListener {
 	}
 
 	private void addToTweet(String text) {
+		if(text == null) {
+			return;
+		}
+		
 		String currentText = mTweetEditText.getText().toString();
 
 		if(currentText.length() == 0) {

@@ -199,6 +199,10 @@ public class CustomPopupWindow {
 	}
 	
 	public void dismiss() {
-		window.dismiss();
+		try {
+			window.dismiss();
+		} catch(Exception e) {
+			//O well
+		}
 	}
 }

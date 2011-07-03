@@ -20,6 +20,8 @@ public class UpdaterService extends IntentService {
 
 	public static final String PAGE = "page";
 
+	public static final String TWEETID = "tweet_id";
+	
 	public static final String SEND_DATA = 
 		"com.DGSD.TweeterTweeter.SEND_DATA";
 
@@ -52,6 +54,8 @@ public class UpdaterService extends IntentService {
 		String requestedUser = inIntent.getStringExtra(USER);
 
 		int page = inIntent.getIntExtra(PAGE, 1);
+		
+		long tweetId = inIntent.getLongExtra(TWEETID, -1);
 
 		boolean hasRequestedUser = true;
 		if(requestedUser == null) {
@@ -90,6 +94,11 @@ public class UpdaterService extends IntentService {
 						updateFollowers(account, requestedUser, page);
 						updateFollowing(account, requestedUser, page);
 						updateProfileInfo(account, requestedUser, page);
+						try{
+							mApplication.updateCurrentFavourites(account);
+						}catch(TwitterException e) {
+							Log.e(TAG, "O NO!", e);
+						}
 						break;
 					case DATATYPES.HOME_TIMELINE: 
 						updateHomeTimeline(account, page);
@@ -114,6 +123,14 @@ public class UpdaterService extends IntentService {
 						break;
 					case DATATYPES.PROFILE_INFO:
 						updateProfileInfo(account, requestedUser, page);
+						break;
+					case DATATYPES.NEW_FAVOURITE:
+						try{
+    						mApplication.addNewFavourite(account, tweetId);
+    						mApplication.updateCurrentFavourites(account);
+						} catch(TwitterException e) {
+							Log.e(TAG, "O NO!", e);
+						}
 						break;
 				}
 			}
@@ -270,5 +287,6 @@ public class UpdaterService extends IntentService {
 		public static final int FOLLOWERS = 6;
 		public static final int FOLLOWING = 7;
 		public static final int PROFILE_INFO = 8;
+		public static final int NEW_FAVOURITE = 9;
 	}
 }

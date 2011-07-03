@@ -61,6 +61,6 @@ public class HomeTimelineFragment extends BaseStatusFragment {
 		Log.i(TAG, "Setting up list");
 
 		//Gets the status' already in the database..
-		mCursor = mApplication.getStatusData().getStatusUpdates(mAccountId, FROM);
+		mCursor = mApplication.getStatusData().getStatusUpdates(mAccountId, null);
 	}
 }
