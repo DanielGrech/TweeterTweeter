@@ -2,39 +2,29 @@ package com.DGSD.TweeterTweeter.Fragments;
 
 import twitter4j.TwitterException;
 import android.database.Cursor;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.view.animation.RotateAnimation;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
-import android.widget.ImageView;
-import android.widget.ListAdapter;
-import android.widget.Toast;
 
 import com.DGSD.TweeterTweeter.R;
 import com.DGSD.TweeterTweeter.TTApplication;
-import com.DGSD.TweeterTweeter.UI.EndlessAdapter;
+import com.DGSD.TweeterTweeter.UI.EndlessListAdapter;
 import com.DGSD.TweeterTweeter.UI.PullToRefreshListView;
 import com.DGSD.TweeterTweeter.UI.PullToRefreshListView.OnRefreshListener;
+import com.DGSD.TweeterTweeter.Utils.DataLoadingTask;
 import com.DGSD.TweeterTweeter.Utils.Log;
 
 public abstract class BaseFragment extends DialogFragment{
 
 	private static final String TAG = BaseFragment.class.getSimpleName();
 
-	public static final int ELEMENTS_PER_PAGE = 100;
+	public static final int ELEMENTS_PER_PAGE = 50;
 
-	/*
-	 * This method MUST be called from a background thread, as it is
-	 * free to do network comms or loading from a db..
-	 */
 	public abstract void getNewest() throws TwitterException;
 	
 	public abstract void getCurrent() throws TwitterException;
@@ -74,7 +64,7 @@ public abstract class BaseFragment extends DialogFragment{
 
 		mListView = (PullToRefreshListView) root.findViewById(R.id.list);
 
-		new DataLoadingTask(DataLoadingTask.CURRENT).execute();
+		new DataLoadingTask(BaseFragment.this, DataLoadingTask.CURRENT).execute();
 
 		Log.i(TAG, "Returning root from onCreateView");
 
@@ -89,7 +79,7 @@ public abstract class BaseFragment extends DialogFragment{
 			@Override
 			public void onRefresh() {
 				Log.i(TAG, "STARTING REFRESH!");
-				new DataLoadingTask(DataLoadingTask.NEWEST).execute();
+				new DataLoadingTask(BaseFragment.this, DataLoadingTask.NEWEST).execute();
 			}
 		});
 		
@@ -141,123 +131,11 @@ public abstract class BaseFragment extends DialogFragment{
         panel.setVisibility(View.GONE);
     }
 
-	protected class EndlessListAdapter extends EndlessAdapter {
-		private RotateAnimation mRotate = null;
-
-		private ImageView mImageView = null;
-		
-		public EndlessListAdapter(SimpleCursorAdapter sca) {
-			super(sca);
-
-			mRotate = 
-				new RotateAnimation(0f, 360f, Animation.RELATIVE_TO_SELF,0.5f, 
-						Animation.RELATIVE_TO_SELF,	0.5f);
-			mRotate.setDuration(600);
-			mRotate.setRepeatMode(Animation.RESTART);
-			mRotate.setRepeatCount(Animation.INFINITE);
-			
-			mImageView = new ImageView(getActivity());
-			mImageView.setImageResource(R.drawable.ic_popup_sync);
-
-		}
-		
-		@Override
-		protected View getPendingView(ViewGroup parent) {
-			mImageView.startAnimation(mRotate);
-
-			return(mImageView);
-		}
-
-		@Override
-		protected boolean cacheInBackground() throws TwitterException{
-			Log.i(TAG, "GETTING OLDER DATA");
-			getOlder();
-			return false;
-		}
-		
-		@Override
-		protected void appendCachedData() {
-			Log.i(TAG, "APPENDING DATA TO LIST!");
-			appendData();
-		}
-		
-		@Override
-		protected boolean onException(View pendingView, Exception e){
-			Log.i(TAG, "ERROR LOADING EXTRA DATA", e);
-			
-			Toast.makeText(getActivity(), "Error loading data..", 
-					Toast.LENGTH_LONG).show();
-		
-			return false;
-		}
-		
-		public ListAdapter getAdapter() {
-			return getWrappedAdapter();
-		}
+	public EndlessListAdapter getAdapter() {
+		return mAdapter;
 	}
 	
-	protected class DataLoadingTask extends AsyncTask<Void, Void, Void> {
-		private boolean hasError = false;
-
-		public static final int CURRENT = 0;
-		
-		public static final int NEWEST = 1;
-		
-		public static final int OLDEST = 2;
-		
-		private int mType;
-		
-		public DataLoadingTask(int type) {
-			mType = type;
-		}
-		
-		@Override
-		protected void onPreExecute() {
-
-		}
-
-		@Override
-		protected Void doInBackground(Void ...args) {
-			try {
-				if(mAdapter != null) {
-					synchronized(mAdapter) {
-						switch(mType) {
-							case CURRENT: getCurrent(); break;
-							case NEWEST: getNewest(); break;
-							case OLDEST: getOlder(); break;
-						}
-					}
-				}
-				else {
-					switch(mType) {
-						case CURRENT: getCurrent(); break;
-						case NEWEST: getNewest(); break;
-						case OLDEST: getOlder(); break;
-					}
-				}
-				//pageNum++;
-			} catch (Exception e) {
-				Log.e(TAG, "Error getting data",e);
-				hasError = true;
-			}
-
-			return null;
-		}
-
-		@Override
-		protected void onPostExecute(Void arg) {
-			Log.i(TAG, "POST EXECUTING");
-			//Check if the refresh view is showing..
-			if(mListView != null && mListView.isRefreshing()) {
-				mListView.onRefreshComplete();
-			}
-
-			if(hasError) {
-				Toast.makeText(getActivity(), "Error getting data", Toast.LENGTH_SHORT).show();
-			}	
-			else {
-				appendData();
-			}
-		}
+	public PullToRefreshListView getListView() {
+		return mListView;
 	}
 }

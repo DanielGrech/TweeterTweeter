@@ -21,7 +21,9 @@ import com.DGSD.TweeterTweeter.StatusData;
 import com.DGSD.TweeterTweeter.Receivers.PortableReceiver;
 import com.DGSD.TweeterTweeter.Receivers.PortableReceiver.Receiver;
 import com.DGSD.TweeterTweeter.Services.UpdaterService;
+import com.DGSD.TweeterTweeter.UI.EndlessListAdapter;
 import com.DGSD.TweeterTweeter.UI.QuickAction;
+import com.DGSD.TweeterTweeter.Utils.DataLoadingTask;
 import com.DGSD.TweeterTweeter.Utils.Log;
 import com.DGSD.TweeterTweeter.Utils.QuickActionUtils;
 import com.github.droidfu.widgets.WebImageView;
@@ -218,7 +220,7 @@ public abstract class BaseStatusFragment extends BaseFragment {
 			
 			sca.setViewBinder(mViewBinder);
 			
-			mAdapter = new EndlessListAdapter(sca);
+			mAdapter = new EndlessListAdapter(BaseStatusFragment.this, sca);
 		}
 		
 		if(mListView.getAdapter() == null) {
@@ -237,7 +239,7 @@ public abstract class BaseStatusFragment extends BaseFragment {
 	
 	private void startRefresh(int type, String account) {
 		if(mType == type && account != null && mAccountId.equals(account)) {
-			new DataLoadingTask(DataLoadingTask.NEWEST).execute();
+			new DataLoadingTask(BaseStatusFragment.this, DataLoadingTask.NEWEST).execute();
 		} else {
 			Log.i(TAG, "Received Irrelevant broadcast: " 
 					+ type + "(My type=" + mType + ")");
