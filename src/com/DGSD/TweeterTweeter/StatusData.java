@@ -79,6 +79,10 @@ public class StatusData {
 	private static final String[] MAX_CREATED_AT_COLUMNS = { "max("
 		+ C_CREATED_AT + ")" };
 
+	private static final String[] MAX_ID_COLUMNS = { "max("
+		+ C_ID + ")" };
+
+	
 	private static final String[] DB_TEXT_COLUMNS = { C_TEXT };
 
 
@@ -461,11 +465,22 @@ public class StatusData {
 		}
 	}
 
-	/**
-	 *
-	 * @param id of the status we are looking for
-	 * @return Text of the status
-	 */
+	public long getLatestTweetId(String table, String accountId) {  
+		SQLiteDatabase db = this.dbHelper.getReadableDatabase();
+		try {
+			Cursor cursor = db.query(table, MAX_ID_COLUMNS, 
+					C_ACCOUNT + " IN (\"" + accountId + "\")", null, null,
+					null, null);
+			try {
+				return cursor.moveToNext() ? cursor.getLong(0) : Long.MIN_VALUE;
+			} finally {
+				cursor.close();
+			}
+		} finally {
+			db.close();
+		}
+	}
+	
 	public String getStatusTextById(String accountId, long id) {  // 
 		SQLiteDatabase db = this.dbHelper.getReadableDatabase();
 		try {

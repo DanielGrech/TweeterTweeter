@@ -5,5 +5,5 @@ read inputline
 
 comment="$inputline"
 
-git add -A * && git commit -m comment
+git add -A * && git commit -m "$comment"
 

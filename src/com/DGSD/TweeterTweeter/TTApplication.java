@@ -413,17 +413,22 @@ OnSharedPreferenceChangeListener {
 	public class FetchStatusUpdates extends Fetch {
 		public int fetchData(String account, String user,
 				int page) throws TwitterException {
-			ResponseList<Status> timeline = 
-				twitter.getHomeTimeline(new Paging(page, BaseFragment.ELEMENTS_PER_PAGE));
-
-			long latestCreatedAtTime = getStatusData()
-			.getLatestCreatedAtTime(StatusData.HOME_TIMELINE_TABLE, account);
-
+			
+			long latestTweet = 
+				getStatusData().getLatestTweetId(StatusData.HOME_TIMELINE_TABLE, account);
+			
+			Log.i(TAG, "LATEST TWEET ID: " + latestTweet);
+			
+			Paging p = new Paging(1, BaseFragment.ELEMENTS_PER_PAGE);
+			if(latestTweet >= 0) {
+				p.sinceId(latestTweet);
+			}
+			
+			ResponseList<Status> timeline = twitter.getHomeTimeline(p);
+			
 			for (Status status : timeline) {
-				getStatusData().insertOrIgnore(StatusData.HOME_TIMELINE_TABLE, 
-						StatusData.createTimelineContentValues(account, user, status));
-
-				if (latestCreatedAtTime < status.getCreatedAt().getTime()) {
+				if (getStatusData().insert(StatusData.HOME_TIMELINE_TABLE, 
+						StatusData.createTimelineContentValues(account, user, status))) {
 					count++;
 				}
 			}
@@ -435,17 +440,20 @@ OnSharedPreferenceChangeListener {
 	public class FetchTimeline extends Fetch {
 		public int fetchData(String account, String user,
 				int page) throws TwitterException {
-			ResponseList<Status> timeline = 
-				twitter.getUserTimeline(user, new Paging(page, BaseFragment.ELEMENTS_PER_PAGE));
-
-			long latestCreatedAtTime = getStatusData()
-			.getLatestCreatedAtTime(StatusData.TIMELINE_TABLE, account);
+			
+			long latestTweet = 
+				getStatusData().getLatestTweetId(StatusData.TIMELINE_TABLE, account);
+			
+			Paging p = new Paging(1, BaseFragment.ELEMENTS_PER_PAGE);
+			if(latestTweet >= 0) {
+				p.sinceId(latestTweet);
+			}
+			
+			ResponseList<Status> timeline = twitter.getUserTimeline(user, p);
 
 			for (Status status : timeline) {
-				getStatusData().insertOrIgnore(StatusData.TIMELINE_TABLE, 
-						StatusData.createTimelineContentValues(account, user, status));
-
-				if (latestCreatedAtTime < status.getCreatedAt().getTime()) {
+				if (getStatusData().insert(StatusData.TIMELINE_TABLE, 
+						StatusData.createTimelineContentValues(account, user, status))) {
 					count++;
 				}
 			}
@@ -457,7 +465,16 @@ OnSharedPreferenceChangeListener {
 	public class FetchMentions extends Fetch {
 		public int fetchData(String account, String user,
 				int page) throws TwitterException {
-			ResponseList<Status> timeline = twitter.getMentions();
+			
+			long latestTweet = 
+				getStatusData().getLatestTweetId(StatusData.MENTIONS_TABLE, account);
+			
+			Paging p = new Paging(1, BaseFragment.ELEMENTS_PER_PAGE);
+			if(latestTweet >= 0) {
+				p.sinceId(latestTweet);
+			}
+			
+			ResponseList<Status> timeline = twitter.getMentions(p);
 
 			for (Status status : timeline) {
 				//Returns true if new rows were added..
@@ -467,7 +484,6 @@ OnSharedPreferenceChangeListener {
 				}
 			}
 
-			Log.d(TAG, "Finished getting mentions");
 			return count;
 		}
 	}
@@ -475,8 +491,16 @@ OnSharedPreferenceChangeListener {
 	public class FetchRetweetsOf extends Fetch {
 		public int fetchData(String account, String user,
 				int page) throws TwitterException {
-			ResponseList<Status> timeline = 
-				twitter.getRetweetsOfMe(new Paging(page, BaseFragment.ELEMENTS_PER_PAGE));
+			
+			long latestTweet = 
+				getStatusData().getLatestTweetId(StatusData.RT_OF_TABLE, account);
+			
+			Paging p = new Paging(1, BaseFragment.ELEMENTS_PER_PAGE);
+			if(latestTweet >= 0) {
+				p.sinceId(latestTweet);
+			}
+			
+			ResponseList<Status> timeline = twitter.getRetweetsOfMe(p);
 
 			for (Status status : timeline) {
 				//Returns true if new rows were added..
@@ -486,8 +510,6 @@ OnSharedPreferenceChangeListener {
 				}
 			}
 
-			Log.d(TAG, "Finished getting retweets of me");
-
 			return count;
 		}
 	}
@@ -495,14 +517,24 @@ OnSharedPreferenceChangeListener {
 	public class FetchRetweetsBy extends Fetch {
 		public int fetchData(String account, String user,
 				int page) throws TwitterException {
+			
+			long latestTweet = 
+				getStatusData().getLatestTweetId(StatusData.RT_BY_TABLE, account);
+			
+			Paging p = new Paging(1, BaseFragment.ELEMENTS_PER_PAGE);
+			if(latestTweet >= 0) {
+				p.sinceId(latestTweet);
+			}
+			
+			
 			ResponseList<Status> timeline;
 
 			if(user == null) {
 				timeline = 
-					twitter.getRetweetedByMe(new Paging(page, BaseFragment.ELEMENTS_PER_PAGE));
+					twitter.getRetweetedByMe(p);
 			} else {
 				timeline = 
-					twitter.getRetweetedByUser(user, new Paging(page, BaseFragment.ELEMENTS_PER_PAGE));
+					twitter.getRetweetedByUser(user, p);
 			}
 
 			for (Status status : timeline) {
@@ -513,15 +545,14 @@ OnSharedPreferenceChangeListener {
 				}
 			}
 
-			Log.d(TAG, "Finished getting retweets by me");
-
 			return count;
 		}
 	}
 
 	public class FetchFavourites extends Fetch {
 		public int fetchData(String account, String user,
-				int page) throws TwitterException {			
+				int page) throws TwitterException {	
+			
 			ResponseList<Status> timeline;
 
 			if(user == null) {
@@ -538,8 +569,6 @@ OnSharedPreferenceChangeListener {
 					count++;
 				}
 			}
-
-			Log.d(TAG, "Finished getting favourites");
 
 			return count;
 		}
@@ -575,8 +604,6 @@ OnSharedPreferenceChangeListener {
 				getStatusData().insertOrIgnore(StatusData.FOLLOWERS_TABLE, values);
 			}
 
-			Log.d(TAG, "Finished getting followers");
-
 			return count;
 		}
 	}
@@ -611,7 +638,6 @@ OnSharedPreferenceChangeListener {
 				getStatusData().insertOrIgnore(StatusData.FOLLOWING_TABLE, values);
 			}
 
-			Log.d(TAG, "Finished getting friends");
 			return count;
 		}
 	}
@@ -626,8 +652,6 @@ OnSharedPreferenceChangeListener {
 
 				getStatusData().insertOrIgnore(StatusData.PROFILE_TABLE, values);
 			}
-
-			Log.d(TAG, "Finished getting profile");
 
 			return count;
 		}	
