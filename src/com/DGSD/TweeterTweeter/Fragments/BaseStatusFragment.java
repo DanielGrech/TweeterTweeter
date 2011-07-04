@@ -207,34 +207,37 @@ public abstract class BaseStatusFragment extends BaseFragment {
 	}
 
 	@Override
-	public void postSetup(boolean isUpdate) {
+	public void appendData() {
 		if(mCursor.getCount() == 0) {
 			mListView.refresh();
 		}
 
 		if(mAdapter == null) {
-			mAdapter = new SimpleCursorAdapter(getActivity(), R.layout.timeline_list_item, 
+			SimpleCursorAdapter sca = new SimpleCursorAdapter(getActivity(), R.layout.timeline_list_item, 
 					mCursor, FROM, TO, 0);
-
-			mAdapter.setViewBinder(mViewBinder);
+			
+			sca.setViewBinder(mViewBinder);
+			
+			mAdapter = new EndlessListAdapter(sca);
 		}
-
-		if(isUpdate) {
-			Log.i(TAG, "SETTING CURSOR");
-
-			//Epic casting..!
-			((SimpleCursorAdapter)mAdapter).changeCursor(mCursor);
-			((SimpleCursorAdapter)mAdapter).notifyDataSetChanged();
-		}
-		else {
-			Log.i(TAG, "SETTING ADAPTER");
+		
+		if(mListView.getAdapter() == null) {
+			Log.i(TAG, "ADAPTER WAS NULL! SETTING IT!");
 			mListView.setAdapter(mAdapter);
+		} else {
+			Log.i(TAG, "REFRESHING CURSOR");
+			((SimpleCursorAdapter)((EndlessListAdapter)mAdapter).getAdapter()).changeCursor(mCursor);
+			((SimpleCursorAdapter)((EndlessListAdapter)mAdapter).getAdapter()).notifyDataSetChanged();
+		}
+		
+		if(mListView.isRefreshing()) {
+			mListView.onRefreshComplete();
 		}
 	}
-
+	
 	private void startRefresh(int type, String account) {
 		if(mType == type && account != null && mAccountId.equals(account)) {
-			new DataLoadingTask(true).execute();
+			new DataLoadingTask(DataLoadingTask.NEWEST).execute();
 		} else {
 			Log.i(TAG, "Received Irrelevant broadcast: " 
 					+ type + "(My type=" + mType + ")");

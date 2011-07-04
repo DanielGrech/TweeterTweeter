@@ -1,6 +1,5 @@
 package com.DGSD.TweeterTweeter.Fragments;
 
-import twitter4j.TwitterException;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +7,7 @@ import android.view.ViewGroup;
 
 import com.DGSD.TweeterTweeter.Services.UpdaterService;
 import com.DGSD.TweeterTweeter.Utils.Log;
+import com.DGSD.TweeterTweeter.Utils.DataFetchers.DataFetcher;
 
 public class RetweetsByFragment extends BaseStatusFragment {
 
@@ -36,7 +36,12 @@ public class RetweetsByFragment extends BaseStatusFragment {
 
 		mUserName = getArguments().getString("username");
 		
+		if(mUserName == null) {
+			mUserName = mApplication.getTwitterSession().getUsername(mAccountId);
+		}
+		
 		mType = UpdaterService.DATATYPES.RETWEETS_BY;
+		
 
 		Log.i(TAG, "onCreate");
 	}
@@ -45,17 +50,32 @@ public class RetweetsByFragment extends BaseStatusFragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
 		return super.onCreateView(inflater, container, savedInstanceState);
 	}
+	
+	
+	@Override
+	public synchronized void getCurrent() {
+		Log.i(TAG, "Getting current");
+		mCursor = mApplication.getStatusData().getRetweetsBy(mAccountId, mUserName, null);
+	
+	}
 
 	@Override
-	public synchronized void setupList() throws TwitterException {
-		Log.i(TAG, "Setting up list");
-
-		if(mUserName == null) {
-			//We have this info in the db already..
-			mCursor = mApplication.getStatusData().getRetweetsBy(mAccountId, mUserName, FROM);
-		} else {
-			mCursor = mApplication.getStatusData().getRetweetsBy(mAccountId, 
-					mApplication.getTwitterSession().getUsername(mAccountId), FROM);
-		}
+	public synchronized void getNewest() {
+		Log.i(TAG, "Getting newest");
+		
+		mApplication.fetchRetweetsBy(mAccountId, mUserName, 
+				DataFetcher.FETCH_NEWEST);
+		
+		getCurrent();
+	}
+	
+	@Override
+	public synchronized void getOlder() {
+		Log.i(TAG, "Getting oldest");
+		
+		mApplication.fetchRetweetsBy(mAccountId, mUserName, 
+				DataFetcher.FETCH_OLDER);
+		
+		getCurrent();
 	}
 }

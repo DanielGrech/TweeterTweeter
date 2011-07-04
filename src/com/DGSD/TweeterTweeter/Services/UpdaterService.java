@@ -8,6 +8,7 @@ import android.content.Intent;
 
 import com.DGSD.TweeterTweeter.TTApplication;
 import com.DGSD.TweeterTweeter.Utils.Log;
+import com.DGSD.TweeterTweeter.Utils.DataFetchers.DataFetcher;
 
 public class UpdaterService extends IntentService {
 	private static final String TAG = UpdaterService.class.getSimpleName();
@@ -53,8 +54,6 @@ public class UpdaterService extends IntentService {
 
 		String requestedUser = inIntent.getStringExtra(USER);
 
-		int page = inIntent.getIntExtra(PAGE, 1);
-		
 		String tweetId = inIntent.getStringExtra(TWEETID);
 
 		boolean hasRequestedUser = true;
@@ -86,14 +85,14 @@ public class UpdaterService extends IntentService {
 
 				switch(dataType) {
 					case DATATYPES.ALL_DATA : //Update all data.
-						updateHomeTimeline(account, page);
-						updateMentions(account, page);
-						updateFavourites(account, requestedUser, page);
-						updateRetweetsBy(account, requestedUser, page);
-						updateRetweetsOf(account, page);
-						updateFollowers(account, requestedUser, page);
-						updateFollowing(account, requestedUser, page);
-						updateProfileInfo(account, requestedUser, page);
+						updateHomeTimeline(account);
+						updateMentions(account);
+						updateFavourites(account, requestedUser);
+						updateRetweetsBy(account, requestedUser);
+						updateRetweetsOf(account);
+						updateFollowers(account, requestedUser);
+						updateFollowing(account, requestedUser);
+						updateProfileInfo(account, requestedUser);
 						try{
 							mApplication.updateCurrentFavourites(account);
 						}catch(TwitterException e) {
@@ -101,28 +100,28 @@ public class UpdaterService extends IntentService {
 						}
 						break;
 					case DATATYPES.HOME_TIMELINE: 
-						updateHomeTimeline(account, page);
+						updateHomeTimeline(account);
 						break;
 					case DATATYPES.MENTIONS:
-						updateMentions(account, page);
+						updateMentions(account);
 						break;
 					case DATATYPES.FAVOURITES:
-						updateFavourites(account, requestedUser, page);
+						updateFavourites(account, requestedUser);
 						break;
 					case DATATYPES.RETWEETS_BY:
-						updateRetweetsBy(account, requestedUser, page);
+						updateRetweetsBy(account, requestedUser);
 						break;
 					case DATATYPES.RETWEETS_OF:
-						updateRetweetsOf(account, page);
+						updateRetweetsOf(account);
 						break;
 					case DATATYPES.FOLLOWERS:
-						updateFollowers(account, requestedUser, page);
+						updateFollowers(account, requestedUser);
 						break;
 					case DATATYPES.FOLLOWING:
-						updateFollowing(account, requestedUser, page);
+						updateFollowing(account, requestedUser);
 						break;
 					case DATATYPES.PROFILE_INFO:
-						updateProfileInfo(account, requestedUser, page);
+						updateProfileInfo(account, requestedUser);
 						break;
 					case DATATYPES.NEW_FAVOURITE:
 						try{
@@ -137,141 +136,146 @@ public class UpdaterService extends IntentService {
 		}
 	}
 
-	protected void sendData(int type, String account, String user, int page) {
+	protected void sendData(int type, String account, String user) {
 		Intent intent = new Intent(SEND_DATA);
 		intent.putExtra(DATA_TYPE, type);
 		intent.putExtra(ACCOUNT, account);
 		intent.putExtra(USER, user);
-		intent.putExtra(PAGE, page);
 		sendBroadcast(intent);
 	}
 
-	protected void sendNoData(int type, String account, String user, int page) {
+	protected void sendNoData(int type, String account, String user) {
 		Intent intent = new Intent(NO_DATA);
 		intent.putExtra(DATA_TYPE, type);
 		intent.putExtra(ACCOUNT, account);
 		intent.putExtra(USER, user);
-		intent.putExtra(PAGE, page);
 		sendBroadcast(intent);
 	}
 
-	protected void sendError(int type, String account, String user, int page) {
+	protected void sendError(int type, String account, String user) {
 		Intent intent = new Intent(ERROR);
 		intent.putExtra(DATA_TYPE, type);
 		intent.putExtra(ACCOUNT, account);
 		intent.putExtra(USER, user);
-		intent.putExtra(PAGE, page);
 		sendBroadcast(intent);
 	}
 
-	private void updateHomeTimeline(String account, int page) {
-		switch(mApplication.fetchStatusUpdates(account, null, page)) {
+	private void updateHomeTimeline(String account) {
+		switch(mApplication.fetchStatusUpdates(account, null, 
+				DataFetcher.FETCH_NEWEST)) {
 			case -1:
-				sendError(DATATYPES.HOME_TIMELINE, account, null, page);
+				sendError(DATATYPES.HOME_TIMELINE, account, null);
 				break;
 			case 0:
-				sendNoData(DATATYPES.HOME_TIMELINE, account, null, page);
+				sendNoData(DATATYPES.HOME_TIMELINE, account, null);
 				break;
 			default:
-				sendData(DATATYPES.HOME_TIMELINE, account, null, page);
+				sendData(DATATYPES.HOME_TIMELINE, account, null);
 				break;
 		}
 	}
 
-	private void updateMentions(String account, int page) {
-		switch(mApplication.fetchMentions(account, null, page)) {
+	private void updateMentions(String account) {
+		switch(mApplication.fetchMentions(account, null, 
+				DataFetcher.FETCH_NEWEST)) {
 			case -1:
-				sendError(DATATYPES.MENTIONS, account, null, page);
+				sendError(DATATYPES.MENTIONS, account, null);
 				break;
 			case 0:
-				sendNoData(DATATYPES.MENTIONS, account, null, page);
+				sendNoData(DATATYPES.MENTIONS, account, null);
 				break;
 			default:
-				sendData(DATATYPES.MENTIONS, account, null, page);
+				sendData(DATATYPES.MENTIONS, account, null);
 				break;
 		}
 	}
 
-	private void updateFavourites(String account, String user, int page) {
-		switch(mApplication.fetchFavourites(account, user, page)) {
+	private void updateFavourites(String account, String user) {
+		switch(mApplication.fetchFavourites(account, user, 
+				DataFetcher.FETCH_NEWEST)) {
 			case -1:
-				sendError(DATATYPES.FAVOURITES, account, user, page);
+				sendError(DATATYPES.FAVOURITES, account, user);
 				break;
 			case 0:
-				sendNoData(DATATYPES.FAVOURITES, account, user, page);
+				sendNoData(DATATYPES.FAVOURITES, account, user);
 				break;
 			default:
-				sendData(DATATYPES.FAVOURITES, account, user, page);
+				sendData(DATATYPES.FAVOURITES, account, user);
 				break;
 		}
 	}
 
-	private void updateRetweetsBy(String account, String user, int page) {
-		switch(mApplication.fetchRetweetsBy(account, user, page)) {
+	private void updateRetweetsBy(String account, String user) {
+		switch(mApplication.fetchRetweetsBy(account, user, 
+				DataFetcher.FETCH_NEWEST)) {
 			case -1:
-				sendError(DATATYPES.RETWEETS_BY, account, user, page);
+				sendError(DATATYPES.RETWEETS_BY, account, user);
 				break;
 			case 0:
-				sendNoData(DATATYPES.RETWEETS_BY, account, user, page);
+				sendNoData(DATATYPES.RETWEETS_BY, account, user);
 				break;
 			default:
-				sendData(DATATYPES.RETWEETS_BY, account, user, page);
+				sendData(DATATYPES.RETWEETS_BY, account, user);
 				break;
 		}
 	}
 
-	private void updateRetweetsOf(String account, int page) {
-		switch(mApplication.fetchRetweetsOf(account, null, page)) {
+	private void updateRetweetsOf(String account) {
+		switch(mApplication.fetchRetweetsOf(account, null, 
+				DataFetcher.FETCH_NEWEST)) {
 			case -1:
-				sendError(DATATYPES.RETWEETS_OF, account, null, page);
+				sendError(DATATYPES.RETWEETS_OF, account, null);
 				break;
 			case 0:
-				sendNoData(DATATYPES.RETWEETS_OF, account, null, page);
+				sendNoData(DATATYPES.RETWEETS_OF, account, null);
 				break;
 			default:
-				sendData(DATATYPES.RETWEETS_OF, account, null, page);
+				sendData(DATATYPES.RETWEETS_OF, account, null);
 				break;
 		}
 	}
 
-	private void updateFollowers(String account, String user, int page) {
-		switch(mApplication.fetchFollowers(account, user, page)) {
+	private void updateFollowers(String account, String user) {
+		switch(mApplication.fetchFollowers(account, user, 
+				DataFetcher.FETCH_NEWEST)) {
 			case -1:
-				sendError(DATATYPES.FOLLOWERS, account, user, page);
+				sendError(DATATYPES.FOLLOWERS, account, user);
 				break;
 			case 0:
-				sendNoData(DATATYPES.FOLLOWERS, account, user, page);
+				sendNoData(DATATYPES.FOLLOWERS, account, user);
 				break;
 			default:
-				sendData(DATATYPES.FOLLOWERS, account, user, page);
+				sendData(DATATYPES.FOLLOWERS, account, user);
 				break;
 		}
 	}
 
-	private void updateFollowing(String account, String user, int page) {
-		switch(mApplication.fetchFollowing(account, user, page)) {
+	private void updateFollowing(String account, String user) {
+		switch(mApplication.fetchFollowing(account, user, 
+				DataFetcher.FETCH_NEWEST)) {
 			case -1:
-				sendError(DATATYPES.FOLLOWING, account, user, page);
+				sendError(DATATYPES.FOLLOWING, account, user);
 				break;
 			case 0:
-				sendNoData(DATATYPES.FOLLOWING, account, user, page);
+				sendNoData(DATATYPES.FOLLOWING, account, user);
 				break;
 			default:
-				sendData(DATATYPES.FOLLOWING, account, user, page);
+				sendData(DATATYPES.FOLLOWING, account, user);
 				break;
 		}
 	}
 
-	private void updateProfileInfo(String account, String user, int page) {
-		switch(mApplication.fetchProfileInfo(account, user, page)) {
+	private void updateProfileInfo(String account, String user) {
+		switch(mApplication.fetchProfileInfo(account, user, 
+				DataFetcher.FETCH_NEWEST)) {
 			case -1:
-				sendError(DATATYPES.PROFILE_INFO, account, user, page);
+				sendError(DATATYPES.PROFILE_INFO, account, user);
 				break;
 			case 0:
-				sendNoData(DATATYPES.PROFILE_INFO, account, user, page);
+				sendNoData(DATATYPES.PROFILE_INFO, account, user);
 				break;
 			default:
-				sendData(DATATYPES.PROFILE_INFO, account, user, page);
+				sendData(DATATYPES.PROFILE_INFO, account, user);
 				break;
 		}
 	}

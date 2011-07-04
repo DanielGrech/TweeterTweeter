@@ -1,19 +1,14 @@
 package com.DGSD.TweeterTweeter;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
 import twitter4j.GeoLocation;
-import twitter4j.IDs;
-import twitter4j.Paging;
-import twitter4j.ResponseList;
 import twitter4j.Status;
 import twitter4j.StatusUpdate;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
-import twitter4j.User;
 import twitter4j.auth.AccessToken;
 import twitter4j.conf.ConfigurationBuilder;
 import android.app.AlarmManager;
@@ -26,8 +21,16 @@ import android.database.Cursor;
 import android.os.Build;
 import android.preference.PreferenceManager;
 
-import com.DGSD.TweeterTweeter.Fragments.BaseFragment;
 import com.DGSD.TweeterTweeter.Utils.Log;
+import com.DGSD.TweeterTweeter.Utils.DataFetchers.FetchFavourites;
+import com.DGSD.TweeterTweeter.Utils.DataFetchers.FetchFollowers;
+import com.DGSD.TweeterTweeter.Utils.DataFetchers.FetchFollowing;
+import com.DGSD.TweeterTweeter.Utils.DataFetchers.FetchMentions;
+import com.DGSD.TweeterTweeter.Utils.DataFetchers.FetchProfileInfo;
+import com.DGSD.TweeterTweeter.Utils.DataFetchers.FetchRetweetsBy;
+import com.DGSD.TweeterTweeter.Utils.DataFetchers.FetchRetweetsOf;
+import com.DGSD.TweeterTweeter.Utils.DataFetchers.FetchStatusUpdates;
+import com.DGSD.TweeterTweeter.Utils.DataFetchers.FetchTimeline;
 
 public class TTApplication extends Application implements
 OnSharedPreferenceChangeListener {
@@ -58,7 +61,7 @@ OnSharedPreferenceChangeListener {
 
 	/* Interface to updaters which fetch data from network */
 	private FetchStatusUpdates mFetchStatusUpdates;
-
+	
 	private FetchTimeline mFetchTimeline;
 
 	private FetchFavourites    mFetchFavourites;
@@ -137,23 +140,23 @@ OnSharedPreferenceChangeListener {
 			}
 		}
 
-		mFetchStatusUpdates = new FetchStatusUpdates();
+		mFetchStatusUpdates = new FetchStatusUpdates(this);
+		
+		mFetchTimeline = new FetchTimeline(this);
 
-		mFetchTimeline = new FetchTimeline();
+		mFetchFavourites = new FetchFavourites(this);
 
-		mFetchFavourites = new FetchFavourites();
+		mFetchMentions = new FetchMentions(this);
 
-		mFetchMentions = new FetchMentions();
+		mFetchRetweetsOf = new FetchRetweetsOf(this);
 
-		mFetchRetweetsOf = new FetchRetweetsOf();
+		mFetchRetweetsBy = new FetchRetweetsBy(this);
 
-		mFetchRetweetsBy = new FetchRetweetsBy();
+		mFetchFollowers = new FetchFollowers(this);
 
-		mFetchFollowers = new FetchFollowers();
+		mFetchFollowing = new FetchFollowing(this);
 
-		mFetchFollowing = new FetchFollowing();
-
-		mFetchProfileInfo = new FetchProfileInfo();
+		mFetchProfileInfo = new FetchProfileInfo(this);
 
 		Log.i(TAG, "onCreated");
 	}
@@ -239,48 +242,48 @@ OnSharedPreferenceChangeListener {
 	}
 
 	public synchronized int fetchStatusUpdates(String accountId, String user, 
-			int page) { 
-		return mFetchStatusUpdates.fetch(accountId, user, page);
+			int type) { 
+		return mFetchStatusUpdates.fetch(accountId, user, type);
 	}
-
+	
 	public synchronized int fetchTimeline(String accountId, String user, 
-			int page) { 
-		return mFetchTimeline.fetch(accountId, user, page);
+			int type) { 
+		return mFetchTimeline.fetch(accountId, user, type);
 	}
 
 	public synchronized int fetchFavourites(String accountId, String user, 
-			int page) {  
-		return mFetchFavourites.fetch(accountId, user, page);
+			int type) { 
+		return mFetchFavourites.fetch(accountId, user, type);
 	}
 
 	public synchronized int fetchMentions(String accountId, String user, 
-			int page) {  
-		return mFetchMentions.fetch(accountId, user, page);
+			int type) { 
+		return mFetchMentions.fetch(accountId, user, type);
 	}
 
 	public synchronized int fetchRetweetsOf(String accountId, String user, 
-			int page) {  
-		return mFetchRetweetsOf.fetch(accountId, user, page);
+			int type) { 
+		return mFetchRetweetsOf.fetch(accountId, user, type);
 	}
 
 	public synchronized int fetchRetweetsBy(String accountId, String user, 
-			int page) {  
-		return mFetchRetweetsBy.fetch(accountId, user, page);
+			int type) { 
+		return mFetchRetweetsBy.fetch(accountId, user, type);
 	}
 
 	public synchronized int fetchFollowers(String accountId, String user, 
-			int page) {
-		return mFetchFollowers.fetch(accountId, user, page);
+			int type) { 
+		return mFetchFollowers.fetch(accountId, user, type);
 	}
 
 	public synchronized int fetchFollowing(String accountId, String user, 
-			int page) {
-		return mFetchFollowing.fetch(accountId, user, page);
+			int type) { 
+		return mFetchFollowing.fetch(accountId, user, type);
 	}
 
 	public synchronized int fetchProfileInfo(String accountId, String user, 
-			int page) {  
-		return mFetchProfileInfo.fetch(accountId, user, page);
+			int type) { 
+		return mFetchProfileInfo.fetch(accountId, user, type);
 	}
 
 
@@ -378,282 +381,5 @@ OnSharedPreferenceChangeListener {
 		} finally {
 			cursor.close();
 		}
-	}
-
-	/*
-	 * Utilities to fetch data from the network
-	 */
-	public abstract class Fetch {
-		public abstract int fetchData(String account, String user, 
-				int page) throws TwitterException;
-
-		protected int count;
-
-		protected Twitter twitter;
-
-		protected int fetch(String account, String user, int page) {
-			twitter = mTwitterList.get(account);
-			if (twitter == null) {
-				Log.d(TAG, "Twitter connection info not initialized");
-				return 0;
-			}
-			try{
-				count = 0;
-				return fetchData(account, user, page);
-			} catch (TwitterException e) {
-				Log.e(TAG, "Error connecting to Twitter service");
-				return -1;
-			} catch (RuntimeException e) {
-				Log.e(TAG, "Failed to fetch data");
-				return -1;
-			} 
-		}
-	}
-
-	public class FetchStatusUpdates extends Fetch {
-		public int fetchData(String account, String user,
-				int page) throws TwitterException {
-			
-			long latestTweet = 
-				getStatusData().getLatestTweetId(StatusData.HOME_TIMELINE_TABLE, account);
-			
-			Log.i(TAG, "LATEST TWEET ID: " + latestTweet);
-			
-			Paging p = new Paging(1, BaseFragment.ELEMENTS_PER_PAGE);
-			if(latestTweet >= 0) {
-				p.sinceId(latestTweet);
-			}
-			
-			ResponseList<Status> timeline = twitter.getHomeTimeline(p);
-			
-			for (Status status : timeline) {
-				if (getStatusData().insert(StatusData.HOME_TIMELINE_TABLE, 
-						StatusData.createTimelineContentValues(account, user, status))) {
-					count++;
-				}
-			}
-
-			return count;
-		}
-	}
-
-	public class FetchTimeline extends Fetch {
-		public int fetchData(String account, String user,
-				int page) throws TwitterException {
-			
-			long latestTweet = 
-				getStatusData().getLatestTweetId(StatusData.TIMELINE_TABLE, account);
-			
-			Paging p = new Paging(1, BaseFragment.ELEMENTS_PER_PAGE);
-			if(latestTweet >= 0) {
-				p.sinceId(latestTweet);
-			}
-			
-			ResponseList<Status> timeline = twitter.getUserTimeline(user, p);
-
-			for (Status status : timeline) {
-				if (getStatusData().insert(StatusData.TIMELINE_TABLE, 
-						StatusData.createTimelineContentValues(account, user, status))) {
-					count++;
-				}
-			}
-
-			return count;
-		}
-	}
-
-	public class FetchMentions extends Fetch {
-		public int fetchData(String account, String user,
-				int page) throws TwitterException {
-			
-			long latestTweet = 
-				getStatusData().getLatestTweetId(StatusData.MENTIONS_TABLE, account);
-			
-			Paging p = new Paging(1, BaseFragment.ELEMENTS_PER_PAGE);
-			if(latestTweet >= 0) {
-				p.sinceId(latestTweet);
-			}
-			
-			ResponseList<Status> timeline = twitter.getMentions(p);
-
-			for (Status status : timeline) {
-				//Returns true if new rows were added..
-				if (getStatusData().insert(StatusData.MENTIONS_TABLE, 
-						StatusData.createTimelineContentValues(account, user, status))) {
-					count++;
-				}
-			}
-
-			return count;
-		}
-	}
-
-	public class FetchRetweetsOf extends Fetch {
-		public int fetchData(String account, String user,
-				int page) throws TwitterException {
-			
-			long latestTweet = 
-				getStatusData().getLatestTweetId(StatusData.RT_OF_TABLE, account);
-			
-			Paging p = new Paging(1, BaseFragment.ELEMENTS_PER_PAGE);
-			if(latestTweet >= 0) {
-				p.sinceId(latestTweet);
-			}
-			
-			ResponseList<Status> timeline = twitter.getRetweetsOfMe(p);
-
-			for (Status status : timeline) {
-				//Returns true if new rows were added..
-				if (getStatusData().insert(StatusData.RT_OF_TABLE, 
-						StatusData.createTimelineContentValues(account, user, status))) {
-					count++;
-				}
-			}
-
-			return count;
-		}
-	}
-
-	public class FetchRetweetsBy extends Fetch {
-		public int fetchData(String account, String user,
-				int page) throws TwitterException {
-			
-			long latestTweet = 
-				getStatusData().getLatestTweetId(StatusData.RT_BY_TABLE, account);
-			
-			Paging p = new Paging(1, BaseFragment.ELEMENTS_PER_PAGE);
-			if(latestTweet >= 0) {
-				p.sinceId(latestTweet);
-			}
-			
-			
-			ResponseList<Status> timeline;
-
-			if(user == null) {
-				timeline = 
-					twitter.getRetweetedByMe(p);
-			} else {
-				timeline = 
-					twitter.getRetweetedByUser(user, p);
-			}
-
-			for (Status status : timeline) {
-				//Returns true if new rows were added..
-				if (getStatusData().insert(StatusData.RT_BY_TABLE, 
-						StatusData.createTimelineContentValues(account, user, status))) {
-					count++;
-				}
-			}
-
-			return count;
-		}
-	}
-
-	public class FetchFavourites extends Fetch {
-		public int fetchData(String account, String user,
-				int page) throws TwitterException {	
-			
-			ResponseList<Status> timeline;
-
-			if(user == null) {
-				timeline = twitter.getFavorites(page);
-			} else {
-				timeline = twitter.getFavorites(user, page);
-			}
-
-			for (Status status : timeline) {
-				//Returns true if new rows were added..
-				if (getStatusData().insert(StatusData.FAVOURITES_TABLE, 
-						StatusData.createTimelineContentValues(account, user, status))) {
-					Log.i(TAG, "INSERTING NEW FAVOURITE!");
-					count++;
-				}
-			}
-
-			return count;
-		}
-	}
-
-	public class FetchFollowers extends Fetch {
-		public int fetchData(String account, String user,
-				int page) throws TwitterException {
-			ArrayList<Long> mIds = new ArrayList<Long>();
-			long cursor = -1;
-
-			//Get the ids of all followers..
-			IDs ids;
-			do{
-				ids =  twitter.getFollowersIDs(cursor);
-
-				long[] idArray = ids.getIDs();
-
-				for(int i = 0, size=idArray.length; i<size ;i++)
-					mIds.add(idArray[i]);
-			}while( (cursor = ids.getNextCursor()) != 0);
-
-			long tempIds[] = new long[mIds.size()];
-			for(int i = 0, size = mIds.size(); i < size; i++)
-				tempIds[i] = mIds.get(i);
-
-			ResponseList<User> users = twitter.lookupUsers(tempIds);
-
-			ContentValues values;
-			for (User u : users) {
-				values = StatusData.createUserContentValues(account, u);
-
-				getStatusData().insertOrIgnore(StatusData.FOLLOWERS_TABLE, values);
-			}
-
-			return count;
-		}
-	}
-
-	public class FetchFollowing extends Fetch {
-		public int fetchData(String account, String user,
-				int page) throws TwitterException {
-			ArrayList<Long> mIds = new ArrayList<Long>();
-			long cursor = -1;
-
-			//Get the ids of all friends..
-			IDs ids;
-			do{
-				ids =  twitter.getFriendsIDs(cursor);
-
-				long[] idArray = ids.getIDs();
-
-				for(int i = 0, size=idArray.length; i<size ;i++)
-					mIds.add(idArray[i]);
-			}while( (cursor = ids.getNextCursor()) != 0);
-
-			long tempIds[] = new long[mIds.size()];
-			for(int i = 0, size = mIds.size(); i < size; i++)
-				tempIds[i] = mIds.get(i);
-
-			ResponseList<User> users = twitter.lookupUsers(tempIds);
-
-			ContentValues values;
-			for (User u : users) {
-				values = StatusData.createUserContentValues(account, u);
-
-				getStatusData().insertOrIgnore(StatusData.FOLLOWING_TABLE, values);
-			}
-
-			return count;
-		}
-	}
-
-	public class FetchProfileInfo extends Fetch {
-		public int fetchData(String account, String user,
-				int page) throws TwitterException {
-			User u = twitter.showUser(twitter.getId());
-
-			if(u != null){
-				ContentValues values = StatusData.createUserContentValues(account, u);
-
-				getStatusData().insertOrIgnore(StatusData.PROFILE_TABLE, values);
-			}
-
-			return count;
-		}	
 	}
 }

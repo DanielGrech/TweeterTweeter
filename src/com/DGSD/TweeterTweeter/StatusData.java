@@ -81,6 +81,9 @@ public class StatusData {
 
 	private static final String[] MAX_ID_COLUMNS = { "max("
 		+ C_ID + ")" };
+	
+	private static final String[] MIN_ID_COLUMNS = { "min("
+		+ C_ID + ")" };
 
 	
 	private static final String[] DB_TEXT_COLUMNS = { C_TEXT };
@@ -465,14 +468,30 @@ public class StatusData {
 		}
 	}
 
-	public long getLatestTweetId(String table, String accountId) {  
+	public String getLatestTweetId(String table, String accountId) {  
 		SQLiteDatabase db = this.dbHelper.getReadableDatabase();
 		try {
 			Cursor cursor = db.query(table, MAX_ID_COLUMNS, 
 					C_ACCOUNT + " IN (\"" + accountId + "\")", null, null,
 					null, null);
 			try {
-				return cursor.moveToNext() ? cursor.getLong(0) : Long.MIN_VALUE;
+				return cursor.moveToNext() ? cursor.getString(0) : null;
+			} finally {
+				cursor.close();
+			}
+		} finally {
+			db.close();
+		}
+	}
+	
+	public String getOldestTweetId(String table, String accountId) {  
+		SQLiteDatabase db = this.dbHelper.getReadableDatabase();
+		try {
+			Cursor cursor = db.query(table, MIN_ID_COLUMNS, 
+					C_ACCOUNT + " IN (\"" + accountId + "\")", null, null,
+					null, null);
+			try {
+				return cursor.moveToNext() ? cursor.getString(0) : null;
 			} finally {
 				cursor.close();
 			}

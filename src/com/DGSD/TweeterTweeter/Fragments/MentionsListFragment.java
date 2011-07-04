@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 
 import com.DGSD.TweeterTweeter.Services.UpdaterService;
 import com.DGSD.TweeterTweeter.Utils.Log;
+import com.DGSD.TweeterTweeter.Utils.DataFetchers.DataFetcher;
 
 public class MentionsListFragment extends BaseStatusFragment {
 
@@ -34,6 +35,10 @@ public class MentionsListFragment extends BaseStatusFragment {
 		
 		mType = UpdaterService.DATATYPES.MENTIONS;
 		
+		if(mUserName == null) {
+			mUserName = mApplication.getTwitterSession().getUsername(mAccountId);
+		}
+		
 		Log.i(TAG, "onCreate");
 	}
 	
@@ -43,10 +48,31 @@ public class MentionsListFragment extends BaseStatusFragment {
 		return super.onCreateView(inflater, container, savedInstanceState);
 	}
 	
+	
 	@Override
-	public synchronized void setupList() {
-		Log.i(TAG, "Setting up list");
+	public synchronized void getCurrent() {
+		Log.i(TAG, "Getting current");
+		mCursor = mApplication.getStatusData().getMentions(mAccountId, null);
+	
+	}
+
+	@Override
+	public synchronized void getNewest() {
+		Log.i(TAG, "Getting newest");
 		
-		mCursor = mApplication.getStatusData().getMentions(mAccountId, FROM);
+		mApplication.fetchMentions(mAccountId, mUserName, 
+				DataFetcher.FETCH_NEWEST);
+		
+		getCurrent();
+	}
+	
+	@Override
+	public synchronized void getOlder() {
+		Log.i(TAG, "Getting oldest");
+		
+		mApplication.fetchMentions(mAccountId, mUserName, 
+				DataFetcher.FETCH_OLDER);
+		
+		getCurrent();
 	}
 }

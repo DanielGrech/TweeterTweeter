@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 
 import com.DGSD.TweeterTweeter.Services.UpdaterService;
 import com.DGSD.TweeterTweeter.Utils.Log;
+import com.DGSD.TweeterTweeter.Utils.DataFetchers.DataFetcher;
 
 public class HomeTimelineFragment extends BaseStatusFragment {
 
@@ -34,6 +35,10 @@ public class HomeTimelineFragment extends BaseStatusFragment {
 
 		mType = UpdaterService.DATATYPES.HOME_TIMELINE;
 		
+		if(mUserName == null) {
+			mUserName = mApplication.getTwitterSession().getUsername(mAccountId);
+		}
+		
 		Log.i(TAG, "onCreate");
 	}
 
@@ -55,12 +60,31 @@ public class HomeTimelineFragment extends BaseStatusFragment {
 		}
 		Log.i(TAG, "Destroying Fragment");
 	}
-
+	
 	@Override
-	public synchronized void setupList() {
-		Log.i(TAG, "Setting up list");
-
-		//Gets the status' already in the database..
+	public synchronized void getCurrent() {
+		Log.i(TAG, "Getting current");
 		mCursor = mApplication.getStatusData().getStatusUpdates(mAccountId, null);
 	}
+
+	@Override
+	public synchronized void getNewest() {
+		Log.i(TAG, "Getting newest");
+		
+		mApplication.fetchStatusUpdates(mAccountId, mUserName, 
+				DataFetcher.FETCH_NEWEST);
+		
+		getCurrent();
+	}
+	
+	@Override
+	public synchronized void getOlder() {
+		Log.i(TAG, "Getting older");
+		
+		mApplication.fetchStatusUpdates(mAccountId, mUserName, 
+				DataFetcher.FETCH_OLDER);
+		
+		getCurrent();
+	}
+	
 }
