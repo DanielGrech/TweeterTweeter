@@ -21,16 +21,16 @@ import android.database.Cursor;
 import android.os.Build;
 import android.preference.PreferenceManager;
 
+import com.DGSD.TweeterTweeter.DataFetchers.FetchFavourites;
+import com.DGSD.TweeterTweeter.DataFetchers.FetchFollowers;
+import com.DGSD.TweeterTweeter.DataFetchers.FetchFollowing;
+import com.DGSD.TweeterTweeter.DataFetchers.FetchMentions;
+import com.DGSD.TweeterTweeter.DataFetchers.FetchProfileInfo;
+import com.DGSD.TweeterTweeter.DataFetchers.FetchRetweetsBy;
+import com.DGSD.TweeterTweeter.DataFetchers.FetchRetweetsOf;
+import com.DGSD.TweeterTweeter.DataFetchers.FetchStatusUpdates;
+import com.DGSD.TweeterTweeter.DataFetchers.FetchTimeline;
 import com.DGSD.TweeterTweeter.Utils.Log;
-import com.DGSD.TweeterTweeter.Utils.DataFetchers.FetchFavourites;
-import com.DGSD.TweeterTweeter.Utils.DataFetchers.FetchFollowers;
-import com.DGSD.TweeterTweeter.Utils.DataFetchers.FetchFollowing;
-import com.DGSD.TweeterTweeter.Utils.DataFetchers.FetchMentions;
-import com.DGSD.TweeterTweeter.Utils.DataFetchers.FetchProfileInfo;
-import com.DGSD.TweeterTweeter.Utils.DataFetchers.FetchRetweetsBy;
-import com.DGSD.TweeterTweeter.Utils.DataFetchers.FetchRetweetsOf;
-import com.DGSD.TweeterTweeter.Utils.DataFetchers.FetchStatusUpdates;
-import com.DGSD.TweeterTweeter.Utils.DataFetchers.FetchTimeline;
 
 public class TTApplication extends Application implements
 OnSharedPreferenceChangeListener {

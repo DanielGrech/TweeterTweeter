@@ -1,4 +1,4 @@
-package com.DGSD.TweeterTweeter.Utils.DataFetchers;
+package com.DGSD.TweeterTweeter.DataFetchers;
 
 import twitter4j.Paging;
 import twitter4j.ResponseList;
@@ -9,8 +9,8 @@ import com.DGSD.TweeterTweeter.StatusData;
 import com.DGSD.TweeterTweeter.TTApplication;
 import com.DGSD.TweeterTweeter.Fragments.BaseFragment;
 
-public class FetchMentions extends DataFetcher {
-	public FetchMentions(TTApplication app) {
+public class FetchRetweetsOf extends DataFetcher {
+	public FetchRetweetsOf(TTApplication app) {
 		super(app);
 	}
 
@@ -18,25 +18,25 @@ public class FetchMentions extends DataFetcher {
 		Paging p = new Paging(1, BaseFragment.ELEMENTS_PER_PAGE);
 		if(type == FETCH_NEWEST) {
 			String latestTweet = 
-				mApplication.getStatusData().getLatestTweetId(StatusData.MENTIONS_TABLE, account);
+				mApplication.getStatusData().getLatestTweetId(StatusData.RT_OF_TABLE, account);
 
 			if(latestTweet != null) {
 				p.sinceId(Long.valueOf(latestTweet));
 			}
 		} else {
 			String oldestTweet = 
-				mApplication.getStatusData().getOldestTweetId(StatusData.MENTIONS_TABLE, account);
+				mApplication.getStatusData().getOldestTweetId(StatusData.RT_OF_TABLE, account);
 			
 			if(oldestTweet != null) {
 				p.maxId(Long.valueOf(oldestTweet));
 			}
 		}
 		
-		ResponseList<Status> timeline = mTwitter.getMentions(p);
+		ResponseList<Status> timeline = mTwitter.getRetweetsOfMe(p);
 
 		for (Status status : timeline) {
 			//Returns true if new rows were added..
-			if (mApplication.getStatusData().insert(StatusData.MENTIONS_TABLE, 
+			if (mApplication.getStatusData().insert(StatusData.RT_OF_TABLE, 
 					StatusData.createTimelineContentValues(account, user, status))) {
 				count++;
 			}

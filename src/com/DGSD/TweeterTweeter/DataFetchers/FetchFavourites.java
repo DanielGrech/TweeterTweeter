@@ -1,4 +1,4 @@
-package com.DGSD.TweeterTweeter.Utils.DataFetchers;
+package com.DGSD.TweeterTweeter.DataFetchers;
 
 import twitter4j.ResponseList;
 import twitter4j.Status;

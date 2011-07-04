@@ -1,4 +1,4 @@
-package com.DGSD.TweeterTweeter.Utils;
+package com.DGSD.TweeterTweeter.Tasks;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -25,6 +25,7 @@ import android.widget.Toast;
 import com.DGSD.TweeterTweeter.R;
 import com.DGSD.TweeterTweeter.TTApplication;
 import com.DGSD.TweeterTweeter.Fragments.NewTweetFragment;
+import com.DGSD.TweeterTweeter.Utils.Log;
 
 public class MediaUploadTask extends AsyncTask<Void, Void, Void> {
 	private static final String TAG = MediaUploadTask.class.getSimpleName();

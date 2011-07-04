@@ -13,10 +13,10 @@ import android.widget.AbsListView.OnScrollListener;
 
 import com.DGSD.TweeterTweeter.R;
 import com.DGSD.TweeterTweeter.TTApplication;
+import com.DGSD.TweeterTweeter.Tasks.DataLoadingTask;
 import com.DGSD.TweeterTweeter.UI.EndlessListAdapter;
 import com.DGSD.TweeterTweeter.UI.PullToRefreshListView;
 import com.DGSD.TweeterTweeter.UI.PullToRefreshListView.OnRefreshListener;
-import com.DGSD.TweeterTweeter.Utils.DataLoadingTask;
 import com.DGSD.TweeterTweeter.Utils.Log;
 
 public abstract class BaseFragment extends DialogFragment{

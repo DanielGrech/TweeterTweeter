@@ -7,8 +7,8 @@ import android.app.IntentService;
 import android.content.Intent;
 
 import com.DGSD.TweeterTweeter.TTApplication;
+import com.DGSD.TweeterTweeter.DataFetchers.DataFetcher;
 import com.DGSD.TweeterTweeter.Utils.Log;
-import com.DGSD.TweeterTweeter.Utils.DataFetchers.DataFetcher;
 
 public class UpdaterService extends IntentService {
 	private static final String TAG = UpdaterService.class.getSimpleName();

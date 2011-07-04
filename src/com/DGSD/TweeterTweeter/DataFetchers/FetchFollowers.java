@@ -1,4 +1,4 @@
-package com.DGSD.TweeterTweeter.Utils.DataFetchers;
+package com.DGSD.TweeterTweeter.DataFetchers;
 
 import java.util.ArrayList;
 
@@ -11,8 +11,8 @@ import android.content.ContentValues;
 import com.DGSD.TweeterTweeter.StatusData;
 import com.DGSD.TweeterTweeter.TTApplication;
 
-public class FetchFollowing extends DataFetcher {
-	public FetchFollowing(TTApplication app) {
+public class FetchFollowers extends DataFetcher {
+	public FetchFollowers(TTApplication app) {
 		super(app);
 	}
 
@@ -20,10 +20,10 @@ public class FetchFollowing extends DataFetcher {
 		ArrayList<Long> mIds = new ArrayList<Long>();
 		long cursor = -1;
 
-		//Get the ids of all friends..
+		//Get the ids of all followers..
 		IDs ids;
 		do{
-			ids =  mTwitter.getFriendsIDs(cursor);
+			ids =  mTwitter.getFollowersIDs(cursor);
 
 			long[] idArray = ids.getIDs();
 
@@ -41,7 +41,7 @@ public class FetchFollowing extends DataFetcher {
 		for (User u : users) {
 			values = StatusData.createUserContentValues(account, u);
 
-			mApplication.getStatusData().insertOrIgnore(StatusData.FOLLOWING_TABLE, values);
+			mApplication.getStatusData().insertOrIgnore(StatusData.FOLLOWERS_TABLE, values);
 		}
 
 		return count;

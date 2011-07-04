@@ -5,9 +5,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.DGSD.TweeterTweeter.DataFetchers.DataFetcher;
 import com.DGSD.TweeterTweeter.Services.UpdaterService;
 import com.DGSD.TweeterTweeter.Utils.Log;
-import com.DGSD.TweeterTweeter.Utils.DataFetchers.DataFetcher;
 
 public class TimelineFragment extends BaseStatusFragment {
 

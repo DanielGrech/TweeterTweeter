@@ -38,10 +38,10 @@ import com.DGSD.TweeterTweeter.R;
 import com.DGSD.TweeterTweeter.StatusData;
 import com.DGSD.TweeterTweeter.TTApplication;
 import com.DGSD.TweeterTweeter.Services.NewStatusService;
+import com.DGSD.TweeterTweeter.Tasks.MediaUploadTask;
+import com.DGSD.TweeterTweeter.Tasks.UrlShortenTask;
 import com.DGSD.TweeterTweeter.Utils.Log;
-import com.DGSD.TweeterTweeter.Utils.MediaUploadTask;
 import com.DGSD.TweeterTweeter.Utils.Tokenizer;
-import com.DGSD.TweeterTweeter.Utils.UrlShortenTask;
 import com.github.droidfu.widgets.WebImageView;
 
 /*

@@ -1,4 +1,4 @@
-package com.DGSD.TweeterTweeter.Utils;
+package com.DGSD.TweeterTweeter.Tasks;
 
 import static com.rosaloves.bitlyj.Bitly.as;
 import static com.rosaloves.bitlyj.Bitly.shorten;
@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.DGSD.TweeterTweeter.R;
+import com.DGSD.TweeterTweeter.Utils.Log;
 import com.rosaloves.bitlyj.BitlyException;
 
 public class UrlShortenTask extends AsyncTask<Void, Void, Void> {

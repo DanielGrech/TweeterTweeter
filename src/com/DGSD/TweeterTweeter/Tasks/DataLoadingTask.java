@@ -1,9 +1,10 @@
-package com.DGSD.TweeterTweeter.Utils;
+package com.DGSD.TweeterTweeter.Tasks;
 
 import android.os.AsyncTask;
 import android.widget.Toast;
 
 import com.DGSD.TweeterTweeter.Fragments.BaseFragment;
+import com.DGSD.TweeterTweeter.Utils.Log;
 
 public class DataLoadingTask extends AsyncTask<Void, Void, Void> {
 	private static final String TAG = DataLoadingTask.class.getSimpleName();
