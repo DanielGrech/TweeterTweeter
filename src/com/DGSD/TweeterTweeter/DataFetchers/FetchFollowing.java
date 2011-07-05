@@ -23,7 +23,7 @@ public class FetchFollowing extends DataFetcher {
 		//Get the ids of all friends..
 		IDs ids;
 		do{
-			ids =  mTwitter.getFriendsIDs(cursor);
+			ids =  mTwitter.getFriendsIDs(user, cursor);
 
 			long[] idArray = ids.getIDs();
 
@@ -39,9 +39,12 @@ public class FetchFollowing extends DataFetcher {
 
 		ContentValues values;
 		for (User u : users) {
-			values = StatusData.createUserContentValues(account, u);
+			values = StatusData.createUserContentValues(account, user, u);
 
-			mApplication.getStatusData().insertOrIgnore(StatusData.FOLLOWING_TABLE, values);
+			if(mApplication.getStatusData()
+					.insert(StatusData.FOLLOWING_TABLE, values)) {
+				count++;
+			}
 		}
 
 		return count;

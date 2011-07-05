@@ -86,7 +86,7 @@ implements OnClickListener {
 	protected static final String[] FROM = 
 	{ StatusData.C_SCREEN_NAME, StatusData.C_IMG, StatusData.C_ID };
 
-	protected static final int[] TO = {R.id.profile_name, R.id.profile_image};
+	protected static final int[] TO = {R.id.screen_name, R.id.profile_image};
 
 	protected static final ViewBinder mViewBinder = new ViewBinder() { 
 		@Override
@@ -105,7 +105,7 @@ implements OnClickListener {
 
 					return true;
 
-				case R.id.profile_name:
+				case R.id.screen_name:
 					String name = "";
 					name = cursor.getString(columnIndex);
 
@@ -324,7 +324,7 @@ implements OnClickListener {
 
 	private void setupMentionCompletion() {
 		//Setup the completion for '@'
-		Cursor cursor = mApplication.getStatusData().getFriends(mAccountId, FROM);
+		Cursor cursor = mApplication.getStatusData().getFollowing(mAccountId, null, FROM);
 		SimpleCursorAdapter adapter = new SimpleCursorAdapter(getActivity(), 
 				R.layout.people_list_item,cursor, FROM, TO, 0);
 
@@ -343,7 +343,7 @@ implements OnClickListener {
 			@Override
 			public Cursor runQuery(CharSequence constraint) {
 				String where = StatusData.C_SCREEN_NAME + " LIKE \"" + constraint + "%\"";
-				return mApplication.getStatusData().getFriends(mAccountId, where, FROM);
+				return mApplication.getStatusData().getFollowing(mAccountId, null, where, FROM);
 			}
 		});
 

@@ -11,6 +11,8 @@ import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.TextView;
@@ -23,7 +25,8 @@ import com.DGSD.TweeterTweeter.Receivers.PortableReceiver.Receiver;
 import com.DGSD.TweeterTweeter.Services.UpdaterService;
 import com.DGSD.TweeterTweeter.Tasks.DataLoadingTask;
 import com.DGSD.TweeterTweeter.UI.EndlessListAdapter;
-import com.DGSD.TweeterTweeter.UI.QuickAction;
+import com.DGSD.TweeterTweeter.UI.PullToRefreshListView;
+import com.DGSD.TweeterTweeter.UI.PullToRefreshListView.OnRefreshListener;
 import com.DGSD.TweeterTweeter.Utils.Log;
 import com.DGSD.TweeterTweeter.Utils.QuickActionUtils;
 import com.github.droidfu.widgets.WebImageView;
@@ -40,8 +43,6 @@ public abstract class BaseStatusFragment extends BaseFragment {
 
 	protected static final int[] TO = {R.id.timeline_date, R.id.timeline_source, R.id.timeline_tweet,
 		R.id.timeline_profile_image }; 
-
-	protected QuickAction mQuickAction;
 
 	protected PortableReceiver mReceiver;
 
@@ -133,13 +134,46 @@ public abstract class BaseStatusFragment extends BaseFragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
-		return super.onCreateView(inflater, container, savedInstanceState);
+		View root = inflater.inflate(R.layout.list_fragment_layout_status, container, false);
+
+		mListView = (PullToRefreshListView) root.findViewById(R.id.list);
+
+		new DataLoadingTask(BaseStatusFragment.this, DataLoadingTask.CURRENT).execute();
+
+		Log.i(TAG, "Returning root from onCreateView");
+
+		return root;
 	}
 
 	@Override
 	public void onActivityCreated(Bundle savedInstance) {
 		super.onActivityCreated(savedInstance);
 
+		((PullToRefreshListView)mListView).setOnRefreshListener(new OnRefreshListener() {
+			@Override
+			public void onRefresh() {
+				Log.i(TAG, "STARTING REFRESH!");
+				new DataLoadingTask(BaseStatusFragment.this, DataLoadingTask.NEWEST).execute();
+			}
+		});
+		
+		((PullToRefreshListView)mListView).setOnScrollListener(new OnScrollListener(){
+
+			@Override
+			public void onScroll(AbsListView view, int firstVisibleItem,
+					int visibleItemCount, int totalItemCount) {
+				if(mAdapter != null) {
+					((EndlessListAdapter)mAdapter).setKeepApending(true);
+				}
+				
+			}
+
+			@Override
+			public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+			}
+		});
+		
 		mListView.setOnItemLongClickListener(new OnItemLongClickListener(){
 			@Override
 			public boolean onItemLongClick(AdapterView<?> parent, View view, 
@@ -211,7 +245,7 @@ public abstract class BaseStatusFragment extends BaseFragment {
 	@Override
 	public void appendData() {
 		if(mCursor.getCount() == 0) {
-			mListView.refresh();
+			((PullToRefreshListView)mListView).refresh();
 		}
 
 		if(mAdapter == null) {
@@ -232,14 +266,14 @@ public abstract class BaseStatusFragment extends BaseFragment {
 			((SimpleCursorAdapter)((EndlessListAdapter)mAdapter).getAdapter()).notifyDataSetChanged();
 		}
 		
-		if(mListView.isRefreshing()) {
-			mListView.onRefreshComplete();
+		if(((PullToRefreshListView)mListView).isRefreshing()) {
+			((PullToRefreshListView)mListView).onRefreshComplete();
 		}
 	}
 	
 	private void startRefresh(int type, String account) {
 		if(mType == type && account != null && mAccountId.equals(account)) {
-			new DataLoadingTask(BaseStatusFragment.this, DataLoadingTask.NEWEST).execute();
+			new DataLoadingTask(BaseStatusFragment.this, DataLoadingTask.CURRENT).execute();
 		} else {
 			Log.i(TAG, "Received Irrelevant broadcast: " 
 					+ type + "(My type=" + mType + ")");
@@ -248,8 +282,8 @@ public abstract class BaseStatusFragment extends BaseFragment {
 
 	private void stopRefresh(int type, String account) {
 		if(mType == type && account != null && mAccountId.equals(account)) {
-			if(mListView.isRefreshing()) {
-				mListView.onRefreshComplete();
+			if(((PullToRefreshListView)mListView).isRefreshing()) {
+				((PullToRefreshListView)mListView).onRefreshComplete();
 			}
 		} else {
 			Log.i(TAG, "Received Irrelevant broadcast - TYPE: " 

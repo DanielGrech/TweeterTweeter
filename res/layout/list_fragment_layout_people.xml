@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res/com.DGSD.TweeterTweeter"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_weight="1">
+    
+    <ListView
+        android:id="@+id/list"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:cacheColorHint="#00000000"/>
+        
+     <TextView
+         android:id="@+id/bottomPopup"
+         android:layout_width="fill_parent"
+         android:layout_height="wrap_content"
+         android:text="Loading .." 
+         android:visibility="gone"
+         android:gravity="center"
+         android:padding="6dip"
+         android:textSize="20sp"
+         android:layout_alignParentBottom="true"
+         android:background="#DD333333"/>   
+     
+</RelativeLayout>

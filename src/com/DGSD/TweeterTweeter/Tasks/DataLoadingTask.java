@@ -4,29 +4,30 @@ import android.os.AsyncTask;
 import android.widget.Toast;
 
 import com.DGSD.TweeterTweeter.Fragments.BaseFragment;
+import com.DGSD.TweeterTweeter.UI.PullToRefreshListView;
 import com.DGSD.TweeterTweeter.Utils.Log;
 
 public class DataLoadingTask extends AsyncTask<Void, Void, Void> {
 	private static final String TAG = DataLoadingTask.class.getSimpleName();
-	
+
 	private boolean hasError = false;
 
 	public static final int CURRENT = 0;
-	
+
 	public static final int NEWEST = 1;
-	
+
 	public static final int OLDEST = 2;
-	
+
 	private int mType;
-	
+
 	private BaseFragment mFragment;
-	
+
 	public DataLoadingTask(BaseFragment fragment, int type) {
 		mFragment = fragment;
-		
+
 		mType = type;
 	}
-	
+
 	@Override
 	protected void onPreExecute() {
 
@@ -64,8 +65,18 @@ public class DataLoadingTask extends AsyncTask<Void, Void, Void> {
 	protected void onPostExecute(Void arg) {
 		Log.i(TAG, "POST EXECUTING");
 		//Check if the refresh view is showing..
-		if(mFragment.getListView() != null && mFragment.getListView().isRefreshing()) {
-			mFragment.getListView().onRefreshComplete();
+		if(mFragment.getListView() != null) {
+			
+			try{
+				PullToRefreshListView lv = 
+					(PullToRefreshListView)mFragment.getListView();
+				
+				if(lv.isRefreshing()) {
+					lv.onRefreshComplete();
+				}
+			} catch(ClassCastException e) {
+				//ignore..
+			}
 		}
 
 		if(hasError) {

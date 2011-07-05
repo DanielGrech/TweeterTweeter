@@ -23,7 +23,7 @@
 	    </activity>
 	    
 	    <activity
-		    android:name="LiveFolders.FavouritesFolder"
+		    android:name=".LiveFolders.FavouritesFolder"
 		    android:label="Favourites Folder">
 		    <intent-filter>
 		        <action android:name="android.intent.action.CREATE_LIVE_FOLDER" />
@@ -33,7 +33,7 @@
 	
 	    <service android:name=".Services.UpdaterService" />
 	    
-	    <service android:name="Services.NewStatusService" />
+	    <service android:name=".Services.NewStatusService" />
 
         <receiver android:name=".Receivers.BootReceiver">
 			 <intent-filter>
@@ -41,14 +41,14 @@
 			 </intent-filter>
 		</receiver>
 
-        <receiver android:name="Receivers.NetworkReceiver">
+        <receiver android:name=".Receivers.NetworkReceiver">
 			 <intent-filter>
 			    <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
 			 </intent-filter>
 		</receiver>
 		
 		
-		<provider android:name="ContentProviders.FavouritesProvider"
+		<provider android:name=".ContentProviders.FavouritesProvider"
              android:authorities="com.DGSD.TweeterTweeter.ContentProvider.Favourites" />
 		
 	</application>

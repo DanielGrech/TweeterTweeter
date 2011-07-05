@@ -16,9 +16,12 @@ public class FetchProfileInfo extends DataFetcher {
 		User u = mTwitter.showUser(mTwitter.getId());
 
 		if(u != null){
-			ContentValues values = StatusData.createUserContentValues(account, u);
+			ContentValues values = StatusData.createUserContentValues(account, user, u);
 
-			mApplication.getStatusData().insertOrIgnore(StatusData.PROFILE_TABLE, values);
+			if(mApplication.getStatusData().
+					insert(StatusData.PROFILE_TABLE, values)) {
+				count++;
+			}
 		}
 
 		return count;

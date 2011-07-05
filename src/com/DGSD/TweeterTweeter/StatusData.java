@@ -19,13 +19,13 @@ public class StatusData {
 	private static final String TAG = StatusData.class.getSimpleName();
 
 	private static final int VERSION = 1;
-	
+
 	private static final String DATABASE = "twitter.db";
 
 	/*
 	 * Various database tables
 	 */
-	public static final String TABLE_NAME_TEMPLTE = "<!@#TABLENAME!@#>";
+	public static final String TABLE_NAME_TEMPLATE = "<!@#TABLENAME!@#>";
 	public static final String HOME_TIMELINE_TABLE = "home_timeline_table";
 	public static final String TIMELINE_TABLE = "timeline_table";
 	public static final String FAVOURITES_TABLE = "favourites_table";
@@ -74,18 +74,18 @@ public class StatusData {
 	 */
 	private static final String GET_ALL_ORDER_BY = C_CREATED_AT + " DESC";
 
-	private static final String GET_ALL_ORDER_BY_ALPHA = C_NAME + " DESC";
+	private static final String GET_ALL_ORDER_BY_ALPHA = C_NAME + " ASC";
 
 	private static final String[] MAX_CREATED_AT_COLUMNS = { "max("
 		+ C_CREATED_AT + ")" };
 
 	private static final String[] MAX_ID_COLUMNS = { "max("
 		+ C_ID + ")" };
-	
+
 	private static final String[] MIN_ID_COLUMNS = { "min("
 		+ C_ID + ")" };
 
-	
+
 	private static final String[] DB_TEXT_COLUMNS = { C_TEXT };
 
 
@@ -100,7 +100,7 @@ public class StatusData {
 		public void onCreate(SQLiteDatabase db) {
 			Log.i(TAG, "Creating database: " + DATABASE);
 
-			String statusTemp = "create table " + TABLE_NAME_TEMPLTE + " (" + 
+			String statusTemp = "create table " + TABLE_NAME_TEMPLATE + " (" + 
 			C_ACCOUNT + " text, " + 
 			C_USER + " text, " + 
 			C_ID + " text primary key, " + 
@@ -122,39 +122,44 @@ public class StatusData {
 			C_URL_ENT + " text, " + 
 			C_USER_ENT + " text)";
 
-			db.execSQL(statusTemp.replace(TABLE_NAME_TEMPLTE, HOME_TIMELINE_TABLE));
-			
-			db.execSQL(statusTemp.replace(TABLE_NAME_TEMPLTE, TIMELINE_TABLE));
+			String userTemp = "create table " + TABLE_NAME_TEMPLATE + " (" +
+			C_ACCOUNT + " text, " +
+			C_NAME + " text, " +
+			C_ID + " text primary key, " +
+			C_USER + " text, " +
+			C_SCREEN_NAME + " text, " +
+			C_CREATED_AT + " text, " + 
+			C_DESC + " text, " +
+			C_FAV + " int, " + 
+			C_FOLLOWERS + " int, " +
+			C_FRIENDS + " int, " + 
+			C_NUM_STAT + " int, " + 
+			C_TEXT + " text, " +
+			C_IMG + " text)";
 
-			db.execSQL(statusTemp.replace(TABLE_NAME_TEMPLTE, FAVOURITES_TABLE));
+			db.execSQL(statusTemp.replace(TABLE_NAME_TEMPLATE, HOME_TIMELINE_TABLE));
 
-			db.execSQL(statusTemp.replace(TABLE_NAME_TEMPLTE, FAVOURITES_PENDING_TABLE));
-			
-			db.execSQL(statusTemp.replace(TABLE_NAME_TEMPLTE, UNFAVOURITES_PENDING_TABLE));
-			
-			db.execSQL(statusTemp.replace(TABLE_NAME_TEMPLTE, MENTIONS_TABLE));
+			db.execSQL(statusTemp.replace(TABLE_NAME_TEMPLATE, TIMELINE_TABLE));
 
-			db.execSQL(statusTemp.replace(TABLE_NAME_TEMPLTE, RT_BY_TABLE));
+			db.execSQL(statusTemp.replace(TABLE_NAME_TEMPLATE, FAVOURITES_TABLE));
 
-			db.execSQL(statusTemp.replace(TABLE_NAME_TEMPLTE, RT_OF_TABLE));
+			db.execSQL(statusTemp.replace(TABLE_NAME_TEMPLATE, FAVOURITES_PENDING_TABLE));
 
-			db.execSQL("create table " + FOLLOWERS_TABLE + " (" + C_ACCOUNT + " text, " + C_ID + " text primary key, "
-					+ C_CREATED_AT + " text, " + C_NAME + " text, " + C_SCREEN_NAME + " text, "
-					+ C_DESC + " text, " + C_FAV + " int, " + C_FOLLOWERS + " int, "
-					+ C_FRIENDS + " int, " + C_NUM_STAT + " int, " + C_TEXT + " text, " 
-					+ C_IMG + " text)");
+			db.execSQL(statusTemp.replace(TABLE_NAME_TEMPLATE, UNFAVOURITES_PENDING_TABLE));
 
-			db.execSQL("create table " + FOLLOWING_TABLE + " (" + C_ACCOUNT + " text, " + C_ID + " text primary key, "
-					+ C_CREATED_AT + " text, " + C_NAME + " text, " + C_SCREEN_NAME + " text, "
-					+ C_DESC + " text, " + C_FAV + " int, " + C_FOLLOWERS + " int, "
-					+ C_FRIENDS + " int, " + C_NUM_STAT + " int, " + C_TEXT + " text, " 
-					+ C_IMG + " text)");
+			db.execSQL(statusTemp.replace(TABLE_NAME_TEMPLATE, MENTIONS_TABLE));
 
-			db.execSQL("create table " + PROFILE_TABLE + " (" + C_ACCOUNT + " text, " + C_ID + " text primary key, "
-					+ C_CREATED_AT + " text, " + C_NAME + " text, " + C_SCREEN_NAME + " text, "
-					+ C_DESC + " text, " + C_FAV + " int, " + C_FOLLOWERS + " int, "
-					+ C_FRIENDS + " int, " + C_NUM_STAT + " int, " + C_TEXT + " text, " 
-					+ C_IMG + " text)");
+			db.execSQL(statusTemp.replace(TABLE_NAME_TEMPLATE, RT_BY_TABLE));
+
+			db.execSQL(statusTemp.replace(TABLE_NAME_TEMPLATE, RT_OF_TABLE));
+
+
+			db.execSQL(userTemp.replace(TABLE_NAME_TEMPLATE, FOLLOWERS_TABLE));
+
+			db.execSQL(userTemp.replace(TABLE_NAME_TEMPLATE, FOLLOWING_TABLE));
+
+			db.execSQL(userTemp.replace(TABLE_NAME_TEMPLATE, PROFILE_TABLE));
+
 		}
 
 		@Override
@@ -181,7 +186,7 @@ public class StatusData {
 		this.dbHelper = new DbHelper(context);
 		Log.i(TAG, "Initialized data");
 	}
-	
+
 	public DbHelper getDbHelper() {
 		return dbHelper;
 	}
@@ -223,7 +228,7 @@ public class StatusData {
 				userEntities += um.getScreenName()+ ",";
 			}
 		}
-		
+
 		if( status.getPlace() != null ) {
 			placeName = status.getPlace().getName();
 		}
@@ -263,10 +268,11 @@ public class StatusData {
 		return values;
 	}
 
-	public static synchronized ContentValues createUserContentValues(String account, User u) {
+	public static synchronized ContentValues createUserContentValues(String account, String user, User u) {
 		ContentValues values = new ContentValues();
 
 		values.put(C_ACCOUNT, account);
+		values.put(C_USER, user);
 		values.put(C_ID, Long.toString(u.getId()) );
 		values.put(C_CREATED_AT, Long.toString(u.getCreatedAt().getTime()) );
 		values.put(C_NAME, u.getName() );
@@ -284,7 +290,7 @@ public class StatusData {
 			values.put(C_TEXT, "" );
 		}
 		try{
-			values.put(C_IMG, u.getProfileImageURL().toString() );
+			values.put(C_IMG, u.getProfileImageURL().toString().replace("_normal.", "_bigger.") );
 		}catch(NullPointerException e) {
 			Log.w(TAG, "Null pointer getting profile image", e);
 			values.put(C_TEXT, "" );
@@ -318,24 +324,24 @@ public class StatusData {
 			db.close(); 
 		}
 	}
-	
-	
+
+
 	public Cursor getStatusUpdates(String accountId, String[] columns) {   
 		SQLiteDatabase db = this.dbHelper.getReadableDatabase();
 		return db.query(HOME_TIMELINE_TABLE, columns, C_ACCOUNT + " IN (\"" + accountId + "\")", 
 				null, null, null, GET_ALL_ORDER_BY);
 	}
-	
+
 	public Cursor getPendingFavourites(String accountId, String[] columns) {
 		SQLiteDatabase db = this.dbHelper.getReadableDatabase();
-		
+
 		return db.query(FAVOURITES_PENDING_TABLE, columns, C_ACCOUNT + " IN (\"" + accountId + "\")", 
 				null, null, null, GET_ALL_ORDER_BY);
 	}
-	
+
 	public void removeFavourite(String account, String tweetid) {
 		SQLiteDatabase db = this.dbHelper.getWritableDatabase();
-		
+
 		if( db.delete(FAVOURITES_TABLE, 
 				C_ACCOUNT + " IN (\"" + account + "\") AND " + 
 				C_ID + " IN (\"" + tweetid + "\")", null) <= 0 ) {
@@ -344,10 +350,10 @@ public class StatusData {
 			Log.i(TAG, "Favourite pending deleted!");
 		}
 	}
-	
+
 	public void removePendingFavourite(String account, String tweetid) {
 		SQLiteDatabase db = this.dbHelper.getWritableDatabase();
-		
+
 		if( db.delete(FAVOURITES_PENDING_TABLE, 
 				C_ACCOUNT + " IN (\"" + account + "\") AND " + 
 				C_ID + " IN (\"" + tweetid + "\")", null) <= 0 ) {
@@ -356,17 +362,17 @@ public class StatusData {
 			Log.i(TAG, "Favourite pending deleted!");
 		}
 	}
-	
+
 	public Cursor getPendingUnfavourites(String accountId, String[] columns) {
 		SQLiteDatabase db = this.dbHelper.getReadableDatabase();
-		
+
 		return db.query(UNFAVOURITES_PENDING_TABLE, columns, C_ACCOUNT + " IN (\"" + accountId + "\")", 
 				null, null, null, GET_ALL_ORDER_BY);
 	}
-	
+
 	public void removePendingUnfavourite(String account, String tweetid) {
 		SQLiteDatabase db = this.dbHelper.getWritableDatabase();
-		
+
 		if( db.delete(UNFAVOURITES_PENDING_TABLE, 
 				C_ACCOUNT + " IN (\"" + account + "\") AND " + 
 				C_ID + " IN (\"" + tweetid + "\")", null) <= 0 ) {
@@ -403,23 +409,23 @@ public class StatusData {
 
 	public Cursor getRetweetsBy(String accountId, String screenName, String[] columns) {   
 		SQLiteDatabase db = this.dbHelper.getReadableDatabase();
-		
+
 		if(screenName == null) {
-		return db.query(RT_BY_TABLE, columns, C_ACCOUNT + " IN (\"" + accountId + "\")", 
-				null, null, null, GET_ALL_ORDER_BY);
+			return db.query(RT_BY_TABLE, columns, C_ACCOUNT + " IN (\"" + accountId + "\")", 
+					null, null, null, GET_ALL_ORDER_BY);
 		} else {
 			return db.query(RT_BY_TABLE, columns, 
 					C_ACCOUNT + " IN (\"" + accountId + "\") AND " + C_USER + "=\"" + screenName + "\"", 
 					null, null, null, GET_ALL_ORDER_BY);
 		}
 	}
-	
+
 	public Cursor getTimeline(String accountId, String screenName, String[] columns) {   
 		SQLiteDatabase db = this.dbHelper.getReadableDatabase();
-		
+
 		if(screenName == null) {
-		return db.query(TIMELINE_TABLE, columns, C_ACCOUNT + " IN (\"" + accountId + "\")", 
-				null, null, null, GET_ALL_ORDER_BY);
+			return db.query(TIMELINE_TABLE, columns, C_ACCOUNT + " IN (\"" + accountId + "\")", 
+					null, null, null, GET_ALL_ORDER_BY);
 		} else {
 			return db.query(TIMELINE_TABLE, columns, 
 					C_ACCOUNT + " IN (\"" + accountId + "\") AND " + C_USER + "=\"" + screenName + "\"", 
@@ -427,25 +433,45 @@ public class StatusData {
 		}
 	}
 
-	public Cursor getFriends(String accountId, String whereClause, String[] columns) {   
+	public Cursor getFollowing(String accountId, String screenName, String whereClause, String[] columns) {   
 		SQLiteDatabase db = this.dbHelper.getReadableDatabase();
-		return db.query(FOLLOWING_TABLE, columns, 
-				C_ACCOUNT + " IN (\"" + accountId + "\") AND " + whereClause, 
-				null, null, null, GET_ALL_ORDER_BY_ALPHA);
-
+		
+		if(screenName == null) {
+			return db.query(FOLLOWING_TABLE, columns, 
+					C_ACCOUNT + " IN (\"" + accountId + "\") AND " + whereClause, 
+					null, null, null, GET_ALL_ORDER_BY_ALPHA);
+		} else {
+			return db.query(FOLLOWING_TABLE, columns, 
+					C_ACCOUNT + " IN (\"" + accountId + "\") AND " + 
+					C_USER + "=\"" + screenName + "\" "+ whereClause, 
+					null, null, null, GET_ALL_ORDER_BY_ALPHA);
+		}
 	}	
 
-	public Cursor getFriends(String accountId, String[] columns) {   
+	public Cursor getFollowing(String accountId, String screenName, String[] columns) {   
 		SQLiteDatabase db = this.dbHelper.getReadableDatabase();
-		return db.query(FOLLOWING_TABLE, columns, C_ACCOUNT + " IN (\"" + accountId + "\")", 
-				null, null, null, GET_ALL_ORDER_BY_ALPHA);
+		if(screenName == null) {
+			return db.query(FOLLOWING_TABLE, columns, C_ACCOUNT + " IN (\"" + accountId + "\")", 
+					null, null, null, GET_ALL_ORDER_BY_ALPHA);
+		} else {
+			return db.query(FOLLOWING_TABLE, columns, 
+					C_ACCOUNT + " IN (\"" + accountId + "\") AND " + C_USER + "=\"" + screenName + "\"", 
+					null, null, null, GET_ALL_ORDER_BY_ALPHA);
+		}
 
 	}
 
-	public Cursor getFollowers(String accountId, String[] columns) {   
+	public Cursor getFollowers(String accountId, String screenName, String[] columns) {   
 		SQLiteDatabase db = this.dbHelper.getReadableDatabase();
-		return db.query(FOLLOWERS_TABLE, columns, C_ACCOUNT + "=\"" + accountId + "\"", 
-				null, null, null, GET_ALL_ORDER_BY);
+
+		if(screenName == null) {
+			return db.query(FOLLOWERS_TABLE, columns, C_ACCOUNT + " IN (\"" + accountId + "\")", 
+					null, null, null, GET_ALL_ORDER_BY_ALPHA);
+		} else {
+			return db.query(FOLLOWERS_TABLE, columns, 
+					C_ACCOUNT + " IN (\"" + accountId + "\") AND " + C_USER + "=\"" + screenName + "\"", 
+					null, null, null, GET_ALL_ORDER_BY_ALPHA);
+		}
 	}
 
 	/**
@@ -483,7 +509,7 @@ public class StatusData {
 			db.close();
 		}
 	}
-	
+
 	public String getOldestTweetId(String table, String accountId) {  
 		SQLiteDatabase db = this.dbHelper.getReadableDatabase();
 		try {
@@ -499,7 +525,7 @@ public class StatusData {
 			db.close();
 		}
 	}
-	
+
 	public String getStatusTextById(String accountId, long id) {  // 
 		SQLiteDatabase db = this.dbHelper.getReadableDatabase();
 		try {

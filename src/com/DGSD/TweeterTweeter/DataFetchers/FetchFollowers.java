@@ -23,7 +23,7 @@ public class FetchFollowers extends DataFetcher {
 		//Get the ids of all followers..
 		IDs ids;
 		do{
-			ids =  mTwitter.getFollowersIDs(cursor);
+			ids =  mTwitter.getFollowersIDs(user, cursor);
 
 			long[] idArray = ids.getIDs();
 
@@ -39,9 +39,12 @@ public class FetchFollowers extends DataFetcher {
 
 		ContentValues values;
 		for (User u : users) {
-			values = StatusData.createUserContentValues(account, u);
+			values = StatusData.createUserContentValues(account, user, u);
 
-			mApplication.getStatusData().insertOrIgnore(StatusData.FOLLOWERS_TABLE, values);
+			if(mApplication.getStatusData()
+					.insert(StatusData.FOLLOWERS_TABLE, values)) {
+				count++;
+			}
 		}
 
 		return count;

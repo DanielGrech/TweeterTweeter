@@ -8,7 +8,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import com.DGSD.TweeterTweeter.Fragments.HomeTimelineFragment;
+import com.DGSD.TweeterTweeter.Fragments.FollowingFragment;
 import com.DGSD.TweeterTweeter.Fragments.LoginFragment;
 import com.DGSD.TweeterTweeter.Services.UpdaterService;
 import com.DGSD.TweeterTweeter.Utils.Log;
@@ -74,7 +74,7 @@ public class TTActivity extends FragmentActivity {
 		});
 		
 		getSupportFragmentManager().beginTransaction().replace(R.id.container, 
-				HomeTimelineFragment.newInstance("account2")).commit();
+				FollowingFragment.newInstance("account2", "DanielGrech")).commit();
 		((ViewGroup)findViewById(R.id.container)).addView(b);
 	}
 	

@@ -4,19 +4,13 @@ import twitter4j.TwitterException;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
-import android.widget.AbsListView;
-import android.widget.AbsListView.OnScrollListener;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 
 import com.DGSD.TweeterTweeter.R;
 import com.DGSD.TweeterTweeter.TTApplication;
-import com.DGSD.TweeterTweeter.Tasks.DataLoadingTask;
-import com.DGSD.TweeterTweeter.UI.EndlessListAdapter;
-import com.DGSD.TweeterTweeter.UI.PullToRefreshListView;
-import com.DGSD.TweeterTweeter.UI.PullToRefreshListView.OnRefreshListener;
 import com.DGSD.TweeterTweeter.Utils.Log;
 
 public abstract class BaseFragment extends DialogFragment{
@@ -35,9 +29,9 @@ public abstract class BaseFragment extends DialogFragment{
 	
 	protected TTApplication mApplication;
 
-	protected PullToRefreshListView mListView;
+	protected ListView mListView;
 	
-	protected EndlessListAdapter mAdapter;
+	protected ListAdapter mAdapter;
 	
 	protected Cursor mCursor;
 	
@@ -59,46 +53,8 @@ public abstract class BaseFragment extends DialogFragment{
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
-		View root = inflater.inflate(R.layout.list_fragment_layout, container, false);
-
-		mListView = (PullToRefreshListView) root.findViewById(R.id.list);
-
-		new DataLoadingTask(BaseFragment.this, DataLoadingTask.CURRENT).execute();
-
-		Log.i(TAG, "Returning root from onCreateView");
-
-		return root;
-	}
-
-	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-
-		mListView.setOnRefreshListener(new OnRefreshListener() {
-			@Override
-			public void onRefresh() {
-				Log.i(TAG, "STARTING REFRESH!");
-				new DataLoadingTask(BaseFragment.this, DataLoadingTask.NEWEST).execute();
-			}
-		});
-		
-		mListView.setOnScrollListener(new OnScrollListener(){
-
-			@Override
-			public void onScroll(AbsListView view, int firstVisibleItem,
-					int visibleItemCount, int totalItemCount) {
-				if(mAdapter != null) {
-					mAdapter.setKeepApending(true);
-				}
-				
-			}
-
-			@Override
-			public void onScrollStateChanged(AbsListView view, int scrollState) {
-
-			}
-		});
 	}
 
 	@Override
@@ -131,11 +87,11 @@ public abstract class BaseFragment extends DialogFragment{
         panel.setVisibility(View.GONE);
     }
 
-	public EndlessListAdapter getAdapter() {
+	public ListAdapter getAdapter() {
 		return mAdapter;
 	}
 	
-	public PullToRefreshListView getListView() {
+	public ListView getListView() {
 		return mListView;
 	}
 }
