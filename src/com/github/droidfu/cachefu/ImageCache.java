@@ -69,6 +69,7 @@ public class ImageCache extends AbstractCache<String, byte[]> {
         if (imageData == null) {
             return null;
         }
+        
         return BitmapFactory.decodeByteArray(imageData, 0, imageData.length);
     }
 

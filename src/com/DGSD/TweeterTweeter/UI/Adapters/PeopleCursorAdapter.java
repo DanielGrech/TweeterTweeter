@@ -64,7 +64,14 @@ public class PeopleCursorAdapter extends SimpleCursorAdapter{
 		wiv.setImageUrl(url);
 		
 		if(url != "") {
-			wiv.loadImage();
+			try{
+				if(!wiv.isLoaded()) {
+	        		wiv.loadImage();
+	        	}
+	        }catch(OutOfMemoryError e) {
+	        	// :(
+	        	wiv.reset();
+	        }
 		}
 		
 		view.setTag(new ViewHolder(screen_name, name, wiv));
@@ -93,7 +100,15 @@ public class PeopleCursorAdapter extends SimpleCursorAdapter{
         vh.name.setText(c.getString(nameCol));
         
         vh.img.setImageUrl(c.getString(imgCol));
-        vh.img.loadImage();
+        
+        try{
+        	if(!vh.img.isLoaded()) {
+        		vh.img.loadImage();
+        	}
+        }catch(OutOfMemoryError e) {
+        	// :(
+        	vh.img.reset();
+        }
         
     }
 	
