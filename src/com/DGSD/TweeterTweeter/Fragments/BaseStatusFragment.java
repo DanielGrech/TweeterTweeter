@@ -3,11 +3,7 @@ package com.DGSD.TweeterTweeter.Fragments;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.database.Cursor;
 import android.os.Bundle;
-import android.support.v4.widget.SimpleCursorAdapter;
-import android.support.v4.widget.SimpleCursorAdapter.ViewBinder;
-import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +11,6 @@ import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemLongClickListener;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.DGSD.TweeterTweeter.R;
@@ -24,12 +19,12 @@ import com.DGSD.TweeterTweeter.Receivers.PortableReceiver;
 import com.DGSD.TweeterTweeter.Receivers.PortableReceiver.Receiver;
 import com.DGSD.TweeterTweeter.Services.UpdaterService;
 import com.DGSD.TweeterTweeter.Tasks.DataLoadingTask;
-import com.DGSD.TweeterTweeter.UI.EndlessListAdapter;
 import com.DGSD.TweeterTweeter.UI.PullToRefreshListView;
 import com.DGSD.TweeterTweeter.UI.PullToRefreshListView.OnRefreshListener;
+import com.DGSD.TweeterTweeter.UI.Adapters.EndlessListAdapter;
+import com.DGSD.TweeterTweeter.UI.Adapters.TimelineCursorAdapter;
 import com.DGSD.TweeterTweeter.Utils.Log;
 import com.DGSD.TweeterTweeter.Utils.QuickActionUtils;
-import com.github.droidfu.widgets.WebImageView;
 
 public abstract class BaseStatusFragment extends BaseFragment {
 
@@ -51,42 +46,6 @@ public abstract class BaseStatusFragment extends BaseFragment {
 	protected IntentFilter mNoDataFilter;
 
 	protected IntentFilter mErrorFilter;
-
-	//Adjust data from database for display
-	protected static final ViewBinder mViewBinder = new ViewBinder() { 
-
-		@Override
-		public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-			switch(view.getId()){
-				case R.id.timeline_date:
-					try{
-						((TextView)view).setText( 
-								DateUtils.getRelativeTimeSpanString(view.getContext(), 
-										Long.valueOf( cursor.getString(columnIndex) )) );
-
-					} catch(NumberFormatException e){
-						Log.e(TAG, "Error converting time string", e);
-					} catch(ClassCastException e) {
-						Log.e(TAG, "Error casting to textview", e);
-					}
-
-					return true;
-
-				case R.id.timeline_profile_image:
-					String url = "";
-					url = cursor.getString(columnIndex);
-
-					((WebImageView) view).setImageUrl(url);
-					if(url != "") {
-						((WebImageView) view).loadImage();
-					}
-
-					return true;
-			}
-
-			return false;
-		}
-	};
 
 	@Override
 	public void onCreate(Bundle savedInstance){
@@ -249,12 +208,10 @@ public abstract class BaseStatusFragment extends BaseFragment {
 		}
 
 		if(mAdapter == null) {
-			SimpleCursorAdapter sca = new SimpleCursorAdapter(getActivity(), R.layout.timeline_list_item, 
-					mCursor, FROM, TO, 0);
+			TimelineCursorAdapter tca = new TimelineCursorAdapter(getActivity(), R.layout.timeline_list_item, 
+					mCursor, FROM, TO);
 			
-			sca.setViewBinder(mViewBinder);
-			
-			mAdapter = new EndlessListAdapter(BaseStatusFragment.this, sca);
+			mAdapter = new EndlessListAdapter(BaseStatusFragment.this, tca);
 		}
 		
 		if(mListView.getAdapter() == null) {
@@ -262,8 +219,8 @@ public abstract class BaseStatusFragment extends BaseFragment {
 			mListView.setAdapter(mAdapter);
 		} else {
 			Log.i(TAG, "REFRESHING CURSOR");
-			((SimpleCursorAdapter)((EndlessListAdapter)mAdapter).getAdapter()).changeCursor(mCursor);
-			((SimpleCursorAdapter)((EndlessListAdapter)mAdapter).getAdapter()).notifyDataSetChanged();
+			((TimelineCursorAdapter)((EndlessListAdapter)mAdapter).getAdapter()).changeCursor(mCursor);
+			((TimelineCursorAdapter)((EndlessListAdapter)mAdapter).getAdapter()).notifyDataSetChanged();
 		}
 		
 		if(((PullToRefreshListView)mListView).isRefreshing()) {

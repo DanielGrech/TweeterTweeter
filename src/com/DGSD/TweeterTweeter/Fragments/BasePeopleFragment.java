@@ -3,17 +3,13 @@ package com.DGSD.TweeterTweeter.Fragments;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.database.Cursor;
 import android.os.Bundle;
-import android.support.v4.widget.SimpleCursorAdapter;
-import android.support.v4.widget.SimpleCursorAdapter.ViewBinder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.DGSD.TweeterTweeter.R;
@@ -22,8 +18,8 @@ import com.DGSD.TweeterTweeter.Receivers.PortableReceiver;
 import com.DGSD.TweeterTweeter.Receivers.PortableReceiver.Receiver;
 import com.DGSD.TweeterTweeter.Services.UpdaterService;
 import com.DGSD.TweeterTweeter.Tasks.DataLoadingTask;
+import com.DGSD.TweeterTweeter.UI.Adapters.PeopleCursorAdapter;
 import com.DGSD.TweeterTweeter.Utils.Log;
-import com.github.droidfu.widgets.WebImageView;
 
 
 
@@ -45,35 +41,6 @@ public abstract class BasePeopleFragment extends BaseFragment {
 	protected IntentFilter mNoDataFilter;
 
 	protected IntentFilter mErrorFilter;
-
-	//Adjust data from database for display
-	protected static final ViewBinder mViewBinder = new ViewBinder() { 
-		@Override
-		public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-			switch(view.getId()){
-				case R.id.profile_image:
-					String url = "";
-					url = cursor.getString(columnIndex);
-
-					((WebImageView) view).setImageUrl(url);
-					if(url != "") {
-						((WebImageView) view).loadImage();
-					}
-
-					return true;
-
-				case R.id.screen_name:
-					((TextView)view).setText(cursor.getString(columnIndex));
-					return true;
-
-				case R.id.name:
-					((TextView)view).setText(cursor.getString(columnIndex));
-					return true;
-			}
-
-			return false;
-		}
-	};
 
 	@Override
 	public void onCreate(Bundle savedInstance){
@@ -194,10 +161,8 @@ public abstract class BasePeopleFragment extends BaseFragment {
 		}
 
 		if(mAdapter == null) {
-			mAdapter = new SimpleCursorAdapter(getActivity(), R.layout.people_list_item, 
-					mCursor, FROM, TO, 0);
-
-			((SimpleCursorAdapter)mAdapter).setViewBinder(mViewBinder);
+			mAdapter = new PeopleCursorAdapter(getActivity(), R.layout.people_list_item, 
+					mCursor, FROM, TO);
 		}
 
 		if(mListView.getAdapter() == null) {
@@ -205,8 +170,8 @@ public abstract class BasePeopleFragment extends BaseFragment {
 			mListView.setAdapter(mAdapter);
 		} else {
 			Log.i(TAG, "REFRESHING CURSOR");
-			((SimpleCursorAdapter)mAdapter).changeCursor(mCursor);
-			((SimpleCursorAdapter)mAdapter).notifyDataSetChanged();
+			((PeopleCursorAdapter)mAdapter).changeCursor(mCursor);
+			((PeopleCursorAdapter)mAdapter).notifyDataSetChanged();
 		}
 	}
 }

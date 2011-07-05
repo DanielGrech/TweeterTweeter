@@ -1,4 +1,4 @@
-package com.DGSD.TweeterTweeter.UI;
+package com.DGSD.TweeterTweeter.UI.Adapters;
 
 import twitter4j.TwitterException;
 import android.support.v4.widget.SimpleCursorAdapter;
