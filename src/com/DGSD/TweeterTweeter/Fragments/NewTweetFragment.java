@@ -18,9 +18,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Images.Media;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v4.widget.SimpleCursorAdapter.CursorToStringConverter;
-import android.support.v4.widget.SimpleCursorAdapter.ViewBinder;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
@@ -40,9 +38,9 @@ import com.DGSD.TweeterTweeter.TTApplication;
 import com.DGSD.TweeterTweeter.Services.NewStatusService;
 import com.DGSD.TweeterTweeter.Tasks.MediaUploadTask;
 import com.DGSD.TweeterTweeter.Tasks.UrlShortenTask;
+import com.DGSD.TweeterTweeter.UI.Adapters.PeopleCursorAdapter;
 import com.DGSD.TweeterTweeter.Utils.Log;
 import com.DGSD.TweeterTweeter.Utils.Tokenizer;
-import com.github.droidfu.widgets.WebImageView;
 
 /*
  * TODO: 
@@ -87,38 +85,6 @@ implements OnClickListener {
 	{ StatusData.C_SCREEN_NAME, StatusData.C_IMG, StatusData.C_ID };
 
 	protected static final int[] TO = {R.id.screen_name, R.id.profile_image};
-
-	protected static final ViewBinder mViewBinder = new ViewBinder() { 
-		@Override
-		public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-			switch( view.getId() ) {
-				case R.id.profile_image:
-					String url = "";
-					url = cursor.getString(columnIndex);
-
-					WebImageView wiv = (WebImageView) view;
-
-					wiv.setImageUrl(url);
-					if(url != "") {
-						wiv.loadImage();
-					}
-
-					return true;
-
-				case R.id.screen_name:
-					String name = "";
-					name = cursor.getString(columnIndex);
-
-					TextView tv = (TextView) view;
-					tv.setText(name);
-
-					return true;
-			}
-
-
-			return false;
-		}
-	};
 
 	public static NewTweetFragment newInstance(String tweetText){
 		NewTweetFragment f = new NewTweetFragment();
@@ -325,8 +291,8 @@ implements OnClickListener {
 	private void setupMentionCompletion() {
 		//Setup the completion for '@'
 		Cursor cursor = mApplication.getStatusData().getFollowing(mAccountId, null, FROM);
-		SimpleCursorAdapter adapter = new SimpleCursorAdapter(getActivity(), 
-				R.layout.people_list_item,cursor, FROM, TO, 0);
+		PeopleCursorAdapter adapter = new PeopleCursorAdapter(getActivity(), 
+				R.layout.people_list_item,cursor, FROM, TO);
 
 
 		adapter.setCursorToStringConverter(new CursorToStringConverter() {
@@ -347,8 +313,6 @@ implements OnClickListener {
 			}
 		});
 
-
-		adapter.setViewBinder(mViewBinder);
 
 		mTweetEditText.setAdapter(adapter);
 

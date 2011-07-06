@@ -10,13 +10,9 @@ import android.widget.TextView;
 
 import com.DGSD.TweeterTweeter.R;
 import com.DGSD.TweeterTweeter.StatusData;
-import com.DGSD.TweeterTweeter.Utils.Log;
 import com.github.droidfu.widgets.WebImageView;
 
 public class PeopleCursorAdapter extends SimpleCursorAdapter{
-	private static final String TAG = PeopleCursorAdapter.class.getSimpleName();
-	
-
 	private int mLayoutRes;
 	
 	int screenCol = -1;
@@ -74,54 +70,30 @@ public class PeopleCursorAdapter extends SimpleCursorAdapter{
 	        }
 		}
 		
-		view.setTag(new ViewHolder(screen_name, name, wiv));
 		
 		return view;
 	}
 
 	@Override
     public void bindView(View view, Context context, Cursor c) {
-
-        ViewHolder vh = (ViewHolder) view.getTag();
+		TextView screenName = (TextView) view.findViewById(R.id.screen_name);
+		TextView name = (TextView) view.findViewById(R.id.name);
+		WebImageView img = (WebImageView) view.findViewById(R.id.profile_image);
         
-        if(vh == null) {
-        	Log.i(TAG, "VH IS NULL. MUST DEFINE");
-        	vh = new ViewHolder(
-        			(TextView) view.findViewById(R.id.screen_name),
-        			(TextView) view.findViewById(R.id.name),
-        			(WebImageView) view.findViewById(R.id.profile_image)
-        	);
-        	
-        	view.setTag(vh);
-        } 
+        screenName.setText(c.getString(screenCol));
         
-        vh.screenName.setText(c.getString(screenCol));
+        name.setText(c.getString(nameCol));
         
-        vh.name.setText(c.getString(nameCol));
-        
-        vh.img.setImageUrl(c.getString(imgCol));
+        img.setImageUrl(c.getString(imgCol));
         
         try{
-        	if(!vh.img.isLoaded()) {
-        		vh.img.loadImage();
+        	if(img.isLoaded()) {
+        		img.loadImage();
         	}
         }catch(OutOfMemoryError e) {
         	// :(
-        	vh.img.reset();
+        	img.reset();
         }
         
     }
-	
-	private class ViewHolder {
-		public TextView screenName;
-		public TextView name;
-		public WebImageView img;
-		
-		public ViewHolder(TextView sn, TextView n, WebImageView i) {
-			screenName = sn;
-			name = n;
-			img = i;
-		}
-		
-	}
 }
