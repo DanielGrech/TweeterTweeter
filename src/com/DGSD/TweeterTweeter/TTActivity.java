@@ -3,8 +3,13 @@ package com.DGSD.TweeterTweeter;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 
+import com.DGSD.TweeterTweeter.Fragments.FollowersFragment;
+import com.DGSD.TweeterTweeter.Fragments.FollowingFragment;
 import com.DGSD.TweeterTweeter.Fragments.HomeTimelineFragment;
 import com.DGSD.TweeterTweeter.Fragments.LoginFragment;
+import com.DGSD.TweeterTweeter.Fragments.MentionsListFragment;
+import com.DGSD.TweeterTweeter.Fragments.RetweetsOfFragment;
+import com.DGSD.TweeterTweeter.Fragments.TimelineFragment;
 import com.DGSD.TweeterTweeter.Utils.Log;
 
 public class TTActivity extends FragmentActivity {
@@ -46,8 +51,14 @@ public class TTActivity extends FragmentActivity {
 	}
 	
 	public void setupPhone() {
-		getSupportFragmentManager().beginTransaction().replace(R.id.container, 
+		getSupportFragmentManager().beginTransaction().add(R.id.container, 
 				HomeTimelineFragment.newInstance("account2")).commit();
+		
+		getSupportFragmentManager().beginTransaction().add(R.id.container, 
+				FollowingFragment.newInstance("account2", "DanielGrech")).commit();
+		
+		getSupportFragmentManager().beginTransaction().add(R.id.container, 
+				FollowersFragment.newInstance("account2", "DanielGrech")).commit();
 	}
 	
 }
