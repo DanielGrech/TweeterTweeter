@@ -33,61 +33,26 @@ public class TimelineCursorAdapter extends SimpleCursorAdapter{
 		super(context, layout, cursor, from, to, 0);
 
 		mLayoutRes = layout;
+
+		screenCol = cursor.getColumnIndex(StatusData.C_SCREEN_NAME);
+
+		textCol = cursor.getColumnIndex(StatusData.C_TEXT);
+
+		createdCol = cursor.getColumnIndex(StatusData.C_CREATED_AT);
+
+		imgCol = cursor.getColumnIndex(StatusData.C_IMG);
 	}
 
 	@Override
 	public View newView(Context context, Cursor cursor, ViewGroup parent) {
-		Cursor c = getCursor();
-
 		final LayoutInflater inflater = LayoutInflater.from(context);
 		View view = inflater.inflate(mLayoutRes, parent, false);
 
-		if(screenCol == -1) {
-			screenCol = c.getColumnIndex(StatusData.C_SCREEN_NAME);
-		}
-
-		if(textCol == -1) {
-			textCol = c.getColumnIndex(StatusData.C_TEXT);
-		}
-
-		if(createdCol == -1) {
-			createdCol = c.getColumnIndex(StatusData.C_CREATED_AT);
-		}
-
-		if(imgCol == -1) {
-			imgCol = c.getColumnIndex(StatusData.C_IMG);
-		}
-
-		TextView screen_name = (TextView) view.findViewById(R.id.timeline_source);
-		screen_name.setText(c.getString(screenCol));
-
-		TextView text = (TextView) view.findViewById(R.id.timeline_tweet);
-		text.setText(c.getString(textCol));
-
-		TextView createdAt = (TextView) view.findViewById(R.id.timeline_date);
-
-		try{
-			createdAt.setText( 
-					DateUtils.getRelativeTimeSpanString(view.getContext(), 
-							Long.valueOf( cursor.getString(createdCol) )) );
-
-		} catch(NumberFormatException e){
-			Log.e(TAG, "Error converting time string", e);
-		} catch(ClassCastException e) {
-			Log.e(TAG, "Error casting to textview", e);
-		}
-
-		WebImageView wiv = (WebImageView) view.findViewById(R.id.timeline_profile_image);
-
-		String url = "";
-		url = cursor.getString(imgCol);
-
-		if(url != "") {
-			wiv.setImageUrl(url);
-			wiv.loadImage();
-		}
-
-		view.setTag(new ViewHolder(screen_name, text, createdAt, wiv));
+		view.setTag(new ViewHolder((TextView) view.findViewById(R.id.timeline_source), 
+				(TextView) view.findViewById(R.id.timeline_tweet), 
+				(TextView) view.findViewById(R.id.timeline_date), 
+				(WebImageView) view.findViewById(R.id.timeline_profile_image)
+		));
 
 		return view;
 	}
@@ -98,7 +63,6 @@ public class TimelineCursorAdapter extends SimpleCursorAdapter{
 		ViewHolder vh = (ViewHolder) view.getTag();
 
 		if(vh == null) {
-			Log.i(TAG, "VH IS NULL. MUST DEFINE");
 			vh = new ViewHolder(
 					(TextView) view.findViewById(R.id.timeline_source),
 					(TextView) view.findViewById(R.id.timeline_date),
@@ -112,7 +76,7 @@ public class TimelineCursorAdapter extends SimpleCursorAdapter{
 		vh.screenName.setText(c.getString(screenCol));
 
 		vh.tweet.setText(c.getString(textCol));
-		
+
 		try{
 			vh.createdAt.setText( 
 					DateUtils.getRelativeTimeSpanString(view.getContext(), 
@@ -123,9 +87,16 @@ public class TimelineCursorAdapter extends SimpleCursorAdapter{
 		} catch(ClassCastException e) {
 			Log.e(TAG, "Error casting to textview", e);
 		}
-		
+
 		vh.img.setImageUrl(c.getString(imgCol));
-		vh.img.loadImage();
+		
+		try{
+			vh.img.loadImage();
+		}catch(OutOfMemoryError e) {
+			// :(
+			Log.e(TAG, "OUT OF MEMORY!");
+			vh.img.reset();
+		}
 
 	}
 

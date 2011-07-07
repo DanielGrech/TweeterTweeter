@@ -64,18 +64,17 @@ public final class R {
         public static final int word_icon=0x7f020013;
     }
     public static final class id {
-        public static final int arrow_down=0x7f090017;
-        public static final int arrow_up=0x7f090016;
+        public static final int arrow_down=0x7f090016;
+        public static final int arrow_up=0x7f090015;
         public static final int bottomPopup=0x7f090002;
         public static final int container=0x7f090007;
         public static final int icon=0x7f090000;
-        public static final int image=0x7f09001c;
+        public static final int image=0x7f09001b;
         public static final int list=0x7f090003;
         public static final int listItem=0x7f090010;
         public static final int loginButton=0x7f090006;
         public static final int loginLogo=0x7f090005;
         public static final int loginfragmentContainer=0x7f090004;
-        public static final int name=0x7f090013;
         public static final int new_tweet_accounts_container=0x7f090009;
         public static final int new_tweet_character_count=0x7f09000b;
         public static final int new_tweet_container=0x7f090008;
@@ -85,19 +84,19 @@ public final class R {
         public static final int new_tweet_text=0x7f09000a;
         public static final int new_tweet_url_shorten=0x7f09000c;
         public static final int profile_image=0x7f090011;
-        public static final int pull_to_refresh_image=0x7f090019;
-        public static final int pull_to_refresh_progress=0x7f090018;
-        public static final int pull_to_refresh_text=0x7f09001a;
-        public static final int pull_to_refresh_updated_at=0x7f09001b;
+        public static final int pull_to_refresh_image=0x7f090018;
+        public static final int pull_to_refresh_progress=0x7f090017;
+        public static final int pull_to_refresh_text=0x7f090019;
+        public static final int pull_to_refresh_updated_at=0x7f09001a;
         public static final int screen_name=0x7f090012;
-        public static final int scroller=0x7f090014;
-        public static final int text=0x7f09001d;
-        public static final int timeline_date=0x7f090020;
-        public static final int timeline_profile_image=0x7f09001e;
-        public static final int timeline_source=0x7f09001f;
-        public static final int timeline_tweet=0x7f090021;
+        public static final int scroller=0x7f090013;
+        public static final int text=0x7f09001c;
+        public static final int timeline_date=0x7f09001f;
+        public static final int timeline_profile_image=0x7f09001d;
+        public static final int timeline_source=0x7f09001e;
+        public static final int timeline_tweet=0x7f090020;
         public static final int title=0x7f090001;
-        public static final int tracks=0x7f090015;
+        public static final int tracks=0x7f090014;
     }
     public static final class layout {
         public static final int action_item=0x7f030000;
@@ -148,6 +147,5 @@ public final class R {
         public static final int Animations_PopUpMenu_Left=0x7f08000a;
         public static final int Animations_PopUpMenu_Reflect=0x7f08000c;
         public static final int Animations_PopUpMenu_Right=0x7f08000b;
-        public static final int Theme_NoBackground=0x7f08000d;
     }
 }

@@ -10,15 +10,16 @@ import android.widget.TextView;
 
 import com.DGSD.TweeterTweeter.R;
 import com.DGSD.TweeterTweeter.StatusData;
+import com.DGSD.TweeterTweeter.Utils.Log;
 import com.github.droidfu.widgets.WebImageView;
 
 public class PeopleCursorAdapter extends SimpleCursorAdapter{
+	private static final String TAG = PeopleCursorAdapter.class.getSimpleName();
+
 	private int mLayoutRes;
-	
+
 	int screenCol = -1;
-	
-	int nameCol = -1;
-	
+
 	int imgCol = -1;
 
 	public PeopleCursorAdapter(Context context, int layout, Cursor cursor,
@@ -26,74 +27,58 @@ public class PeopleCursorAdapter extends SimpleCursorAdapter{
 		super(context, layout, cursor, from, to, 0);
 
 		mLayoutRes = layout;
+
+		screenCol = cursor.getColumnIndex(StatusData.C_SCREEN_NAME);
+
+		imgCol = cursor.getColumnIndex(StatusData.C_IMG);
 	}
 
 	@Override
 	public View newView(Context context, Cursor cursor, ViewGroup parent) {
-		Cursor c = getCursor();
+		View view = LayoutInflater.from(context).inflate(mLayoutRes, parent, false);
 
-		final LayoutInflater inflater = LayoutInflater.from(context);
-		View view = inflater.inflate(mLayoutRes, parent, false);
+		view.setTag(new ViewHolder((TextView) view.findViewById(R.id.screen_name),
+				(WebImageView) view.findViewById(R.id.profile_image)
+		));
 
-		if(screenCol == -1) {
-			screenCol = c.getColumnIndex(StatusData.C_SCREEN_NAME);
-		}
-		
-		if(nameCol == -1) {
-			nameCol = c.getColumnIndex(StatusData.C_NAME);
-		}
-		
-		if(imgCol == -1) {
-			imgCol = c.getColumnIndex(StatusData.C_IMG);
-		}
-		
-		TextView screen_name = (TextView) view.findViewById(R.id.screen_name);
-		screen_name.setText(c.getString(screenCol));
-		
-		TextView name = (TextView) view.findViewById(R.id.name);
-		name.setText(c.getString(nameCol));
-		
-		String url = "";
-		url = cursor.getString(imgCol);
-		
-		WebImageView wiv = (WebImageView) view.findViewById(R.id.profile_image);
-		wiv.setImageUrl(url);
-		
-		if(url != "") {
-			try{
-				if(!wiv.isLoaded()) {
-	        		wiv.loadImage();
-	        	}
-	        }catch(OutOfMemoryError e) {
-	        	// :(
-	        	wiv.reset();
-	        }
-		}
-		
-		
 		return view;
 	}
 
 	@Override
-    public void bindView(View view, Context context, Cursor c) {
-		TextView screenName = (TextView) view.findViewById(R.id.screen_name);
-		TextView name = (TextView) view.findViewById(R.id.name);
-		WebImageView img = (WebImageView) view.findViewById(R.id.profile_image);
-        
-        screenName.setText(c.getString(screenCol));
-        
-        name.setText(c.getString(nameCol));
-        
-        img.setImageUrl(c.getString(imgCol));
-        
-        try{
-        	if(img.isLoaded()) {
-        		img.loadImage();
-        	}
-        }catch(OutOfMemoryError e) {
-        	// :(
-        	img.reset();
-        }
-        
-    }
+	public void bindView(View view, Context context, Cursor c) {
+
+		ViewHolder vh = (ViewHolder) view.getTag();
+
+		if(vh == null) {
+			vh = new ViewHolder((TextView) view.findViewById(R.id.screen_name),
+					(WebImageView) view.findViewById(R.id.profile_image));
+			view.setTag(vh);
+		}
+
+		vh.img.reset();
+
+		vh.screenName.setText(c.getString(screenCol));
+
+
+		vh.img.setImageUrl(c.getString(imgCol));
+
+		try{
+			vh.img.loadImage();
+		}catch(OutOfMemoryError e) {
+			// :(
+			Log.e(TAG, "OUT OF MEMORY!");
+			vh.img.reset();
+		}
+	}
+
+	private class ViewHolder {
+		public TextView screenName;
+		public WebImageView img;
+
+
+		public ViewHolder(TextView s, WebImageView i) {
+			screenName = s;
+			img = i;
+		}
+	}
 }

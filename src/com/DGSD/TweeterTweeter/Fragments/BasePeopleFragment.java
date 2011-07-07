@@ -29,10 +29,9 @@ public abstract class BasePeopleFragment extends BaseFragment {
 	private static final String RECEIVE_DATA = 
 		"com.DGSD.TweeterTweeter.RECEIVE_DATA";
 
-	protected static final String[] FROM = { StatusData.C_SCREEN_NAME, StatusData.C_NAME, 
-		StatusData.C_IMG, StatusData.C_ID};
+	protected static final String[] FROM = { StatusData.C_SCREEN_NAME, StatusData.C_IMG, StatusData.C_ID};
 
-	protected static final int[] TO = {R.id.screen_name, R.id.name, R.id.profile_image}; 
+	protected static final int[] TO = {R.id.screen_name, R.id.profile_image}; 
 
 	protected PortableReceiver mReceiver;
 

@@ -1,16 +1,10 @@
 package com.DGSD.TweeterTweeter;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.ViewGroup;
-import android.widget.Button;
 
-import com.DGSD.TweeterTweeter.Fragments.FollowingFragment;
+import com.DGSD.TweeterTweeter.Fragments.HomeTimelineFragment;
 import com.DGSD.TweeterTweeter.Fragments.LoginFragment;
-import com.DGSD.TweeterTweeter.Services.UpdaterService;
 import com.DGSD.TweeterTweeter.Utils.Log;
 
 public class TTActivity extends FragmentActivity {
@@ -52,30 +46,8 @@ public class TTActivity extends FragmentActivity {
 	}
 	
 	public void setupPhone() {
-		final Button b = new Button(this);
-		if(mApplication.isServiceRunning())
-			b.setText("Stop");
-		else
-			b.setText("Start");
-		
-		b.setOnClickListener(new OnClickListener(){
-			@Override
-			public void onClick(View v) {
-				if(mApplication.isServiceRunning()) {
-					stopService(new Intent(TTActivity.this, UpdaterService.class));
-					b.setText("Start");
-				}else {
-					startService(new Intent(TTActivity.this, UpdaterService.class));
-					b.setText("Stop");
-				}
-				
-				
-			}
-		});
-		
 		getSupportFragmentManager().beginTransaction().replace(R.id.container, 
-				FollowingFragment.newInstance("account2", "DanielGrech")).commit();
-		((ViewGroup)findViewById(R.id.container)).addView(b);
+				HomeTimelineFragment.newInstance("account2")).commit();
 	}
 	
 }
