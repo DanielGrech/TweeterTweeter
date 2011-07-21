@@ -475,13 +475,28 @@ public class StatusData {
 					null, null, null, GET_ALL_ORDER_BY_ALPHA);
 		}
 	}
+	
+	public Cursor getFollowers(String accountId, String screenName, String whereClause, String[] columns) {   
+		SQLiteDatabase db = this.dbHelper.getReadableDatabase();
+
+		if(screenName == null) {
+			return db.query(FOLLOWERS_TABLE, columns, 
+					C_ACCOUNT + " IN (\"" + accountId + "\") AND " + whereClause,
+					null, null, null, GET_ALL_ORDER_BY_ALPHA);
+		} else {
+			return db.query(FOLLOWERS_TABLE, columns, 
+					C_ACCOUNT + " IN (\"" + accountId + "\")  AND " + 
+					C_USER + "=\"" + screenName + "\" "+ whereClause, 
+					null, null, null, GET_ALL_ORDER_BY_ALPHA);
+		}
+	}
 
 	/**
 	 * @return The screenname and image url of any person we have cached
 	 */
 	public Cursor getPeople(String accountId, String screenName, String whereClause, String[] columns) {   
 		Cursor following = getFollowing(accountId, null, whereClause, columns);
-		Cursor followers = getFollowers(accountId, null, columns);
+		Cursor followers = getFollowers(accountId, null, whereClause, columns);
 		
 		CursorJoiner joiner = new CursorJoiner(following, new String[]{C_ID} , followers, new String[]{C_ID});
 		

@@ -153,13 +153,8 @@ public class QuickActionUtils {
 					builder.create().show();
 				} else {
 					//There are no other mentioned users, lets just reply
-					activity.getFragmentManager()
-							.beginTransaction()
-							.replace(R.id.container, 
-									NewTweetFragment.newInstance(app.getSelectedAccount(), 
-											"@" + screenName + " "))
-							.addToBackStack(null)
-							.commit();
+					NewTweetFragment.newInstance(app.getSelectedAccount(), 
+							"@" + screenName + " ").show(activity.getFragmentManager(), null);
 				}
 
 				if(mQuickAction != null) {
@@ -186,13 +181,8 @@ public class QuickActionUtils {
 								break;
 							case 1:
 								//Retweet & edit
-								activity.getFragmentManager()
-										.beginTransaction()
-										.replace(R.id.container, 
-												NewTweetFragment.newInstance(app.getSelectedAccount(),
-														"RT " + tweetText))
-										.addToBackStack(null)
-										.commit();
+								NewTweetFragment.newInstance(app.getSelectedAccount(),
+										"RT " + tweetText).show(activity.getFragmentManager(), null);
 								break;
 						}
 					}

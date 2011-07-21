@@ -113,7 +113,9 @@ implements OnClickListener {
 			Bundle savedInstanceState) {
 		View root = inflater.inflate(R.layout.new_tweet_layout, container, false);
 
-		getDialog().setTitle("New Tweet");
+		if(getDialog() != null) {
+			getDialog().setTitle("New Tweet");
+		}
 		
 		mTweetEditText = 
 			(MultiAutoCompleteTextView) root.findViewById(R.id.new_tweet_text);

@@ -2,4 +2,6 @@
 
 <resources>
 	<dimen name="side_menu_width">300dip</dimen>
+	
+	<dimen name="text_size_large">18sp</dimen>
 </resources>

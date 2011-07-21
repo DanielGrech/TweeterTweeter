@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+ xmlns:android="http://schemas.android.com/apk/res/android"    android:id="@+id/contentOutline" 
+    android:orientation="vertical"
+    android:layout_width="0dp"
+    android:layout_height="fill_parent"
+    >
+
+    <LinearLayout 
+        android:id="@+id/contentBox"
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@drawable/floating_content_box">
+
+        <RelativeLayout
+            android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:layout_marginBottom="20dip"
+            android:id="@+id/content_top_row">
+	            <TextView 
+	                style="@style/TitleText"
+	                android:id="@+id/contentTitle"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:layout_marginBottom="6dip"
+	                android:layout_marginLeft="20dp"
+	                android:layout_alignParentLeft="true"/>
+	                
+	            <ProgressBar
+	                android:id="@+id/progressBar"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:layout_alignParentRight="true"
+	                android:paddingRight="7dip"
+	                android:indeterminateOnly="true"
+	                android:visibility="gone"
+	                style="@android:style/Widget.ProgressBar.Small.Inverse"
+	                />
+        </RelativeLayout>
+        
+        <LinearLayout
+            android:id="@+id/container"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_width="fill_parent"
+            android:layout_height="0dip"
+            android:layout_weight="1" />
+    </LinearLayout>
+</LinearLayout>
+

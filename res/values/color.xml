@@ -3,4 +3,6 @@
 	<color name="list_item_start_color">#D9D9D9</color>
 	<color name="list_item_center_color">#E6E6E6</color>
 	<color name="list_item_end_color">#D9D9D9</color>
+	
+	<color name="accent_1">#ff29549f</color>
 </resources>

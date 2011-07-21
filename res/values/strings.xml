@@ -30,6 +30,7 @@
         <item>Retweeted By</item>
         <item>Retweets of Me</item>
         <item>Saved Search</item>
+        <item>Lists</item>
     </string-array>
         <string name="tt_activity">TTActivity</string>
         <string name="login_activity">LoginActivity</string>

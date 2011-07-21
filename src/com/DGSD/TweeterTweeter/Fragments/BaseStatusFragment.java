@@ -203,6 +203,11 @@ public abstract class BaseStatusFragment extends BaseFragment {
 
 	@Override
 	public void appendData() {
+		if(mListView == null) {
+			Log.i(TAG, "Listview was null!");
+			return;
+		}
+		
 		if(mCursor.getCount() == 0) {
 			((PullToRefreshListView)mListView).refresh();
 		}

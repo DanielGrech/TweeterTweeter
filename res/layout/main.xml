@@ -10,10 +10,14 @@
     	android:layout_height="match_parent"
     	android:background="#000"/>
     	
-    <LinearLayout
-	    android:orientation="vertical"
-	    android:layout_width="fill_parent"
-	    android:layout_height="fill_parent"
-	    android:id="@+id/container"/>
+    <include 
+	    layout="@layout/floating_layout" 
+	    android:id="@+id/contentOutline_ref"  
+	    android:layout_width="0dp" 
+	    android:layout_height="fill_parent" 
+	    android:layout_weight="1" 
+	    android:layout_marginLeft="10dp" 
+	    android:layout_marginRight="10dp" 
+	    android:layout_marginBottom="10dp"/>
 
 </LinearLayout>
