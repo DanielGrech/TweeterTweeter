@@ -49,6 +49,8 @@ public class LoginActivity extends Activity{
 
 			Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_LONG).show();
 
+			((TTApplication)getApplication()).setupAccountList();
+			
 			startActivity(new Intent(LoginActivity.this, TTActivity.class));
 			finish();
 		}

@@ -61,7 +61,7 @@ OnSharedPreferenceChangeListener {
 
 	/* Interface to updaters which fetch data from network */
 	private FetchStatusUpdates mFetchStatusUpdates;
-	
+
 	private FetchTimeline mFetchTimeline;
 
 	private FetchFavourites    mFetchFavourites;
@@ -77,6 +77,8 @@ OnSharedPreferenceChangeListener {
 	private FetchFollowing     mFetchFollowing;
 
 	private FetchProfileInfo   mFetchProfileInfo;
+
+	private String mSelectedAccount;
 
 	@Override
 	public void onCreate() {  
@@ -100,7 +102,7 @@ OnSharedPreferenceChangeListener {
 			.build());
 		}*/
 
-
+		mSelectedAccount = "account1";
 
 		CONSUMER_KEY = getResources().getString(R.string.consumer_key);
 		CONSUMER_SECRET = getResources().getString(R.string.consumer_secret);
@@ -121,27 +123,12 @@ OnSharedPreferenceChangeListener {
 
 		if(mSession == null) {
 			mSession = new TwitterSession(this);
-
-			mAccountList = mSession.getAccountList();
-
-			if(mAccountList != null) {
-				for(String account : mAccountList) {
-					AccessToken at = mSession.getAccessToken(account);
-					
-					Twitter t = 
-						new TwitterFactory(new ConfigurationBuilder().setIncludeEntitiesEnabled(true)
-                    						.build() ).getInstance();
-
-					mAccessTokenList.put(account,at);
-					mTwitterList.put(account,t);
-
-					configureToken(at, t);
-				}
-			}
 		}
-
-		mFetchStatusUpdates = new FetchStatusUpdates(this);
 		
+		setupAccountList();
+		
+		mFetchStatusUpdates = new FetchStatusUpdates(this);
+
 		mFetchTimeline = new FetchTimeline(this);
 
 		mFetchFavourites = new FetchFavourites(this);
@@ -161,6 +148,25 @@ OnSharedPreferenceChangeListener {
 		Log.i(TAG, "onCreated");
 	}
 
+	public void setupAccountList() {
+		mAccountList = mSession.getAccountList();
+
+		if(mAccountList != null) {
+			for(String account : mAccountList) {
+				AccessToken at = mSession.getAccessToken(account);
+
+				Twitter t = 
+						new TwitterFactory(new ConfigurationBuilder().setIncludeEntitiesEnabled(true)
+								.build() ).getInstance();
+
+				mAccessTokenList.put(account,at);
+				mTwitterList.put(account,t);
+
+				configureToken(at, t);
+			}
+		}
+	}
+	
 	@Override
 	public void onTerminate() {  
 		super.onTerminate();
@@ -178,9 +184,9 @@ OnSharedPreferenceChangeListener {
 		// Can use static final constants like HONEYCOMB, declared in later versions
 		// of the OS since they are inlined at compile time. This is guaranteed behavior.
 		return (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) 
-		&& (this.getResources().getConfiguration().screenLayout
-				& Configuration.SCREENLAYOUT_SIZE_MASK)
-				== Configuration.SCREENLAYOUT_SIZE_XLARGE;
+				&& (this.getResources().getConfiguration().screenLayout
+						& Configuration.SCREENLAYOUT_SIZE_MASK)
+						== Configuration.SCREENLAYOUT_SIZE_XLARGE;
 	}
 
 	private void configureToken(AccessToken at, Twitter t) {
@@ -194,8 +200,30 @@ OnSharedPreferenceChangeListener {
 		}
 	}
 
+	public synchronized void setSelectedAccount(String account) {
+		mSelectedAccount = account;
+	}
+
+	public String getSelectedAccount(){
+		return mSelectedAccount;
+	}
+
 	public synchronized Twitter getTwitter(String accountId) {
 		return mTwitterList.get(accountId);
+	}
+
+	public synchronized HashSet<String> getAccountList() {
+		HashSet<String> retval = new HashSet<String>();
+
+		for(String a: mAccountList) {
+			try {
+				retval.add(mSession.getUsername(a));
+			} catch(NullPointerException e) {
+				Log.e(TAG, "Null pointer getting screen name");
+			}
+		}
+
+		return retval;
 	}
 
 	public TwitterSession getTwitterSession() {
@@ -245,7 +273,7 @@ OnSharedPreferenceChangeListener {
 			int type) { 
 		return mFetchStatusUpdates.fetch(accountId, user, type);
 	}
-	
+
 	public synchronized int fetchTimeline(String accountId, String user, 
 			int type) { 
 		return mFetchTimeline.fetch(accountId, user, type);
@@ -321,10 +349,10 @@ OnSharedPreferenceChangeListener {
 		//Insert into pending unfavourite table
 		ContentValues values = new ContentValues();
 		values.put(StatusData.C_ID, tweetid);
-		
+
 		getStatusData().insertOrIgnore(StatusData.UNFAVOURITES_PENDING_TABLE, values);
 	}
-	
+
 	public void updateCurrentFavourites(String account) throws TwitterException {
 		Twitter twitter = mTwitterList.get(account);
 
@@ -343,11 +371,11 @@ OnSharedPreferenceChangeListener {
 						Log.i(TAG, "Syncing new favourite");
 						//For each new pending favourite, add it to favourites
 						twitter.createFavorite(Long.valueOf(cursor.getString(0)));
-						
+
 						//Remove from pending list..
 						getStatusData().removePendingFavourite(account, 
 								cursor.getString(0));
-						
+
 					} while (cursor.moveToNext());
 				}
 			}
@@ -356,20 +384,20 @@ OnSharedPreferenceChangeListener {
 		} finally {
 			cursor.close();
 		}
-		
+
 		//Get currently pending unfavourite.
 		cursor = getStatusData().getPendingUnfavourites(account, 
 				new String[]{StatusData.C_ID});
-		
+
 		try{
 			if(cursor != null) {
 				if (cursor.moveToFirst()) {
 					do {
 						Log.i(TAG, "Syncing new unfavourites");
-						
+
 						//For each new pending favourite, add it to favourites
 						twitter.destroyFavorite(Long.valueOf(cursor.getString(0)));
-						
+
 						//Remove from pending list..
 						getStatusData().removePendingUnfavourite(account, 
 								cursor.getString(0));

@@ -63,8 +63,6 @@ implements OnClickListener {
 
 	private String mAccountId;
 
-	private ViewGroup mAccountContainer;
-
 	private MultiAutoCompleteTextView mTweetEditText;
 
 	private TextView mCharacterCountView;
@@ -86,12 +84,13 @@ implements OnClickListener {
 
 	protected static final int[] TO = {R.id.screen_name, R.id.profile_image};
 
-	public static NewTweetFragment newInstance(String tweetText){
+	public static NewTweetFragment newInstance(String account, String tweetText){
 		NewTweetFragment f = new NewTweetFragment();
 
 		// Supply index input as an argument.
 		Bundle args = new Bundle();
 		
+		args.putString("account", account);
 		args.putString("tweet", tweetText);
 
 		f.setArguments(args);
@@ -106,7 +105,7 @@ implements OnClickListener {
 
 		mApplication = (TTApplication) getActivity().getApplication();
 
-		mAccountId = "account1";
+		mAccountId =  getArguments().getString("account");
 	}
 
 	@Override
@@ -114,9 +113,8 @@ implements OnClickListener {
 			Bundle savedInstanceState) {
 		View root = inflater.inflate(R.layout.new_tweet_layout, container, false);
 
-		mAccountContainer = 
-			(ViewGroup) root.findViewById(R.id.new_tweet_accounts_container);
-
+		getDialog().setTitle("New Tweet");
+		
 		mTweetEditText = 
 			(MultiAutoCompleteTextView) root.findViewById(R.id.new_tweet_text);
 
@@ -267,6 +265,8 @@ implements OnClickListener {
 				
 				getActivity().startService(intent);
 				
+				this.dismiss();
+				
 				break;
 		}
 	}
@@ -298,7 +298,6 @@ implements OnClickListener {
 		adapter.setCursorToStringConverter(new CursorToStringConverter() {
 			@Override
 			public CharSequence convertToString(Cursor cursor) {
-				Log.i(TAG, "Converting Cursor String");
 				return cursor.getString(cursor.getColumnIndex(StatusData.C_SCREEN_NAME));
 			}
 		});
@@ -309,7 +308,7 @@ implements OnClickListener {
 			@Override
 			public Cursor runQuery(CharSequence constraint) {
 				String where = StatusData.C_SCREEN_NAME + " LIKE \"" + constraint + "%\"";
-				return mApplication.getStatusData().getFollowing(mAccountId, null, where, FROM);
+				return mApplication.getStatusData().getPeople(mAccountId, null, where, FROM);
 			}
 		});
 

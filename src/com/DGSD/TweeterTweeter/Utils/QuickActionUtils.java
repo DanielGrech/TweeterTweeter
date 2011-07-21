@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.DGSD.TweeterTweeter.R;
 import com.DGSD.TweeterTweeter.StatusData;
+import com.DGSD.TweeterTweeter.TTApplication;
 import com.DGSD.TweeterTweeter.Fragments.NewTweetFragment;
 import com.DGSD.TweeterTweeter.Services.UpdaterService;
 import com.DGSD.TweeterTweeter.UI.ActionItem;
@@ -75,6 +76,7 @@ public class QuickActionUtils {
 		final String tweetid = getTweetProperty(mCursor, StatusData.C_ID, pos);
 		final String tweetText = getTweetProperty(mCursor, StatusData.C_TEXT, pos);
 		final String[] userEntities = getTweetProperty(mCursor, StatusData.C_USER_ENT, pos).split(",");
+		final TTApplication app = (TTApplication) activity.getApplication();
 		
 		mFavouriteAction.setOnClickListener(new OnClickListener() {
 			@Override
@@ -140,7 +142,8 @@ public class QuickActionUtils {
 							activity.getFragmentManager()
         							.beginTransaction()
         							.replace(R.id.container, 
-        									NewTweetFragment.newInstance(val + " "))
+        									NewTweetFragment.newInstance(app.getSelectedAccount(), 
+        											val + " "))
 									.addToBackStack(null)
 									.commit();
 
@@ -153,7 +156,8 @@ public class QuickActionUtils {
 					activity.getFragmentManager()
 							.beginTransaction()
 							.replace(R.id.container, 
-									NewTweetFragment.newInstance("@" + screenName + " "))
+									NewTweetFragment.newInstance(app.getSelectedAccount(), 
+											"@" + screenName + " "))
 							.addToBackStack(null)
 							.commit();
 				}
@@ -185,7 +189,8 @@ public class QuickActionUtils {
 								activity.getFragmentManager()
 										.beginTransaction()
 										.replace(R.id.container, 
-												NewTweetFragment.newInstance("RT " + tweetText))
+												NewTweetFragment.newInstance(app.getSelectedAccount(),
+														"RT " + tweetText))
 										.addToBackStack(null)
 										.commit();
 								break;

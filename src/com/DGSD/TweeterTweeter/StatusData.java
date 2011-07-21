@@ -9,6 +9,8 @@ import twitter4j.UserMentionEntity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.CursorJoiner;
+import android.database.MatrixCursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -474,6 +476,47 @@ public class StatusData {
 		}
 	}
 
+	/**
+	 * @return The screenname and image url of any person we have cached
+	 */
+	public Cursor getPeople(String accountId, String screenName, String whereClause, String[] columns) {   
+		Cursor following = getFollowing(accountId, null, whereClause, columns);
+		Cursor followers = getFollowers(accountId, null, columns);
+		
+		CursorJoiner joiner = new CursorJoiner(following, new String[]{C_ID} , followers, new String[]{C_ID});
+		
+		MatrixCursor retval = new MatrixCursor(new String[] {C_SCREEN_NAME, C_IMG, C_ID});
+		
+		String name;
+		String image;
+		String id;
+		
+		for(CursorJoiner.Result result : joiner) { 
+			name = null;
+			image = null;
+			id = null;
+			switch(result) {
+				case BOTH:
+					name = following.getString(following.getColumnIndex(C_SCREEN_NAME));
+					image = following.getString(following.getColumnIndex(C_IMG));
+					id = following.getString(following.getColumnIndex(C_ID));
+				case LEFT:
+					name = following.getString(following.getColumnIndex(C_SCREEN_NAME));
+					image = following.getString(following.getColumnIndex(C_IMG));
+					id = following.getString(following.getColumnIndex(C_ID));
+				case RIGHT:
+					name = followers.getString(following.getColumnIndex(C_SCREEN_NAME));
+					image = followers.getString(following.getColumnIndex(C_IMG));
+					id = followers.getString(following.getColumnIndex(C_ID));
+			}
+			
+			retval.addRow(new String[]{name, image, id});
+		}
+		
+		return retval;
+	}
+	
+	
 	/**
 	 *
 	 * @return Timestamp of the latest status we have it the database

@@ -78,7 +78,7 @@ public class NewStatusService extends Service{
 		//Make sure any previous warnings are gone
 		mNotificationManager.cancel(RETRY_NOTIFICATION);
 		
-		showTickerText("Sending tweet...");
+		showTickerText("Sending tweet", "Contacting twitter service");
 		
 		new StatusUpdater().start();
 		
@@ -107,7 +107,7 @@ public class NewStatusService extends Service{
 			try {
 				mApplication.updateStatus(mAccountId, mTweetText, location);
 				
-				showTickerText("Tweet Sent!");
+				showTickerText("Tweet Sent!", "Your tweet has been posted");
 			} catch (TwitterException e) {
 				Log.e(TAG, "Error updating status", e);
 				
@@ -116,7 +116,7 @@ public class NewStatusService extends Service{
 				 */
 				Notification notification = 
 					getCustomNotification("Error updating status", 
-						"There was an error updating your status. Tap to retry");
+						"Tap to retry");
 				
 				Intent intent = new Intent(mApplication, NewStatusService.class);
 				
@@ -146,7 +146,7 @@ public class NewStatusService extends Service{
 	/*
 	 * Shows the given text in the notification bar, then removes itself
 	 */
-	private void showTickerText(String text) {
+	private void showTickerText(String title, String text) {
 		/*
 		 * Even though we only want the ticker text, 
 		 * we need to build the whole notification
@@ -156,16 +156,14 @@ public class NewStatusService extends Service{
 					text, System.currentTimeMillis());
 		
 		Context context = getApplicationContext();
-		CharSequence contentTitle = "Sending Tweet";
-		CharSequence contentText = "Your tweet is being sent";
+		CharSequence contentTitle = title;
+		CharSequence contentText = text;
 		Intent notificationIntent = new Intent(this, TTActivity.class);
 		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
 		notification.setLatestEventInfo(context, contentTitle, contentText, contentIntent);
 		
 		mNotificationManager.notify(TICKER_NOTIFICATION, notification);
-		
-		mNotificationManager.cancel(TICKER_NOTIFICATION);
 	}
 	
 	/*

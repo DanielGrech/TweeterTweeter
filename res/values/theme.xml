@@ -1,5 +1,6 @@
 <resources>
-    <style name="Theme.TiledBackground" parent="@android:style/Theme.Holo.Light">
+    <style name="Theme.TiledBackground" parent="@android:style/Theme.Holo">
         <item name="android:windowBackground">@drawable/background_repeat</item>
     </style>
+    
 </resources>	

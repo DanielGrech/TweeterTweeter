@@ -34,7 +34,7 @@ public class SideMenuFragment extends ListFragment {
 		ListView lv = getListView();
 
 		setListAdapter(new ArrayAdapter<String>(getActivity(), 
-				android.R.layout.simple_list_item_activated_1, mListItems));
+				R.layout.side_menu_list_item, mListItems));
 
 		lv.setCacheColorHint(Color.TRANSPARENT);
 				

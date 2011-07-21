@@ -39,7 +39,8 @@ public class UrlShortenTask extends AsyncTask<Void, Void, Void> {
 	private TextView mTextView;
 
 	Pattern hyperLinksPattern = 
-		Pattern.compile("\\(?\\b(http://|www[.])[-A-Za-z0-9+&@#/%?=~_()|!:,.;]*[-A-Za-z0-9+&@#/%=~_()|]");
+		Pattern.compile("\\(?\\b(http://|www[.])[-A-Za-z0-9+&@#/%?=~_()|!:,.;]*[-A-Za-z0-9+&@#/%=~_()|]", 
+				Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 	
 	public UrlShortenTask(Activity a, TextView tv) {
 		mLinkList = new Vector<Hyperlink>();

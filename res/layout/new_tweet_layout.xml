@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:minWidth="450dip" 
+  	android:minHeight="450dip"
     android:id="@+id/new_tweet_container">
 
     <!-- This viewgroup should hold images of the different 
@@ -18,7 +20,7 @@
         android:id="@+id/new_tweet_text"
         android:layout_width="fill_parent"
         android:layout_height="0dip"
-        android:layout_weight="1"
+        android:layout_weight="2"
         android:inputType="textCapSentences|textMultiLine"
         android:imeOptions="actionGo"/>
         
