@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.DGSD.TweeterTweeter.R;
 import com.DGSD.TweeterTweeter.TTApplication;
@@ -92,23 +91,23 @@ public class SideMenuFragment extends ListFragment {
 				break;
 				
 			case ITEM_FOLLOWERS:
-				
+				fragment = FollowersFragment.newInstance(account, username);
 				break;
 				
 			case ITEM_FOLLOWING:
-				
+				fragment = FollowingFragment.newInstance(account, username);
 				break;
 				
 			case ITEM_MENTIONS:
-				
+				fragment = MentionsListFragment.newInstance(account);
 				break;
 				
 			case ITEM_RETWEETS_BY:
-				
+				fragment = RetweetsByFragment.newInstance(account, username);
 				break;
 				
 			case ITEM_RETWEETS_OF:
-				
+				fragment = RetweetsOfFragment.newInstance(account);
 				break;
 				
 			case ITEM_SAVED_SEARCH:

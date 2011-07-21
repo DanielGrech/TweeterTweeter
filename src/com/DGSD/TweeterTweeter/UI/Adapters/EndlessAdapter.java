@@ -89,8 +89,8 @@ abstract public class EndlessAdapter extends AdapterWrapper {
 	 */
 	@Override
 	public int getCount() {
-		if (keepOnAppending.get()) {
-			return(super.getCount()+1);		// one more for "pending"
+		if (keepOnAppending.get() && super.getCount() > 0) {
+			return super.getCount()+1;		// one more for "pending"
 		}
 
 		return(super.getCount());
