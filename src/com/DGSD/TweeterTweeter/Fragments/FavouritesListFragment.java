@@ -1,5 +1,6 @@
 package com.DGSD.TweeterTweeter.Fragments;
 
+import android.database.Cursor;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -53,8 +54,11 @@ public class FavouritesListFragment extends BaseStatusFragment {
 	@Override
 	public synchronized void getCurrent() {
 		Log.i(TAG, "Getting current");
-		mCursor = mApplication.getStatusData().getFavourites(mAccountId, mUserName, null);
+		Cursor temp = mApplication.getStatusData().getFavourites(mAccountId, mUserName, null);
 	
+		if(temp != null) {
+			mCursor = temp;
+		}
 	}
 
 	@Override

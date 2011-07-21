@@ -155,6 +155,11 @@ public abstract class BasePeopleFragment extends BaseFragment {
 
 	@Override
 	public void appendData() {
+		if(mCursor == null) {
+			Log.i(TAG, "CURSOR WAS NULL!! CANT SET ADAPTER!");
+			return;
+		}
+		
 		if(mCursor.getCount() == 0) {
 			new DataLoadingTask(BasePeopleFragment.this, DataLoadingTask.NEWEST).execute();
 		}
