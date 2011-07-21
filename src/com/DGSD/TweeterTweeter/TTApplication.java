@@ -253,6 +253,10 @@ OnSharedPreferenceChangeListener {
 	public long getInterval() {
 		return mInterval;
 	}
+	
+	public String getUserName(String account) {
+		return mSession.getUsername(account);
+	}
 
 	public void updateStatus(String accountId, String tweet, 
 			GeoLocation location) throws TwitterException {
@@ -337,7 +341,7 @@ OnSharedPreferenceChangeListener {
 
 		//Insert status into local favourites.
 		getStatusData().insertOrIgnore(StatusData.FAVOURITES_TABLE, 
-				StatusData.createTimelineContentValues(account, null, status));
+				StatusData.createTimelineContentValues(account, getUserName(account), status));
 	}
 
 	public synchronized void removeFavourite(String account, 

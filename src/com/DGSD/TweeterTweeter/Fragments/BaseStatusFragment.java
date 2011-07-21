@@ -121,7 +121,7 @@ public abstract class BaseStatusFragment extends BaseFragment {
 			@Override
 			public void onScroll(AbsListView view, int firstVisibleItem,
 					int visibleItemCount, int totalItemCount) {
-				if(mAdapter != null) {
+				if(mAdapter != null && (totalItemCount != visibleItemCount)) {
 					((EndlessListAdapter)mAdapter).setKeepApending(true);
 				}
 				

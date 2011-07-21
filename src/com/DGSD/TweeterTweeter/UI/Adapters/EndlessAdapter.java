@@ -15,14 +15,16 @@ limitations under the License.
 
 package com.DGSD.TweeterTweeter.UI.Adapters;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.util.Log;
 import android.widget.ListAdapter;
-import java.util.concurrent.atomic.AtomicBoolean;
+
 import com.commonsware.cwac.adapter.AdapterWrapper;
 
 /**
@@ -130,8 +132,8 @@ abstract public class EndlessAdapter extends AdapterWrapper {
 	@Override
 	public View getView(int position, View convertView,
 			ViewGroup parent) {
-		if (position==super.getCount() &&
-				keepOnAppending.get()) {
+		
+		if (position==super.getCount() && keepOnAppending.get()) {
 			if (pendingView==null) {
 				pendingView=getPendingView(parent);
 

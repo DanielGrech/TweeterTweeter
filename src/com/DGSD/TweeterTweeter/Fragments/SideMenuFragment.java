@@ -67,14 +67,12 @@ public class SideMenuFragment extends ListFragment {
 	public void onListItemClick(ListView lv, View v, int pos, long id) {
 		mSelectedItem = pos;
 		
-		Toast.makeText(getActivity(), "Clicked Item " + mSelectedItem, 
-				Toast.LENGTH_SHORT).show();
-		
 		lv.setItemChecked(pos, true);
 		
 		Fragment fragment = null;
 		
 		String account = mApplication.getSelectedAccount();
+		String username = mApplication.getUserName(account);
 		
 		switch(pos) {
 			case ITEM_HOME_TIMELINE:
@@ -90,7 +88,7 @@ public class SideMenuFragment extends ListFragment {
 				break;
 				
 			case ITEM_FAVOURITES:
-				
+				fragment = FavouritesListFragment.newInstance(account, username);
 				break;
 				
 			case ITEM_FOLLOWERS:

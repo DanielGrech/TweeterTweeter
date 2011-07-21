@@ -13,28 +13,28 @@ import com.DGSD.TweeterTweeter.R;
 import com.DGSD.TweeterTweeter.TTApplication;
 import com.DGSD.TweeterTweeter.Utils.Log;
 
-public abstract class BaseFragment extends DialogFragment{
+public abstract class BaseFragment extends DialogFragment {
 
 	private static final String TAG = BaseFragment.class.getSimpleName();
 
 	public static final int ELEMENTS_PER_PAGE = 50;
 
 	public abstract void getNewest() throws TwitterException;
-	
+
 	public abstract void getCurrent() throws TwitterException;
-	
+
 	public abstract void getOlder() throws TwitterException;
-	
+
 	public abstract void appendData();
-	
+
 	protected TTApplication mApplication;
 
 	protected ListView mListView;
-	
+
 	protected ListAdapter mAdapter;
-	
+
 	protected Cursor mCursor;
-	
+
 	protected String mAccountId;
 
 	protected String mUserName;
@@ -69,28 +69,28 @@ public abstract class BaseFragment extends DialogFragment{
 		mAdapter = null;
 
 		mCursor = null;
-		
+
 		mListView = null;
 
 		Log.i(TAG, "Destroying view");
 	}
 
 	protected void showPanel(View panel, boolean slideUp) {
-        panel.startAnimation(AnimationUtils.loadAnimation(getActivity(),
-                slideUp ? R.anim.slide_in : R.anim.slide_out_top));
-        panel.setVisibility(View.VISIBLE);
-    }
+		panel.startAnimation(AnimationUtils.loadAnimation(getActivity(),
+				slideUp ? R.anim.slide_in : R.anim.slide_out_top));
+		panel.setVisibility(View.VISIBLE);
+	}
 
 	protected void hidePanel(View panel, boolean slideDown) {
-        panel.startAnimation(AnimationUtils.loadAnimation(getActivity(),
-                slideDown ? R.anim.slide_out : R.anim.slide_in_top));
-        panel.setVisibility(View.GONE);
-    }
+		panel.startAnimation(AnimationUtils.loadAnimation(getActivity(),
+				slideDown ? R.anim.slide_out : R.anim.slide_in_top));
+		panel.setVisibility(View.GONE);
+	}
 
 	public ListAdapter getAdapter() {
 		return mAdapter;
 	}
-	
+
 	public ListView getListView() {
 		return mListView;
 	}

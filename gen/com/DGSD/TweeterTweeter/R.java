@@ -75,7 +75,7 @@ public final class R {
     public static final class id {
         public static final int arrow_down=0x7f0b001d;
         public static final int arrow_up=0x7f0b001c;
-        public static final int bottomPopup=0x7f0b0008;
+        public static final int bottomPopup=0x7f0b0009;
         public static final int container=0x7f0b0007;
         public static final int contentBox=0x7f0b0003;
         public static final int contentOutline=0x7f0b0002;
@@ -84,7 +84,7 @@ public final class R {
         public static final int content_top_row=0x7f0b0004;
         public static final int icon=0x7f0b0000;
         public static final int image=0x7f0b0022;
-        public static final int list=0x7f0b0009;
+        public static final int list=0x7f0b0008;
         public static final int listItem=0x7f0b0017;
         public static final int loginButton=0x7f0b000c;
         public static final int loginLogo=0x7f0b000b;
@@ -101,6 +101,7 @@ public final class R {
         public static final int new_tweet_url_shorten=0x7f0b0013;
         public static final int profile_image=0x7f0b0018;
         public static final int progressBar=0x7f0b0006;
+        public static final int progress_small=0x01010000;
         public static final int pull_to_refresh_image=0x7f0b001f;
         public static final int pull_to_refresh_progress=0x7f0b001e;
         public static final int pull_to_refresh_text=0x7f0b0020;
