@@ -1,8 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.DGSD.TweeterTweeter.UI.Workspace xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:id="@+id/container">
+    android:layout_height="fill_parent">
+    
+    <fragment class="com.DGSD.TweeterTweeter.Fragments.SideMenuFragment"
+    	android:id="@+id/side_menu"
+    	android:layout_width="@dimen/side_menu_width"
+    	android:layout_height="match_parent"
+    	android:background="#000"/>
+    	
+    <LinearLayout
+	    android:orientation="vertical"
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent"
+	    android:id="@+id/container"/>
 
-</com.DGSD.TweeterTweeter.UI.Workspace>
+</LinearLayout>

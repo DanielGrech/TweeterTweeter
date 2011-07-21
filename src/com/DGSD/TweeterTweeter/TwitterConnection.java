@@ -173,9 +173,7 @@ public class TwitterConnection {
 
 					what = 0;
 				} catch (Exception e){
-					Log.d(TAG, "Error getting access token");
-
-					e.printStackTrace();
+					Log.d(TAG, "Error getting access token", e);
 				}
 
 				mHandler.sendMessage(mHandler.obtainMessage(what, 2, 0));

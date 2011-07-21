@@ -1,11 +1,11 @@
 package com.DGSD.TweeterTweeter.Utils;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
-import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Toast;
@@ -28,7 +28,7 @@ public class QuickActionUtils {
 
 	private static final ActionItem mShareAction = new ActionItem();
 	
-	public static QuickAction getTimelineQuickAction(FragmentActivity a, String account, 
+	public static QuickAction getTimelineQuickAction(Activity a, String account, 
 			View view, Cursor mCursor, int pos) {
 		QuickAction mQuickAction = new QuickAction(view);
 
@@ -67,7 +67,7 @@ public class QuickActionUtils {
 		return retval;
 	}
 	
-	public static void setupTimelineTweet(final FragmentActivity activity, 
+	public static void setupTimelineTweet(final Activity activity, 
 			final QuickAction mQuickAction, final String mAccountId, 
 			final Cursor mCursor, final int pos) {
 		
@@ -137,7 +137,7 @@ public class QuickActionUtils {
 									break;
 							}
 
-							activity.getSupportFragmentManager()
+							activity.getFragmentManager()
         							.beginTransaction()
         							.replace(R.id.container, 
         									NewTweetFragment.newInstance(val + " "))
@@ -150,7 +150,7 @@ public class QuickActionUtils {
 					builder.create().show();
 				} else {
 					//There are no other mentioned users, lets just reply
-					activity.getSupportFragmentManager()
+					activity.getFragmentManager()
 							.beginTransaction()
 							.replace(R.id.container, 
 									NewTweetFragment.newInstance("@" + screenName + " "))
@@ -182,7 +182,7 @@ public class QuickActionUtils {
 								break;
 							case 1:
 								//Retweet & edit
-								activity.getSupportFragmentManager()
+								activity.getFragmentManager()
 										.beginTransaction()
 										.replace(R.id.container, 
 												NewTweetFragment.newInstance("RT " + tweetText))

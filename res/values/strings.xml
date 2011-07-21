@@ -19,7 +19,7 @@
     <string name="pull_to_refresh_tap_label">Tap to refresh...</string>
     
     
-    <string-array name="view_types">
+    <string-array name="menu_list">
         <item>Home Timeline</item>
         <item>Direct Messages (Received)</item>
         <item>Direct Messages (Sent)</item>
@@ -28,9 +28,9 @@
         <item>Following</item>
         <item>Mentions</item>
         <item>Retweeted By</item>
-        <item>Retweeted To</item>
         <item>Retweets of Me</item>
-        <item>Search</item>
-        <item>User Timeline</item>
+        <item>Saved Search</item>
     </string-array>
+        <string name="tt_activity">TTActivity</string>
+        <string name="login_activity">LoginActivity</string>
 </resources>

@@ -1,9 +1,9 @@
 package com.DGSD.TweeterTweeter.Fragments;
 
 import twitter4j.TwitterException;
+import android.app.DialogFragment;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.ListAdapter;

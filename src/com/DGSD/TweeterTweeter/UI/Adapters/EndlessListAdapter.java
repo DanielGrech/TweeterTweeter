@@ -1,13 +1,13 @@
 package com.DGSD.TweeterTweeter.UI.Adapters;
 
 import twitter4j.TwitterException;
-import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
+import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
 import com.DGSD.TweeterTweeter.R;
