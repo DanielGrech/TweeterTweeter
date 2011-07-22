@@ -845,10 +845,14 @@ public class Workspace extends ViewGroup {
 
 	@Override
 	protected void onRestoreInstanceState(Parcelable state) {
-		SavedState savedState = (SavedState) state;
-		super.onRestoreInstanceState(savedState.getSuperState());
-		if (savedState.currentScreen != -1) {
-			snapToScreen(savedState.currentScreen, true, true);
+		try{
+			SavedState savedState = (SavedState) state;
+			super.onRestoreInstanceState(savedState.getSuperState());
+			if (savedState.currentScreen != -1) {
+				snapToScreen(savedState.currentScreen, true, true);
+			}
+		}catch(ClassCastException e) {
+			e.printStackTrace();
 		}
 	}
 

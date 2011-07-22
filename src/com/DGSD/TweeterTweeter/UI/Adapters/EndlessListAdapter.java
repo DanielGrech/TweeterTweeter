@@ -20,7 +20,7 @@ public class EndlessListAdapter extends EndlessAdapter {
 
 	private LinearLayout mPendingView = null;
 
-			private BaseFragment mFragment;
+	private BaseFragment mFragment;
 
 	public EndlessListAdapter(BaseFragment fragment, SimpleCursorAdapter sca) {
 		super(sca);

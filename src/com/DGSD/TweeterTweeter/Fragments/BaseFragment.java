@@ -3,6 +3,7 @@ package com.DGSD.TweeterTweeter.Fragments;
 import twitter4j.TwitterException;
 import android.app.DialogFragment;
 import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.view.animation.AnimationUtils;
@@ -19,11 +20,11 @@ public abstract class BaseFragment extends DialogFragment {
 
 	public static final int ELEMENTS_PER_PAGE = 50;
 
-	public abstract void getNewest() throws TwitterException;
+	public abstract Cursor getNewest() throws TwitterException;
 
-	public abstract void getCurrent() throws TwitterException;
+	public abstract Cursor getCurrent() throws TwitterException;
 
-	public abstract void getOlder() throws TwitterException;
+	public abstract Cursor getOlder() throws TwitterException;
 
 	public abstract void appendData();
 
@@ -38,6 +39,8 @@ public abstract class BaseFragment extends DialogFragment {
 	protected String mAccountId;
 
 	protected String mUserName;
+	
+	protected AsyncTask<Void, Void, Cursor> mCurrentTask;
 
 	//The type of data returned from the updater service
 	protected int mType = -1;
@@ -55,6 +58,10 @@ public abstract class BaseFragment extends DialogFragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
+		
+		if(mListView != null) {
+			mListView.setFastScrollEnabled(true);
+		}
 	}
 
 	@Override
@@ -73,6 +80,22 @@ public abstract class BaseFragment extends DialogFragment {
 		mListView = null;
 
 		Log.i(TAG, "Destroying view");
+	}
+	
+	@Override
+	public void onPause() {
+	    super.onPause();
+	    if(mListView != null) {
+	    	mListView.setVisibility(View.GONE);
+	    }
+	}
+	
+	@Override
+	public void onResume() {
+	    super.onResume();
+	    if(mListView != null) {
+	    	mListView.setVisibility(View.VISIBLE);
+	    }
 	}
 
 	protected void showPanel(View panel, boolean slideUp) {
@@ -93,5 +116,9 @@ public abstract class BaseFragment extends DialogFragment {
 
 	public ListView getListView() {
 		return mListView;
+	}
+	
+	public void setCursor(Cursor c) {
+		mCursor = c;
 	}
 }

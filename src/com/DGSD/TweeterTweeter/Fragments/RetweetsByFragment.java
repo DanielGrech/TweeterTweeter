@@ -1,5 +1,6 @@
 package com.DGSD.TweeterTweeter.Fragments;
 
+import android.database.Cursor;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -53,29 +54,28 @@ public class RetweetsByFragment extends BaseStatusFragment {
 	
 	
 	@Override
-	public synchronized void getCurrent() {
+	public synchronized Cursor getCurrent() {
 		Log.i(TAG, "Getting current");
-		mCursor = mApplication.getStatusData().getRetweetsBy(mAccountId, mUserName, null);
-	
+		return mApplication.getStatusData().getRetweetsBy(mAccountId, mUserName, null);
 	}
 
 	@Override
-	public synchronized void getNewest() {
+	public synchronized Cursor getNewest() {
 		Log.i(TAG, "Getting newest");
 		
 		mApplication.fetchRetweetsBy(mAccountId, mUserName, 
 				DataFetcher.FETCH_NEWEST);
 		
-		getCurrent();
+		return getCurrent();
 	}
 	
 	@Override
-	public synchronized void getOlder() {
+	public synchronized Cursor getOlder() {
 		Log.i(TAG, "Getting oldest");
 		
 		mApplication.fetchRetweetsBy(mAccountId, mUserName, 
 				DataFetcher.FETCH_OLDER);
 		
-		getCurrent();
+		return getCurrent();
 	}
 }

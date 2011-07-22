@@ -52,32 +52,28 @@ public class FavouritesListFragment extends BaseStatusFragment {
 	}
 	
 	@Override
-	public synchronized void getCurrent() {
+	public synchronized Cursor getCurrent() {
 		Log.i(TAG, "Getting current");
-		Cursor temp = mApplication.getStatusData().getFavourites(mAccountId, mUserName, null);
-	
-		if(temp != null) {
-			mCursor = temp;
-		}
+		return mApplication.getStatusData().getFavourites(mAccountId, mUserName, null);
 	}
 
 	@Override
-	public synchronized void getNewest() {
+	public synchronized Cursor getNewest() {
 		Log.i(TAG, "Getting newest");
 		
 		mApplication.fetchFavourites(mAccountId, mUserName, 
 				DataFetcher.FETCH_NEWEST);
 		
-		getCurrent();
+		return getCurrent();
 	}
 	
 	@Override
-	public synchronized void getOlder() {
+	public synchronized Cursor getOlder() {
 		Log.i(TAG, "Getting oldest");
 		
 		mApplication.fetchFavourites(mAccountId, mUserName, 
 				DataFetcher.FETCH_OLDER);
 		
-		getCurrent();
+		return getCurrent();
 	}
 }

@@ -63,33 +63,29 @@ public class HomeTimelineFragment extends BaseStatusFragment {
 	}
 	
 	@Override
-	public synchronized void getCurrent() {
+	public synchronized Cursor getCurrent() {
 		Log.i(TAG, "Getting current");
-		Cursor temp = mApplication.getStatusData().getStatusUpdates(mAccountId, null);
-		
-		if(temp != null) {
-			mCursor = temp;
-		}
+		return mApplication.getStatusData().getStatusUpdates(mAccountId, null);
 	}
 
 	@Override
-	public synchronized void getNewest() {
+	public synchronized Cursor getNewest() {
 		Log.i(TAG, "Getting newest");
 		
 		mApplication.fetchStatusUpdates(mAccountId, mUserName, 
 				DataFetcher.FETCH_NEWEST);
 		
-		getCurrent();
+		return getCurrent();
 	}
 	
 	@Override
-	public synchronized void getOlder() {
+	public synchronized Cursor getOlder() {
 		Log.i(TAG, "Getting older");
 		
 		mApplication.fetchStatusUpdates(mAccountId, mUserName, 
 				DataFetcher.FETCH_OLDER);
 		
-		getCurrent();
+		return getCurrent();
 	}
 	
 }

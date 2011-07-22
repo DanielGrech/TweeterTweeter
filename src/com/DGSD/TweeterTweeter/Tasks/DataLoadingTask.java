@@ -1,5 +1,6 @@
 package com.DGSD.TweeterTweeter.Tasks;
 
+import android.database.Cursor;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
@@ -7,7 +8,7 @@ import com.DGSD.TweeterTweeter.Fragments.BaseFragment;
 import com.DGSD.TweeterTweeter.UI.PullToRefreshListView;
 import com.DGSD.TweeterTweeter.Utils.Log;
 
-public class DataLoadingTask extends AsyncTask<Void, Void, Void> {
+public class DataLoadingTask extends AsyncTask<Void, Void, Cursor> {
 	private static final String TAG = DataLoadingTask.class.getSimpleName();
 
 	private boolean hasError = false;
@@ -34,22 +35,21 @@ public class DataLoadingTask extends AsyncTask<Void, Void, Void> {
 	}
 
 	@Override
-	protected Void doInBackground(Void ...args) {
+	protected Cursor doInBackground(Void ...args) {
 		try {
 			if(mFragment.getAdapter() != null) {
 				synchronized(mFragment.getAdapter()) {
 					switch(mType) {
-						case CURRENT: mFragment.getCurrent(); break;
-						case NEWEST: mFragment.getNewest(); break;
-						case OLDEST: mFragment.getOlder(); break;
+						case CURRENT: return mFragment.getCurrent();
+						case NEWEST: return mFragment.getNewest();
+						case OLDEST: return mFragment.getOlder();
 					}
 				}
-			}
-			else {
+			} else {
 				switch(mType) {
-					case CURRENT: mFragment.getCurrent(); break;
-					case NEWEST: mFragment.getNewest(); break;
-					case OLDEST: mFragment.getOlder(); break;
+					case CURRENT: return mFragment.getCurrent();
+					case NEWEST: return mFragment.getNewest();
+					case OLDEST: return mFragment.getOlder();
 				}
 			}
 			//pageNum++;
@@ -62,7 +62,12 @@ public class DataLoadingTask extends AsyncTask<Void, Void, Void> {
 	}
 
 	@Override
-	protected void onPostExecute(Void arg) {
+	protected void onPostExecute(Cursor cursor) {
+		if(this.isCancelled()) {
+			Log.i(TAG, "Returning from cancelled task");
+			return;
+		}
+		
 		Log.i(TAG, "POST EXECUTING");
 		//Check if the refresh view is showing..
 		if(mFragment.getListView() != null) {
@@ -82,7 +87,8 @@ public class DataLoadingTask extends AsyncTask<Void, Void, Void> {
 		if(hasError) {
 			Toast.makeText(mFragment.getActivity(), "Error getting data", Toast.LENGTH_SHORT).show();
 		}	
-		else {
+		else {			
+			mFragment.setCursor(cursor);
 			mFragment.appendData();
 		}
 	}

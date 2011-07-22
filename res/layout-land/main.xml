@@ -10,21 +10,20 @@
     	android:layout_height="match_parent"
     	android:background="#000"/>
     
-    <com.DGSD.TweeterTweeter.UI.Workspace
-            android:id="@+id/data_container_port"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-            
-            <LinearLayout
+    <LinearLayout
+    	android:id="@+id/data_container_land"
+    	android:layout_width="match_parent"
+    	android:layout_height="match_parent">
+	    <LinearLayout
 	            android:id="@+id/container"
 	            android:layout_width="0dp"
 	            android:layout_height="fill_parent"
 	            android:layout_weight="1" />
-	    	<LinearLayout
+	    <LinearLayout
 	            android:id="@+id/secondary_container"
 	            android:layout_width="0dp"
 	            android:layout_height="fill_parent"
-	            android:layout_weight="1"/>   
-    </com.DGSD.TweeterTweeter.UI.Workspace>
-
+	            android:layout_weight="1"/>      
+	    
+	</LinearLayout>
 </LinearLayout>

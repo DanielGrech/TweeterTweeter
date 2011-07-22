@@ -40,7 +40,7 @@ public abstract class BasePeopleFragment extends BaseFragment {
 	protected IntentFilter mNoDataFilter;
 
 	protected IntentFilter mErrorFilter;
-
+	
 	@Override
 	public void onCreate(Bundle savedInstance){
 		super.onCreate(savedInstance);
@@ -60,7 +60,9 @@ public abstract class BasePeopleFragment extends BaseFragment {
 					Log.v(TAG, "Data Received");
 					if(mType == dataType && account != null && 
 							mAccountId.equals(account)) {
-						new DataLoadingTask(BasePeopleFragment.this, DataLoadingTask.CURRENT).execute();
+						mCurrentTask = new DataLoadingTask(BasePeopleFragment.this, 
+								DataLoadingTask.CURRENT);
+						mCurrentTask.execute();
 					}
 				}
 				else if(intent.getAction().equals(UpdaterService.NO_DATA)) {
@@ -92,7 +94,16 @@ public abstract class BasePeopleFragment extends BaseFragment {
 
 		mListView = (ListView) root.findViewById(R.id.list);
 
-		new DataLoadingTask(BasePeopleFragment.this, DataLoadingTask.CURRENT).execute();
+		if(mCurrentTask != null && !mCurrentTask.isCancelled()) {
+			mCurrentTask.cancel(true);
+		}
+		
+		if(mCurrentTask != null && !mCurrentTask.isCancelled()) {
+			mCurrentTask.cancel(true);
+		}
+		
+		mCurrentTask = new DataLoadingTask(BasePeopleFragment.this, DataLoadingTask.CURRENT);
+		mCurrentTask.execute();
 
 		Log.i(TAG, "Returning root from onCreateView");
 
@@ -161,7 +172,13 @@ public abstract class BasePeopleFragment extends BaseFragment {
 		}
 		
 		if(mCursor.getCount() == 0) {
-			new DataLoadingTask(BasePeopleFragment.this, DataLoadingTask.NEWEST).execute();
+			if(mCurrentTask != null && !mCurrentTask.isCancelled()) {
+				mCurrentTask.cancel(true);
+			}
+			
+			mCurrentTask = new DataLoadingTask(BasePeopleFragment.this, 
+					DataLoadingTask.NEWEST);
+			mCurrentTask.execute();
 		}
 
 		if(mAdapter == null) {

@@ -98,7 +98,12 @@ public abstract class BaseStatusFragment extends BaseFragment {
 
 		mListView = (PullToRefreshListView) root.findViewById(R.id.list);
 
-		new DataLoadingTask(BaseStatusFragment.this, DataLoadingTask.CURRENT).execute();
+		if(mCurrentTask != null && !mCurrentTask.isCancelled()) {
+			mCurrentTask.cancel(true);
+		}
+		
+		mCurrentTask = new DataLoadingTask(BaseStatusFragment.this, DataLoadingTask.CURRENT);
+		mCurrentTask.execute();
 
 		Log.i(TAG, "Returning root from onCreateView");
 
@@ -113,7 +118,12 @@ public abstract class BaseStatusFragment extends BaseFragment {
 			@Override
 			public void onRefresh() {
 				Log.i(TAG, "STARTING REFRESH!");
-				new DataLoadingTask(BaseStatusFragment.this, DataLoadingTask.NEWEST).execute();
+				if(mCurrentTask != null && !mCurrentTask.isCancelled()) {
+					mCurrentTask.cancel(true);
+				}
+				
+				mCurrentTask = new DataLoadingTask(BaseStatusFragment.this, DataLoadingTask.NEWEST);
+				mCurrentTask.execute();
 			}
 		});
 		
@@ -245,7 +255,12 @@ public abstract class BaseStatusFragment extends BaseFragment {
 	
 	private void startRefresh(int type, String account) {
 		if(mType == type && account != null && mAccountId.equals(account)) {
-			new DataLoadingTask(BaseStatusFragment.this, DataLoadingTask.CURRENT).execute();
+			if(mCurrentTask != null && !mCurrentTask.isCancelled()) {
+				mCurrentTask.cancel(true);
+			}
+			
+			mCurrentTask = new DataLoadingTask(BaseStatusFragment.this, DataLoadingTask.CURRENT);
+			mCurrentTask.execute();
 		} else {
 			Log.i(TAG, "Received Irrelevant broadcast: " 
 					+ type + "(My type=" + mType + ")");
