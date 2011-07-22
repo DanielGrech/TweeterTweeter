@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.Toast;
 
@@ -161,6 +162,15 @@ public abstract class BaseStatusFragment extends BaseFragment {
 				return false;
 			}
 
+		});
+		
+		mListView.setOnItemClickListener(new OnItemClickListener(){
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, 
+					int pos, long id) {
+				
+			}
+			
 		});
 	}
 

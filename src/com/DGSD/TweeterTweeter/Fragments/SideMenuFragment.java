@@ -17,7 +17,7 @@ public class SideMenuFragment extends ListFragment {
 	public static final String TAG = SideMenuFragment.class.getSimpleName();
 
 	private static final String KEY_SELECTED_ITEM = "selected_item";
-	
+
 	private static final int ITEM_HOME_TIMELINE = 0;
 	private static final int ITEM_DM_RECEIVED = 1;
 	private static final int ITEM_DM_SENT = 2;
@@ -33,7 +33,7 @@ public class SideMenuFragment extends ListFragment {
 	private int mSelectedItem;
 
 	private String[] mListItems;
-	
+
 	private TTApplication mApplication;
 
 	@Override
@@ -46,7 +46,7 @@ public class SideMenuFragment extends ListFragment {
 		}
 
 		mApplication = (TTApplication) getActivity().getApplication();
-		
+
 		mListItems = getResources().getStringArray(R.array.menu_list);
 
 		ListView lv = getListView();
@@ -55,75 +55,86 @@ public class SideMenuFragment extends ListFragment {
 				R.layout.side_menu_list_item, mListItems));
 
 		lv.setCacheColorHint(Color.TRANSPARENT);
-				
+
+		lv.setBackgroundResource(R.drawable.sidebar_background_repeat);
+
 		lv.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-		
-		onListItemClick(lv, null, mSelectedItem, -1);
+
+		displayFragmentOfItem(mSelectedItem);
 
 	}
 
 	@Override
 	public void onListItemClick(ListView lv, View v, int pos, long id) {
-		mSelectedItem = pos;
-		
-		lv.setItemChecked(pos, true);
-		
+		if(mSelectedItem == pos) {
+			//We are already showing this item!
+			return;
+		} else {
+			mSelectedItem = pos;
+
+			displayFragmentOfItem(mSelectedItem);
+		}
+	}
+
+	private void displayFragmentOfItem(int itemPos) {
+		getListView().setItemChecked(itemPos, true);
+
 		Fragment fragment = null;
-		
+
 		String account = mApplication.getSelectedAccount();
 		String username = mApplication.getUserName(account);
-		
-		switch(pos) {
+
+		switch(itemPos) {
 			case ITEM_HOME_TIMELINE:
 				fragment = HomeTimelineFragment.newInstance(account);
 				break;
-				
+
 			case ITEM_DM_RECEIVED:
-				
+
 				break;
-				
+
 			case ITEM_DM_SENT:
-				
+
 				break;
-				
+
 			case ITEM_FAVOURITES:
 				fragment = FavouritesListFragment.newInstance(account, username);
 				break;
-				
+
 			case ITEM_FOLLOWERS:
 				fragment = FollowersFragment.newInstance(account, username);
 				break;
-				
+
 			case ITEM_FOLLOWING:
 				fragment = FollowingFragment.newInstance(account, username);
 				break;
-				
+
 			case ITEM_MENTIONS:
 				fragment = MentionsListFragment.newInstance(account);
 				break;
-				
+
 			case ITEM_RETWEETS_BY:
 				fragment = RetweetsByFragment.newInstance(account, username);
 				break;
-				
+
 			case ITEM_RETWEETS_OF:
 				fragment = RetweetsOfFragment.newInstance(account);
 				break;
-				
+
 			case ITEM_SAVED_SEARCH:
-				
+
 				break;
-				
+
 			case ITEM_LISTS:
-				
+
 				break;
 		}
-		
+
 		getFragmentManager().beginTransaction()
-							.replace(R.id.container, fragment)
-							.addToBackStack(null)
-							.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-							.commit();
+		.replace(R.id.container, fragment)
+		.addToBackStack(null)
+		.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+		.commit();
 	}
 
 
@@ -133,6 +144,6 @@ public class SideMenuFragment extends ListFragment {
 		Log.i(TAG, "Saving State: " + mSelectedItem);
 		outState.putInt(KEY_SELECTED_ITEM, mSelectedItem);
 	}
-	
-	
+
+
 }

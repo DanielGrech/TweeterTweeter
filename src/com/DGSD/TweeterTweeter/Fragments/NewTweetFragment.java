@@ -53,6 +53,8 @@ implements OnClickListener {
 
 	public static final String TAG = NewTweetFragment.class.getSimpleName();
 
+	private static final String KEY_TWEET_TEXT = "tweet_text";
+	
 	private static final int GET_CAMERA_IMAGE = 0;
 
 	private static final int GET_GALLERY_IMAGE = 1;
@@ -165,7 +167,12 @@ implements OnClickListener {
 			}
 		});
 		
-		addToTweet(mTweetEditText, getArguments().getString("tweet"));
+		if(savedInstanceState != null 
+				&& savedInstanceState.getString(KEY_TWEET_TEXT) != null) {
+			addToTweet(mTweetEditText, savedInstanceState.getString(KEY_TWEET_TEXT));
+		} else {
+			addToTweet(mTweetEditText, getArguments().getString("tweet"));
+		}
 	}
 
 	@Override
@@ -213,6 +220,15 @@ implements OnClickListener {
 		}
 	}
 
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		
+		if(mTweetEditText != null) {
+			outState.putString(KEY_TWEET_TEXT, mTweetEditText.getText().toString());
+		}
+	}
+	
 	@Override
 	public void onClick(View v) {
 		switch(v.getId()) {

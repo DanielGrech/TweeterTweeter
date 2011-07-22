@@ -155,8 +155,8 @@ public abstract class BasePeopleFragment extends BaseFragment {
 
 	@Override
 	public void appendData() {
-		if(mCursor == null) {
-			Log.i(TAG, "CURSOR WAS NULL!! CANT SET ADAPTER!");
+		if(mListView == null || mCursor == null) {
+			Log.i(TAG, "Listview/cursor was null!");
 			return;
 		}
 		

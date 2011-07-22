@@ -9,15 +9,21 @@
     	android:layout_width="@dimen/side_menu_width"
     	android:layout_height="match_parent"
     	android:background="#000"/>
-    	
-    <include 
-	    layout="@layout/floating_layout" 
-	    android:id="@+id/contentOutline_ref"  
-	    android:layout_width="0dp" 
-	    android:layout_height="fill_parent" 
-	    android:layout_weight="1" 
-	    android:layout_marginLeft="10dp" 
-	    android:layout_marginRight="10dp" 
-	    android:layout_marginBottom="10dp"/>
-
+    
+    <LinearLayout
+    	android:id="@+id/data_container"
+    	android:layout_width="match_parent"
+    	android:layout_height="match_parent">
+	    <LinearLayout
+	            android:id="@+id/container"
+	            android:layout_width="0dp"
+	            android:layout_height="fill_parent"
+	            android:layout_weight="1" />
+	    <LinearLayout
+	            android:id="@+id/secondary_container"
+	            android:layout_width="0dp"
+	            android:layout_height="fill_parent"
+	            android:layout_weight="1"/>      
+	    
+	</LinearLayout>
 </LinearLayout>

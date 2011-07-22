@@ -24,7 +24,7 @@ public class TTActivity extends Activity {
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.main);
-
+	
 		mApplication = (TTApplication) getApplication();
 
 		ActionBar mActionBar = getActionBar();
@@ -87,6 +87,4 @@ public class TTActivity extends Activity {
 
 		return true;
 	}
-
-
 }
