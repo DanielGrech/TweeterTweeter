@@ -8,7 +8,6 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import com.DGSD.TweeterTweeter.Utils.Log;
 import android.view.Display;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -19,6 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.DGSD.TweeterTweeter.TwitterConnection.TwDialogListener;
+import com.DGSD.TweeterTweeter.Utils.Log;
 
 public class TwitterDialog extends Dialog {
 

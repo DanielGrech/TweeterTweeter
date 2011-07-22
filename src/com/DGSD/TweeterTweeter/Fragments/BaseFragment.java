@@ -5,6 +5,7 @@ import android.app.DialogFragment;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.ActionMode;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.ListAdapter;
@@ -41,7 +42,9 @@ public abstract class BaseFragment extends DialogFragment {
 	protected String mUserName;
 	
 	protected AsyncTask<Void, Void, Cursor> mCurrentTask;
-
+	
+	protected ActionMode mCurrentActionMode;
+	
 	//The type of data returned from the updater service
 	protected int mType = -1;
 

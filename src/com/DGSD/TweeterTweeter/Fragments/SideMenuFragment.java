@@ -61,7 +61,6 @@ public class SideMenuFragment extends ListFragment {
 		lv.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 
 		displayFragmentOfItem(mSelectedItem);
-
 	}
 
 	@Override
@@ -144,6 +143,4 @@ public class SideMenuFragment extends ListFragment {
 		Log.i(TAG, "Saving State: " + mSelectedItem);
 		outState.putInt(KEY_SELECTED_ITEM, mSelectedItem);
 	}
-
-
 }

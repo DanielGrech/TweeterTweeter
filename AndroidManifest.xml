@@ -38,6 +38,10 @@
 		        <category android:name="android.intent.category.DEFAULT" />
 		    </intent-filter>
 		</activity>
+		
+		<activity
+	        android:name=".Preferences"
+	        android:label="@string/set_preferences" />
 	
 	    <service android:name=".Services.UpdaterService" />
 	    

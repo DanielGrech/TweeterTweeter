@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    
+    <item android:id="@+id/menu_mention"
+        android:title="Mention"
+        android:icon="@drawable/ic_menu_edit"
+        android:showAsAction="ifRoom|withText"/>
+        
+    <item android:id="@+id/menu_block"
+        android:title="Block"
+        android:icon="@drawable/ic_menu_blocked_user"
+        android:showAsAction="ifRoom|withText" /> 
+        
+    <item android:id="@+id/menu_add"
+        android:title="Follow"
+        android:showAsAction="ifRoom|withText"
+        android:icon="@drawable/ic_menu_invite"/>
+        
+    <item android:id="@+id/menu_report"
+        android:title="Report"
+        android:showAsAction="ifRoom|withText"
+        android:icon="@drawable/ic_menu_notifications"/>    
+</menu>

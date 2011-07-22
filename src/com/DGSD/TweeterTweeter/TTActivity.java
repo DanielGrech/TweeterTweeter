@@ -3,9 +3,16 @@ package com.DGSD.TweeterTweeter;
 import android.app.ActionBar;
 import android.app.ActionBar.OnNavigationListener;
 import android.app.Activity;
+import android.content.ClipData;
+import android.content.ClipDescription;
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.view.DragEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnDragListener;
 import android.widget.SearchView;
 import android.widget.Toast;
 
@@ -24,10 +31,13 @@ public class TTActivity extends Activity {
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.main);
-	
+
 		mApplication = (TTApplication) getApplication();
 
 		ActionBar mActionBar = getActionBar();
+		
+		mActionBar.setDisplayShowHomeEnabled(false);
+		mActionBar.setDisplayShowTitleEnabled(false);
 
 		mActionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.actionbar_background_repeat));
 
@@ -54,7 +64,7 @@ public class TTActivity extends Activity {
 		//Handle the 'Search View' in the action bar
 		getMenuInflater().inflate(R.menu.menu, menu);
 
-		SearchView searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
+		final SearchView searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
 
 		searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 			@Override
@@ -70,6 +80,51 @@ public class TTActivity extends Activity {
 			}
 		});
 
+		searchView.setOnDragListener(new OnDragListener(){
+			@Override
+			public boolean onDrag(View v, DragEvent event) {
+				final int action = event.getAction();
+				
+				switch(action) {
+					case DragEvent.ACTION_DRAG_STARTED:
+						if (event.getClipDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)) {
+							return true;
+						} else {
+							return false;
+						}
+
+					case DragEvent.ACTION_DRAG_ENTERED:
+						
+						if(searchView.isIconified()) {
+							searchView.setBackgroundResource(R.drawable.background_repeat);
+						} else {
+							searchView.setBackgroundColor(Color.TRANSPARENT);
+						}
+						break;
+
+					case DragEvent.ACTION_DRAG_EXITED:
+						searchView.setBackgroundColor(Color.TRANSPARENT);
+						break;
+
+					case DragEvent.ACTION_DROP:
+						searchView.setIconified(false);
+						
+						ClipData.Item item = event.getClipData().getItemAt(0);
+
+	                    String dragData = item.getText().toString();
+	                    searchView.setQuery(dragData, true);
+						break;
+
+					case DragEvent.ACTION_DRAG_ENDED:
+						System.err.println("ENDING DRAG!");
+						searchView.setBackgroundColor(Color.TRANSPARENT);
+						break;
+				}
+
+				return false;
+			}
+		});
+
 		return true;
 	}
 
@@ -81,6 +136,9 @@ public class TTActivity extends Activity {
 						null).show(getFragmentManager(), null);
 				break;
 
+			case R.id.menu_preferences:
+				startActivity(new Intent(this, Preferences.class));
+				break;
 			default:
 				return false;
 		}

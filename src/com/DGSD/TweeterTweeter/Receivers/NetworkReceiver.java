@@ -4,9 +4,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
-import com.DGSD.TweeterTweeter.Utils.Log;
 
 import com.DGSD.TweeterTweeter.Services.UpdaterService;
+import com.DGSD.TweeterTweeter.Utils.Log;
 
 public class NetworkReceiver extends BroadcastReceiver { 
 	public static final String TAG = "NetworkReceiver";

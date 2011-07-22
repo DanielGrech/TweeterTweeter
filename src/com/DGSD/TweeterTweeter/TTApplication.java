@@ -318,7 +318,12 @@ OnSharedPreferenceChangeListener {
 		return mFetchProfileInfo.fetch(accountId, user, type);
 	}
 
-
+	public boolean isFollowing(String account, String personId) {
+		return getStatusData().contains(StatusData.FOLLOWING_TABLE, account, 
+				StatusData.C_ID, personId);
+	}
+	
+	
 	public synchronized void addNewFavourite(String account, 
 			String tweetid) throws TwitterException{
 

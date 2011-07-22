@@ -1,10 +1,16 @@
 package com.DGSD.TweeterTweeter.Fragments;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -24,15 +30,15 @@ import com.DGSD.TweeterTweeter.UI.PullToRefreshListView;
 import com.DGSD.TweeterTweeter.UI.PullToRefreshListView.OnRefreshListener;
 import com.DGSD.TweeterTweeter.UI.Adapters.EndlessListAdapter;
 import com.DGSD.TweeterTweeter.UI.Adapters.TimelineCursorAdapter;
+import com.DGSD.TweeterTweeter.Utils.ListUtils;
 import com.DGSD.TweeterTweeter.Utils.Log;
-import com.DGSD.TweeterTweeter.Utils.QuickActionUtils;
 
 public abstract class BaseStatusFragment extends BaseFragment {
 
 	private static final String TAG = BaseStatusFragment.class.getSimpleName();
 
 	private static final String RECEIVE_DATA = 
-		"com.DGSD.TweeterTweeter.RECEIVE_DATA";
+			"com.DGSD.TweeterTweeter.RECEIVE_DATA";
 
 	protected static final String[] FROM = { StatusData.C_CREATED_AT, StatusData.C_SCREEN_NAME,
 		StatusData.C_TEXT, StatusData.C_IMG, StatusData.C_ID};
@@ -101,7 +107,7 @@ public abstract class BaseStatusFragment extends BaseFragment {
 		if(mCurrentTask != null && !mCurrentTask.isCancelled()) {
 			mCurrentTask.cancel(true);
 		}
-		
+
 		mCurrentTask = new DataLoadingTask(BaseStatusFragment.this, DataLoadingTask.CURRENT);
 		mCurrentTask.execute();
 
@@ -121,12 +127,12 @@ public abstract class BaseStatusFragment extends BaseFragment {
 				if(mCurrentTask != null && !mCurrentTask.isCancelled()) {
 					mCurrentTask.cancel(true);
 				}
-				
+
 				mCurrentTask = new DataLoadingTask(BaseStatusFragment.this, DataLoadingTask.NEWEST);
 				mCurrentTask.execute();
 			}
 		});
-		
+
 		((PullToRefreshListView)mListView).setOnScrollListener(new OnScrollListener(){
 
 			@Override
@@ -135,7 +141,6 @@ public abstract class BaseStatusFragment extends BaseFragment {
 				if(mAdapter != null && (totalItemCount != visibleItemCount)) {
 					((EndlessListAdapter)mAdapter).setKeepApending(true);
 				}
-				
 			}
 
 			@Override
@@ -143,44 +148,27 @@ public abstract class BaseStatusFragment extends BaseFragment {
 
 			}
 		});
-		
+
 		mListView.setOnItemLongClickListener(new OnItemLongClickListener(){
 			@Override
 			public boolean onItemLongClick(AdapterView<?> parent, View view, 
 					int pos, long id) {
 
-				//Get available tweet data..
-				/*
-				 * TODO: Should just return a whole data structure with all details possible
-				 */
-				String tweet_id = QuickActionUtils.getTweetProperty(mCursor, 
-						StatusData.C_ID, pos-1);
-
-				if(tweet_id == "") {
-					//We couldn't get a tweet id :(
-					Toast.makeText(getActivity(), 
-							"Error getting data for tweet", Toast.LENGTH_SHORT).show();
-
-					return false;
-				}
-
-				Log.i(TAG, "TWEET ID: " + tweet_id);
-
-				QuickActionUtils.getTimelineQuickAction(getActivity(), mAccountId, 
-						view, mCursor, pos-1).show();
-
-				return false;
+				mCurrentActionMode = getActivity().startActionMode(
+						new StatusCallback(pos - 1));
+				
+				return true;
 			}
 
 		});
-		
+
 		mListView.setOnItemClickListener(new OnItemClickListener(){
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, 
 					int pos, long id) {
-				
+
 			}
-			
+
 		});
 	}
 
@@ -218,6 +206,11 @@ public abstract class BaseStatusFragment extends BaseFragment {
 			mCursor = null;
 		}
 
+		if(mCurrentActionMode != null) {
+			mCurrentActionMode.finish();
+			mCurrentActionMode = null;
+		}
+		
 		mAdapter = null;
 	}
 
@@ -227,7 +220,7 @@ public abstract class BaseStatusFragment extends BaseFragment {
 			Log.i(TAG, "Listview/cursor was null!");
 			return;
 		}
-		
+
 		if(mCursor.getCount() == 0) {
 			((PullToRefreshListView)mListView).refresh();
 		}
@@ -235,10 +228,10 @@ public abstract class BaseStatusFragment extends BaseFragment {
 		if(mAdapter == null) {
 			TimelineCursorAdapter tca = new TimelineCursorAdapter(getActivity(), R.layout.timeline_list_item, 
 					mCursor, FROM, TO);
-			
+
 			mAdapter = new EndlessListAdapter(BaseStatusFragment.this, tca);
 		}
-		
+
 		if(mListView.getAdapter() == null) {
 			Log.i(TAG, "ADAPTER WAS NULL! SETTING IT!");
 			mListView.setAdapter(mAdapter);
@@ -247,18 +240,18 @@ public abstract class BaseStatusFragment extends BaseFragment {
 			((TimelineCursorAdapter)((EndlessListAdapter)mAdapter).getAdapter()).changeCursor(mCursor);
 			((TimelineCursorAdapter)((EndlessListAdapter)mAdapter).getAdapter()).notifyDataSetChanged();
 		}
-		
+
 		if(((PullToRefreshListView)mListView).isRefreshing()) {
 			((PullToRefreshListView)mListView).onRefreshComplete();
 		}
 	}
-	
+
 	private void startRefresh(int type, String account) {
 		if(mType == type && account != null && mAccountId.equals(account)) {
 			if(mCurrentTask != null && !mCurrentTask.isCancelled()) {
 				mCurrentTask.cancel(true);
 			}
-			
+
 			mCurrentTask = new DataLoadingTask(BaseStatusFragment.this, DataLoadingTask.CURRENT);
 			mCurrentTask.execute();
 		} else {
@@ -277,5 +270,167 @@ public abstract class BaseStatusFragment extends BaseFragment {
 					+ type + " ACCOUNT: " + account 
 					+ "(My type=" + mType + " My Account = " + mAccountId + ")");
 		}
+	}
+
+	private class StatusCallback implements ActionMode.Callback {
+
+		private String mTweetId;
+
+		private String mScreenName;
+
+		private String mTweetText;
+		
+		final String[] userEntities;
+
+		private boolean hasError;
+
+		public StatusCallback(int pos) {
+			hasError = false;
+
+			mTweetId = ListUtils.getTweetProperty(mCursor, 
+					StatusData.C_ID, pos);
+
+			mScreenName = ListUtils.getTweetProperty(mCursor, 
+					StatusData.C_SCREEN_NAME, pos);
+
+			mTweetText = ListUtils.getTweetProperty(mCursor, 
+					StatusData.C_TEXT, pos);
+			
+			userEntities = ListUtils.getTweetProperty(mCursor, 
+					StatusData.C_USER_ENT, pos).split(",");
+
+			if(mTweetId == "" || mTweetId == null) {
+				//We couldn't get a tweet id :(
+				Toast.makeText(getActivity(), 
+						"Error getting data for tweet", Toast.LENGTH_SHORT).show();
+
+				hasError = true;
+			}
+		}
+
+		@Override
+		public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
+			if(hasError) {
+				return false;
+			} else {
+				actionMode.setTitle(mScreenName + "'s tweet");
+
+				MenuInflater inflater = getActivity().getMenuInflater();
+				inflater.inflate(R.menu.status_context_menu, menu);
+				return true;
+			}
+		}
+
+		@Override
+		public boolean onPrepareActionMode(ActionMode actionMode, Menu menu) {
+			return false;
+		}
+
+		@Override
+		public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
+
+			boolean handled = false;
+			switch (menuItem.getItemId()) {
+				case R.id.menu_reply:
+					if(userEntities.length > 0 && userEntities[0].length() > 0) {
+						//We might want to reply to all mentioned users?
+						final CharSequence[] choices = {"Reply", "Reply to all"};
+
+						AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+						builder.setTitle("Reply");
+
+						builder.setItems(choices, new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int item) {
+								String val = "";
+								switch(item) {
+									case 0: 
+										//Reply
+										val = "@" + mScreenName;
+										break;
+									case 1:
+										//Reply to all
+										val = "@" + mScreenName;
+										for(String s : userEntities) {
+											if(s.length() > 0) {
+												val += " @" + s;
+											}
+										}
+										break;
+								}
+
+								NewTweetFragment.newInstance(mApplication.getSelectedAccount(),
+										val + " ").show(getActivity().getFragmentManager(), null);
+							}
+						});
+
+						builder.create().show();
+					} else {
+						//There are no other mentioned users, lets just reply
+						NewTweetFragment.newInstance(mApplication.getSelectedAccount(), 
+								"@" + mScreenName + " ").show(getActivity().getFragmentManager(), null);
+					}
+
+					handled = true;
+					break;
+
+				case R.id.menu_retweet:
+					final CharSequence[] choices = {"Retweet", "Retweet and edit"};
+
+					AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+					builder.setTitle("Retweet");
+
+					builder.setItems(choices, new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int item) {
+							switch(item) {
+								case 0: 
+									Toast.makeText(getActivity(), "Retweet!", 
+											Toast.LENGTH_SHORT).show();
+									break;
+								case 1:
+									//Retweet & edit
+									NewTweetFragment.newInstance(mApplication.getSelectedAccount(),
+											"RT " + mTweetText).show(getActivity().getFragmentManager(), null);
+									break;
+							}
+						}
+					});
+
+					builder.create().show();
+
+					handled = true;
+					break;
+
+				case R.id.menu_favourite:
+					System.err.println("FAVOURITE FOR: " + mTweetId);
+					Intent intent = new Intent(getActivity(), UpdaterService.class);
+					intent.putExtra(UpdaterService.DATA_TYPE, UpdaterService.DATATYPES.NEW_FAVOURITE);
+					intent.putExtra(UpdaterService.ACCOUNT, mAccountId);
+					intent.putExtra(UpdaterService.TWEETID, mTweetId);
+					getActivity().startService(intent);
+
+					handled = true;
+					break;
+
+				case R.id.menu_share:
+					Intent sharingIntent = new Intent(Intent.ACTION_SEND);
+					sharingIntent.setType("text/plain");
+					sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, mTweetText);
+					sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Tweet by " + mScreenName);
+					getActivity().startActivity(Intent.createChooser(sharingIntent, "Share tweet"));
+
+					handled = true;
+					break;
+			}
+
+			actionMode.finish();
+
+			return handled;
+		}
+
+		@Override
+		public void onDestroyActionMode(ActionMode actionMode) {
+			mCurrentActionMode = null;
+		}
+
 	}
 }

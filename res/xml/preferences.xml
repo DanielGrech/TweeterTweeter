@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+	<PreferenceCategory 
+		android:summary="Change the appearance of the data lists"
+		android:title="Tweet Display">
+		<CheckBoxPreference 
+			android:defaultValue="false"
+			android:summary="The size of the text used to display data"
+			android:key="prefTextSize" 
+			android:title="Text Size" />
+		<ListPreference 
+			android:title="Image size"
+			android:summary="The size of the user image in each row" 
+			android:key="listPref"
+			android:entries="@array/prefs_image_size" 
+			android:entryValues="@array/prefs_image_size_vals" />
+	</PreferenceCategory>
+	
+	<PreferenceCategory 
+		android:title="Data Handling"
+		android:summary="Change the way the app gets data">
+		<RingtonePreference 
+			android:name="Ringtone Preference"
+			android:summary="Select a ringtone" 
+			android:title="Ringtones"
+			android:key="ringtonePref" />
+			
+		<PreferenceScreen 
+			android:key="SecondPrefScreen"
+			android:title="Second PreferenceScreen" 
+			android:summary="This is a second PreferenceScreen">
+			<EditTextPreference 
+				android:name="An other EditText Preference"
+				android:summary="This is a preference in the second PreferenceScreen"
+				android:title="Edit text" 
+				android:key="SecondEditTextPref" />
+		</PreferenceScreen>
+		
+		<Preference 
+			android:title="Custom Preference"
+			android:summary="This works almost like a button" 
+			android:key="customPref" />
+	</PreferenceCategory>
+	
+</PreferenceScreen>

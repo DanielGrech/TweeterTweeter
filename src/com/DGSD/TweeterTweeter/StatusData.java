@@ -327,7 +327,17 @@ public class StatusData {
 		}
 	}
 
-
+	public boolean contains(String table, String accountId, String column, String val) {
+		SQLiteDatabase db = this.dbHelper.getReadableDatabase();
+		
+		Cursor c = db.query(table, new String[]{column}, 
+				C_ACCOUNT + " IN (\"" + accountId + "\") AND " + column + "=\"" + val + "\"", 
+				null, null, null, null);
+		
+		return !(c == null || c.getCount() == 0);
+	}
+	
+	
 	public Cursor getStatusUpdates(String accountId, String[] columns) {   
 		SQLiteDatabase db = this.dbHelper.getReadableDatabase();
 		return db.query(HOME_TIMELINE_TABLE, columns, C_ACCOUNT + " IN (\"" + accountId + "\")", 

@@ -9,12 +9,12 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
-import com.DGSD.TweeterTweeter.Utils.Log;
 import android.widget.RemoteViews;
 
 import com.DGSD.TweeterTweeter.R;
 import com.DGSD.TweeterTweeter.TTActivity;
 import com.DGSD.TweeterTweeter.TTApplication;
+import com.DGSD.TweeterTweeter.Utils.Log;
 
 public class NewStatusService extends Service{
 	

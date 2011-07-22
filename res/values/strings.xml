@@ -1,37 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">TweeterTweeter</string>
-    <string name="consumer_key">AMJAX1bGldW9sUpXnjDdvw</string>
-    <string name="consumer_secret">HJiwIdO43SfOhxH1aZIfknNmhcN581kgScAhoN2Wbo</string>
-    <string name="account_spinner">Choose an account</string>
-    <string name="twitpic_key">a70b86c797017c351c09932423d14922</string>
-    <string name="bitlyKey">R_faa997c865c4d1fcfe37217c44c1cc21</string>
-    <string name="bitlyName">dgsoftwaredevelopment</string>
-    
-    <string name="receive_twitter_data">Receive Twitter Data</string>
-    <string name="receive_data_description">Allow this app to fetch data from twitter</string>
-    <string name="send_data_description">Allow this application to use data from twitter</string>
-    <string name="send_twitter_data">Use data from twitter</string>
-    
-    <string name="pull_to_refresh_pull_label">Pull to refresh...</string>
-    <string name="pull_to_refresh_release_label">Release to refresh...</string>
-    <string name="pull_to_refresh_refreshing_label">Loading...</string>
-    <string name="pull_to_refresh_tap_label">Tap to refresh...</string>
-    
-    
-    <string-array name="menu_list">
-        <item>Home Timeline</item>
-        <item>Direct Messages (Received)</item>
-        <item>Direct Messages (Sent)</item>
-        <item>Favourites</item>
-        <item>Followers</item>
-        <item>Following</item>
-        <item>Mentions</item>
-        <item>Retweeted By</item>
-        <item>Retweets of Me</item>
-        <item>Saved Search</item>
-        <item>Lists</item>
-    </string-array>
-        <string name="tt_activity">TTActivity</string>
-        <string name="login_activity">LoginActivity</string>
+	<string name="app_name">TweeterTweeter</string>
+	<string name="consumer_key">AMJAX1bGldW9sUpXnjDdvw</string>
+	<string name="consumer_secret">HJiwIdO43SfOhxH1aZIfknNmhcN581kgScAhoN2Wbo</string>
+	<string name="account_spinner">Choose an account</string>
+	<string name="twitpic_key">a70b86c797017c351c09932423d14922</string>
+	<string name="bitlyKey">R_faa997c865c4d1fcfe37217c44c1cc21</string>
+	<string name="bitlyName">dgsoftwaredevelopment</string>
+
+	<string name="receive_twitter_data">Receive Twitter Data</string>
+	<string name="receive_data_description">Allow this app to fetch data from twitter</string>
+	<string name="send_data_description">Allow this application to use data from twitter
+	</string>
+	<string name="send_twitter_data">Use data from twitter</string>
+
+	<string name="pull_to_refresh_pull_label">Pull to refresh...</string>
+	<string name="pull_to_refresh_release_label">Release to refresh...</string>
+	<string name="pull_to_refresh_refreshing_label">Loading...</string>
+	<string name="pull_to_refresh_tap_label">Tap to refresh...</string>
+
+
+	<string-array name="menu_list">
+		<item>Home Timeline</item>
+		<item>Direct Messages (Received)</item>
+		<item>Direct Messages (Sent)</item>
+		<item>Favourites</item>
+		<item>Followers</item>
+		<item>Following</item>
+		<item>Mentions</item>
+		<item>Retweeted By</item>
+		<item>Retweets of Me</item>
+		<item>Saved Search</item>
+		<item>Lists</item>
+	</string-array>
+
+	<string-array name="prefs_image_size">
+		<item>Small</item>
+		<item>Medium</item>
+		<item>Larger</item>
+	</string-array>
+	
+	<string-array name="prefs_image_size_vals">
+		<item>100</item>
+		<item>200</item>
+		<item>300</item>
+	</string-array>
+
+
+	<string name="tt_activity">TTActivity</string>
+	<string name="login_activity">LoginActivity</string>
+	<string name="set_preferences">Set Preferences</string>
 </resources>

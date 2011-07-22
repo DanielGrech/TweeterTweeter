@@ -39,8 +39,8 @@ public class PeopleCursorAdapter extends SimpleCursorAdapter{
 
 		view.setTag(new ViewHolder((TextView) view.findViewById(R.id.screen_name),
 				(WebImageView) view.findViewById(R.id.profile_image)
-		));
-
+				));
+		
 		return view;
 	}
 
@@ -66,8 +66,8 @@ public class PeopleCursorAdapter extends SimpleCursorAdapter{
 			vh.img.loadImage();
 		}catch(OutOfMemoryError e) {
 			// :(
-			Log.e(TAG, "OUT OF MEMORY!");
-			vh.img.reset();
+					Log.e(TAG, "OUT OF MEMORY!");
+					vh.img.reset();
 		}
 	}
 
