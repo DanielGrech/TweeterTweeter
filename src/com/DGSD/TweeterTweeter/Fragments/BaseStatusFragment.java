@@ -1,6 +1,7 @@
 package com.DGSD.TweeterTweeter.Fragments;
 
 import android.app.AlertDialog;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -100,7 +101,7 @@ public abstract class BaseStatusFragment extends BaseFragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
-		View root = inflater.inflate(R.layout.list_fragment_layout_status, container, false);
+		View root = inflater.inflate(R.layout.list_fragment_layout, container, false);
 
 		mListView = (PullToRefreshListView) root.findViewById(R.id.list);
 
@@ -166,7 +167,17 @@ public abstract class BaseStatusFragment extends BaseFragment {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, 
 					int pos, long id) {
-
+				//Show the view
+				View container = getActivity().findViewById(R.id.secondary_container);
+				container.setVisibility(View.VISIBLE);
+				
+				//Insert the fragment!
+				getFragmentManager().beginTransaction()
+									.replace(R.id.secondary_container, 
+											TweetFragment.newInstance(StatusData.getStatus(mCursor)))
+										.addToBackStack(null)
+										.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+										.commit();
 			}
 
 		});

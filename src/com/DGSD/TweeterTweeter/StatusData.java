@@ -609,5 +609,31 @@ public class StatusData {
 		}
 	}
 
+	public static ContentValues getStatus(Cursor c) {
+		ContentValues values = new ContentValues();
+		
+		values.put(C_ACCOUNT, c.getString(c.getColumnIndex(C_ACCOUNT)));
+		values.put(C_USER, c.getString(c.getColumnIndex(C_USER)));
+		values.put(C_ID, c.getString(c.getColumnIndex(C_ID)));
+		values.put(C_CREATED_AT, c.getString(c.getColumnIndex(C_CREATED_AT)));
+		values.put(C_TEXT, c.getString(c.getColumnIndex(C_TEXT)));
+		values.put(C_USER_NAME, c.getString(c.getColumnIndex(C_USER_NAME)));
+		values.put(C_SCREEN_NAME, c.getString(c.getColumnIndex(C_SCREEN_NAME)));
+		values.put(C_IMG, c.getString(c.getColumnIndex(C_IMG)));
+		values.put(C_FAV, c.getString(c.getColumnIndex(C_FAV)));
+		values.put(C_SRC, c.getString(c.getColumnIndex(C_SRC)));
+		values.put(C_IN_REPLY, c.getString(c.getColumnIndex(C_IN_REPLY)));
+		values.put(C_ORIG_TWEET, c.getString(c.getColumnIndex(C_ORIG_TWEET)));
+		values.put(C_RETWEET_COUNT, c.getString(c.getColumnIndex(C_RETWEET_COUNT)));
+		values.put(C_PLACE_NAME, c.getString(c.getColumnIndex(C_PLACE_NAME)));
+		values.put(C_LAT, c.getString(c.getColumnIndex(C_LAT)));
+		values.put(C_LONG, c.getString(c.getColumnIndex(C_LONG)));
+		values.put(C_MEDIA_ENT, c.getString(c.getColumnIndex(C_MEDIA_ENT)));
+		values.put(C_HASH_ENT, c.getString(c.getColumnIndex(C_HASH_ENT)));
+		values.put(C_URL_ENT, c.getString(c.getColumnIndex(C_URL_ENT)));
+		values.put(C_USER_ENT, c.getString(c.getColumnIndex(C_USER_ENT)));
+
+		return values;
+	}
 
 }

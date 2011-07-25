@@ -1,30 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
     
-    <fragment class="com.DGSD.TweeterTweeter.Fragments.SideMenuFragment"
-    	android:id="@+id/side_menu"
-    	android:layout_width="@dimen/side_menu_width"
-    	android:layout_height="match_parent"
-    	android:background="#000"/>
-    
-    <com.DGSD.TweeterTweeter.UI.Workspace
+    <LinearLayout
             android:id="@+id/data_container_port"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-            
+            android:layout_height="0dp"
+            android:layout_weight="2"
+            android:orientation="horizontal">
+    
+		    <fragment class="com.DGSD.TweeterTweeter.Fragments.SideMenuFragment"
+		    	android:id="@+id/side_menu"
+		    	android:layout_width="@dimen/side_menu_width"
+		    	android:layout_height="match_parent"
+		    	android:background="#000"/>
+
             <LinearLayout
 	            android:id="@+id/container"
-	            android:layout_width="0dp"
-	            android:layout_height="fill_parent"
+	            android:layout_width="match_parent"
+	            android:layout_height="match_parent"
 	            android:layout_weight="1" />
-	    	<LinearLayout
-	            android:id="@+id/secondary_container"
-	            android:layout_width="0dp"
-	            android:layout_height="fill_parent"
-	            android:layout_weight="1"/>   
-    </com.DGSD.TweeterTweeter.UI.Workspace>
+	</LinearLayout>
 
+   	<LinearLayout
+           android:id="@+id/secondary_container"
+           android:layout_width="match_parent"
+           android:layout_height="0dp"
+           android:layout_weight="1"
+           android:visibility="gone"/>   
 </LinearLayout>

@@ -25,6 +25,7 @@ import com.DGSD.TweeterTweeter.Tasks.AddFriendTask;
 import com.DGSD.TweeterTweeter.Tasks.BlockUserTask;
 import com.DGSD.TweeterTweeter.Tasks.DataLoadingTask;
 import com.DGSD.TweeterTweeter.Tasks.ReportSpamTask;
+import com.DGSD.TweeterTweeter.UI.Adapters.EndlessListAdapter;
 import com.DGSD.TweeterTweeter.UI.Adapters.PeopleCursorAdapter;
 import com.DGSD.TweeterTweeter.Utils.ListUtils;
 import com.DGSD.TweeterTweeter.Utils.Log;
@@ -98,7 +99,7 @@ public abstract class BasePeopleFragment extends BaseFragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
-		View root = inflater.inflate(R.layout.list_fragment_layout_people, container, false);
+		View root = inflater.inflate(R.layout.list_fragment_layout, container, false);
 
 		mListView = (ListView) root.findViewById(R.id.list);
 
@@ -128,7 +129,7 @@ public abstract class BasePeopleFragment extends BaseFragment {
 					int pos, long id) {
 
 				mCurrentActionMode = getActivity().startActionMode(
-						new PeopleCallback(pos));
+						new PeopleCallback(pos-1));
 
 				return false;
 			}
@@ -191,8 +192,10 @@ public abstract class BasePeopleFragment extends BaseFragment {
 		}
 
 		if(mAdapter == null) {
-			mAdapter = new PeopleCursorAdapter(getActivity(), R.layout.people_list_item, 
-					mCursor, FROM, TO);
+			mAdapter = new EndlessListAdapter(BasePeopleFragment.this, 
+					new PeopleCursorAdapter(getActivity(), R.layout.people_list_item, 
+					mCursor, FROM, TO));
+			((EndlessListAdapter)mAdapter).setKeepApending(false);
 		}
 
 		if(mListView.getAdapter() == null) {

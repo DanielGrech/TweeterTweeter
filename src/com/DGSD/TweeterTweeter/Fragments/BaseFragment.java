@@ -10,9 +10,12 @@ import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
 
 import com.DGSD.TweeterTweeter.R;
 import com.DGSD.TweeterTweeter.TTApplication;
+import com.DGSD.TweeterTweeter.UI.Adapters.EndlessListAdapter;
+import com.DGSD.TweeterTweeter.UI.Adapters.TimelineCursorAdapter;
 import com.DGSD.TweeterTweeter.Utils.Log;
 
 public abstract class BaseFragment extends DialogFragment {
@@ -123,5 +126,9 @@ public abstract class BaseFragment extends DialogFragment {
 	
 	public void setCursor(Cursor c) {
 		mCursor = c;
+		if(mAdapter != null && ((EndlessListAdapter)mAdapter).getAdapter() != null) {
+			((SimpleCursorAdapter)((EndlessListAdapter)mAdapter).getAdapter()).changeCursor(mCursor);
+			((SimpleCursorAdapter)((EndlessListAdapter)mAdapter).getAdapter()).notifyDataSetChanged();
+		}
 	}
 }

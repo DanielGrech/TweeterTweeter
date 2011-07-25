@@ -5,15 +5,8 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:padding="6dip"
-    android:focusable="false">
-    <com.github.droidfu.widgets.WebImageView
-        android:id="@+id/timeline_profile_image"
-        android:layout_width="100dip"
-        android:layout_height="100dip"
-        android:layout_alignParentTop="true"
-        android:scaleType="fitXY"
-        droidfu:autoLoad="false"
-        droidfu:progressDrawable="@drawable/ic_contact_picture"/>
+    android:focusable="false"
+    android:background="@drawable/gradient_background">
 
     <TextView
          android:id="@+id/timeline_source"
@@ -25,7 +18,7 @@
          android:layout_marginLeft="6.0dip"
          android:layout_marginTop="4.0dip" 
          android:layout_marginRight="7.0dip"
-         android:layout_toRightOf="@id/timeline_profile_image"
+         android:layout_toRightOf="@+id/timeline_profile_image"
          android:ellipsize="marquee"/>
          
     <TextView
@@ -45,7 +38,7 @@
         android:id="@+id/timeline_tweet"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/timeline_profile_image" 
+        android:layout_toRightOf="@+id/timeline_profile_image" 
         android:layout_below="@id/timeline_source"
         android:layout_marginLeft="6.0dip" 
         android:layout_marginRight="7.0dip"
@@ -53,4 +46,13 @@
         android:singleLine="false"
         android:textSize="14.0sp" 
         android:textColor="#ff888888"/>
+        
+        <com.github.droidfu.widgets.WebImageView
+	        android:id="@+id/timeline_profile_image"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentTop="true"
+	        android:scaleType="fitXY"
+	        droidfu:autoLoad="false"
+	        droidfu:progressDrawable="@drawable/ic_contact_picture"/>
 </RelativeLayout>

@@ -173,6 +173,14 @@ public class Workspace extends ViewGroup {
 	 */
 	int getScreenCount() {
 		int childCount = getChildCount();
+		
+		//We only want visible children..
+		for(int i = 0, size = getChildCount(); i < size; i++) {
+			if(getChildAt(i).getVisibility() == View.GONE) {
+				childCount--;
+			}
+		}
+		
 		if (mSeparatorDrawable != null) {
 			return (childCount + 1) / 2;
 		}
@@ -852,6 +860,7 @@ public class Workspace extends ViewGroup {
 				snapToScreen(savedState.currentScreen, true, true);
 			}
 		}catch(ClassCastException e) {
+			super.onRestoreInstanceState(state);
 			e.printStackTrace();
 		}
 	}

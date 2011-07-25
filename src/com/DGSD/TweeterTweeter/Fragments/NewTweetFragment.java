@@ -54,7 +54,7 @@ implements OnClickListener {
 	public static final String TAG = NewTweetFragment.class.getSimpleName();
 
 	private static final String KEY_TWEET_TEXT = "tweet_text";
-	
+
 	private static final int GET_CAMERA_IMAGE = 0;
 
 	private static final int GET_GALLERY_IMAGE = 1;
@@ -76,13 +76,13 @@ implements OnClickListener {
 	private Button mLocationButton;
 
 	private Button mSubmitButton;
-	
+
 	private long mLatitude = -1;
-	
+
 	private long mLongitude = -1;
 
 	protected static final String[] FROM = 
-	{ StatusData.C_SCREEN_NAME, StatusData.C_IMG, StatusData.C_ID };
+		{ StatusData.C_SCREEN_NAME, StatusData.C_IMG, StatusData.C_ID };
 
 	protected static final int[] TO = {R.id.screen_name, R.id.profile_image};
 
@@ -91,7 +91,7 @@ implements OnClickListener {
 
 		// Supply index input as an argument.
 		Bundle args = new Bundle();
-		
+
 		args.putString("account", account);
 		args.putString("tweet", tweetText);
 
@@ -99,8 +99,8 @@ implements OnClickListener {
 
 		return f;
 	}
-	
-	
+
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -118,24 +118,24 @@ implements OnClickListener {
 		if(getDialog() != null) {
 			getDialog().setTitle("New Tweet");
 		}
-		
+
 		mTweetEditText = 
-			(MultiAutoCompleteTextView) root.findViewById(R.id.new_tweet_text);
+				(MultiAutoCompleteTextView) root.findViewById(R.id.new_tweet_text);
 
 		mCharacterCountView = 
-			(TextView) root.findViewById(R.id.new_tweet_character_count);
+				(TextView) root.findViewById(R.id.new_tweet_character_count);
 
 		mShortenUrlButton = 
-			(Button) root.findViewById(R.id.new_tweet_url_shorten);
+				(Button) root.findViewById(R.id.new_tweet_url_shorten);
 
 		mMediaButton = 
-			(Button) root.findViewById(R.id.new_tweet_media);
+				(Button) root.findViewById(R.id.new_tweet_media);
 
 		mLocationButton = 
-			(Button) root.findViewById(R.id.new_tweet_location);
+				(Button) root.findViewById(R.id.new_tweet_location);
 
 		mSubmitButton = 
-			(Button) root.findViewById(R.id.new_tweet_submit);
+				(Button) root.findViewById(R.id.new_tweet_submit);
 
 
 		Log.i(TAG, "Returning root from onCreateView");
@@ -162,11 +162,15 @@ implements OnClickListener {
 		//Listen for when the user presses 'enter' on the keyboard.
 		mTweetEditText.setOnEditorActionListener(new OnEditorActionListener() {
 			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-				mSubmitButton.performClick();
-				return false;
+				if (event != null && event.getAction() != KeyEvent.ACTION_DOWN) {
+					return false;
+				} else {
+					mSubmitButton.performClick();
+					return true;
+				}
 			}
 		});
-		
+
 		if(savedInstanceState != null 
 				&& savedInstanceState.getString(KEY_TWEET_TEXT) != null) {
 			addToTweet(mTweetEditText, savedInstanceState.getString(KEY_TWEET_TEXT));
@@ -192,10 +196,10 @@ implements OnClickListener {
 					try {
 						Bitmap captureBmp = Media.getBitmap(
 								getActivity().getContentResolver(), Uri.fromFile(file) );
-						
+
 						new MediaUploadTask(getActivity(), mTweetEditText, 
 								MediaUploadTask.CAMERA_IMG,	captureBmp).execute();
-						
+
 					} catch (FileNotFoundException e) {
 						Log.e(TAG, "File not found", e);
 					} catch (IOException e) {
@@ -223,12 +227,12 @@ implements OnClickListener {
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		
+
 		if(mTweetEditText != null) {
 			outState.putString(KEY_TWEET_TEXT, mTweetEditText.getText().toString());
 		}
 	}
-	
+
 	@Override
 	public void onClick(View v) {
 		switch(v.getId()) {
@@ -269,22 +273,22 @@ implements OnClickListener {
 
 			case R.id.new_tweet_submit:
 				Log.i(TAG, "Submit Button!!");
-				
+
 				Intent intent = new Intent(getActivity(), NewStatusService.class);
-				
+
 				intent.putExtra(NewStatusService.TWEET_ACCOUNT, mAccountId);
-				
+
 				intent.putExtra(NewStatusService.TWEET_TEXT, mTweetEditText.getText());
-				
+
 				if(mLatitude != -1 && mLongitude != -1) {
 					intent.putExtra(NewStatusService.TWEET_LAT, mLatitude);
 					intent.putExtra(NewStatusService.TWEET_LONG, mLongitude);
 				}
-				
+
 				getActivity().startService(intent);
-				
+
 				this.dismiss();
-				
+
 				break;
 		}
 	}
@@ -357,7 +361,7 @@ implements OnClickListener {
 		String[] projection = { MediaStore.Images.Media.DATA };
 		Cursor cursor = getActivity().managedQuery(uri, projection, null, null, null);
 		int column_index = cursor
-		.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+				.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
 		cursor.moveToFirst();
 		return cursor.getString(column_index);
 	}
@@ -377,7 +381,7 @@ implements OnClickListener {
 		if(text == null) {
 			return;
 		}
-		
+
 		String currentText = tv.getText().toString();
 
 		if(currentText.length() == 0) {

@@ -1,11 +1,13 @@
 package com.DGSD.TweeterTweeter;
 
+import android.animation.LayoutTransition;
 import android.app.ActionBar;
 import android.app.ActionBar.OnNavigationListener;
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.DragEvent;
@@ -13,6 +15,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnDragListener;
+import android.view.ViewGroup;
 import android.widget.SearchView;
 import android.widget.Toast;
 
@@ -26,6 +29,8 @@ public class TTActivity extends Activity {
 
 	private TTApplication mApplication;
 
+	private ViewGroup mDataContainer;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -34,8 +39,22 @@ public class TTActivity extends Activity {
 
 		mApplication = (TTApplication) getApplication();
 
-		ActionBar mActionBar = getActionBar();
+		if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
+			mDataContainer = (ViewGroup) findViewById(R.id.data_container_land);
+		} else {
+			mDataContainer = (ViewGroup) findViewById(R.id.data_container_port);
+		}
+
+		LayoutTransition lt = new LayoutTransition();
+
+		lt.setStagger(LayoutTransition.CHANGE_APPEARING, 30);
+		lt.setStagger(LayoutTransition.CHANGE_DISAPPEARING, 30);
+		lt.setDuration(500);
 		
+		mDataContainer.setLayoutTransition(lt);
+
+		ActionBar mActionBar = getActionBar();
+
 		mActionBar.setDisplayShowHomeEnabled(false);
 		mActionBar.setDisplayShowTitleEnabled(false);
 
@@ -51,9 +70,9 @@ public class TTActivity extends Activity {
 				/*
 				 * This is itemPosition+1 as account naming is not 0-indexed
 				 */
-				Log.i(TAG, "Setting selected account to account" + (itemPosition+1));
-				mApplication.setSelectedAccount("account" + (itemPosition+1));
-				return false;
+				 Log.i(TAG, "Setting selected account to account" + (itemPosition+1));
+				 mApplication.setSelectedAccount("account" + (itemPosition+1));
+				 return false;
 			}
 		});
 	}
@@ -84,7 +103,7 @@ public class TTActivity extends Activity {
 			@Override
 			public boolean onDrag(View v, DragEvent event) {
 				final int action = event.getAction();
-				
+
 				switch(action) {
 					case DragEvent.ACTION_DRAG_STARTED:
 						if (event.getClipDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)) {
@@ -94,7 +113,7 @@ public class TTActivity extends Activity {
 						}
 
 					case DragEvent.ACTION_DRAG_ENTERED:
-						
+
 						if(searchView.isIconified()) {
 							searchView.setBackgroundResource(R.drawable.background_repeat);
 						} else {
@@ -108,11 +127,11 @@ public class TTActivity extends Activity {
 
 					case DragEvent.ACTION_DROP:
 						searchView.setIconified(false);
-						
+
 						ClipData.Item item = event.getClipData().getItemAt(0);
 
-	                    String dragData = item.getText().toString();
-	                    searchView.setQuery(dragData, true);
+						String dragData = item.getText().toString();
+						searchView.setQuery(dragData, true);
 						break;
 
 					case DragEvent.ACTION_DRAG_ENDED:

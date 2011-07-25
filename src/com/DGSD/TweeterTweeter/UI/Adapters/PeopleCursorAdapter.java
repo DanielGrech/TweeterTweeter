@@ -59,7 +59,6 @@ public class PeopleCursorAdapter extends SimpleCursorAdapter{
 
 		vh.screenName.setText(c.getString(screenCol));
 
-
 		vh.img.setImageUrl(c.getString(imgCol));
 
 		try{

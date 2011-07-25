@@ -21,6 +21,7 @@
         android:layout_width="fill_parent"
         android:layout_height="0dip"
         android:layout_weight="2"
+        android:gravity="top|left"
         android:inputType="textCapSentences|textMultiLine"
         android:imeOptions="actionGo"/>
         

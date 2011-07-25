@@ -5,7 +5,8 @@
     android:layout_width="fill_parent"
     android:layout_height="?android:attr/listPreferredItemHeight"
     android:padding="6dip"
-    android:focusable="false">
+    android:focusable="false"
+    android:background="@drawable/gradient_background">
     
     <com.github.droidfu.widgets.WebImageView
         android:id="@+id/profile_image"
