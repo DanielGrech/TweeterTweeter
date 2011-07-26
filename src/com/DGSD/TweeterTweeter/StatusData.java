@@ -9,6 +9,7 @@ import twitter4j.UserMentionEntity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.CursorIndexOutOfBoundsException;
 import android.database.CursorJoiner;
 import android.database.MatrixCursor;
 import android.database.SQLException;
@@ -79,13 +80,13 @@ public class StatusData {
 	private static final String GET_ALL_ORDER_BY_ALPHA = C_NAME + " ASC";
 
 	private static final String[] MAX_CREATED_AT_COLUMNS = { "max("
-		+ C_CREATED_AT + ")" };
+			+ C_CREATED_AT + ")" };
 
 	private static final String[] MAX_ID_COLUMNS = { "max("
-		+ C_ID + ")" };
+			+ C_ID + ")" };
 
 	private static final String[] MIN_ID_COLUMNS = { "min("
-		+ C_ID + ")" };
+			+ C_ID + ")" };
 
 
 	private static final String[] DB_TEXT_COLUMNS = { C_TEXT };
@@ -103,41 +104,41 @@ public class StatusData {
 			Log.i(TAG, "Creating database: " + DATABASE);
 
 			String statusTemp = "create table " + TABLE_NAME_TEMPLATE + " (" + 
-			C_ACCOUNT + " text, " + 
-			C_USER + " text, " + 
-			C_ID + " text primary key, " + 
-			C_CREATED_AT + " text, " + 
-			C_TEXT + " text, " + 
-			C_USER_NAME + " text, " + 
-			C_SCREEN_NAME + " text, "+ 
-			C_IMG + " text, " + 
-			C_FAV + " int, " + 
-			C_SRC + " text, " + 
-			C_IN_REPLY + " text, " + 
-			C_ORIG_TWEET + " text, " + 
-			C_RETWEET_COUNT + " int, " + 
-			C_PLACE_NAME + " text, " + 
-			C_LAT + " text, " + 
-			C_LONG + " text, " + 
-			C_MEDIA_ENT + " text, " + 
-			C_HASH_ENT + " text, " + 
-			C_URL_ENT + " text, " + 
-			C_USER_ENT + " text)";
+					C_ACCOUNT + " text, " + 
+					C_USER + " text, " + 
+					C_ID + " text primary key, " + 
+					C_CREATED_AT + " text, " + 
+					C_TEXT + " text, " + 
+					C_USER_NAME + " text, " + 
+					C_SCREEN_NAME + " text, "+ 
+					C_IMG + " text, " + 
+					C_FAV + " int, " + 
+					C_SRC + " text, " + 
+					C_IN_REPLY + " text, " + 
+					C_ORIG_TWEET + " text, " + 
+					C_RETWEET_COUNT + " int, " + 
+					C_PLACE_NAME + " text, " + 
+					C_LAT + " text, " + 
+					C_LONG + " text, " + 
+					C_MEDIA_ENT + " text, " + 
+					C_HASH_ENT + " text, " + 
+					C_URL_ENT + " text, " + 
+					C_USER_ENT + " text)";
 
 			String userTemp = "create table " + TABLE_NAME_TEMPLATE + " (" +
-			C_ACCOUNT + " text, " +
-			C_NAME + " text, " +
-			C_ID + " text primary key, " +
-			C_USER + " text, " +
-			C_SCREEN_NAME + " text, " +
-			C_CREATED_AT + " text, " + 
-			C_DESC + " text, " +
-			C_FAV + " int, " + 
-			C_FOLLOWERS + " int, " +
-			C_FRIENDS + " int, " + 
-			C_NUM_STAT + " int, " + 
-			C_TEXT + " text, " +
-			C_IMG + " text)";
+					C_ACCOUNT + " text, " +
+					C_NAME + " text, " +
+					C_ID + " text primary key, " +
+					C_USER + " text, " +
+					C_SCREEN_NAME + " text, " +
+					C_CREATED_AT + " text, " + 
+					C_DESC + " text, " +
+					C_FAV + " int, " + 
+					C_FOLLOWERS + " int, " +
+					C_FRIENDS + " int, " + 
+					C_NUM_STAT + " int, " + 
+					C_TEXT + " text, " +
+					C_IMG + " text)";
 
 			db.execSQL(statusTemp.replace(TABLE_NAME_TEMPLATE, HOME_TIMELINE_TABLE));
 
@@ -242,7 +243,7 @@ public class StatusData {
 
 		if(status.getRetweetedStatus() != null) {
 			retweetedScreenName = 
-				status.getRetweetedStatus().getUser().getScreenName();
+					status.getRetweetedStatus().getUser().getScreenName();
 		}
 
 		values.put(C_ACCOUNT, account);
@@ -329,15 +330,15 @@ public class StatusData {
 
 	public boolean contains(String table, String accountId, String column, String val) {
 		SQLiteDatabase db = this.dbHelper.getReadableDatabase();
-		
+
 		Cursor c = db.query(table, new String[]{column}, 
 				C_ACCOUNT + " IN (\"" + accountId + "\") AND " + column + "=\"" + val + "\"", 
 				null, null, null, null);
-		
+
 		return !(c == null || c.getCount() == 0);
 	}
-	
-	
+
+
 	public Cursor getStatusUpdates(String accountId, String[] columns) {   
 		SQLiteDatabase db = this.dbHelper.getReadableDatabase();
 		return db.query(HOME_TIMELINE_TABLE, columns, C_ACCOUNT + " IN (\"" + accountId + "\")", 
@@ -356,7 +357,7 @@ public class StatusData {
 
 		if( db.delete(FAVOURITES_TABLE, 
 				C_ACCOUNT + " IN (\"" + account + "\") AND " + 
-				C_ID + " IN (\"" + tweetid + "\")", null) <= 0 ) {
+						C_ID + " IN (\"" + tweetid + "\")", null) <= 0 ) {
 			Log.i(TAG, "Couldnt find favourite pending to delete");
 		} else {
 			Log.i(TAG, "Favourite pending deleted!");
@@ -368,7 +369,7 @@ public class StatusData {
 
 		if( db.delete(FAVOURITES_PENDING_TABLE, 
 				C_ACCOUNT + " IN (\"" + account + "\") AND " + 
-				C_ID + " IN (\"" + tweetid + "\")", null) <= 0 ) {
+						C_ID + " IN (\"" + tweetid + "\")", null) <= 0 ) {
 			Log.i(TAG, "Couldnt find favourite pending to delete");
 		} else {
 			Log.i(TAG, "Favourite pending deleted!");
@@ -387,7 +388,7 @@ public class StatusData {
 
 		if( db.delete(UNFAVOURITES_PENDING_TABLE, 
 				C_ACCOUNT + " IN (\"" + account + "\") AND " + 
-				C_ID + " IN (\"" + tweetid + "\")", null) <= 0 ) {
+						C_ID + " IN (\"" + tweetid + "\")", null) <= 0 ) {
 			Log.i(TAG, "Couldnt find favourite pending to delete");
 		} else {
 			Log.i(TAG, "Favourite pending deleted!");
@@ -447,7 +448,7 @@ public class StatusData {
 
 	public Cursor getFollowing(String accountId, String screenName, String whereClause, String[] columns) {   
 		SQLiteDatabase db = this.dbHelper.getReadableDatabase();
-		
+
 		if(screenName == null) {
 			return db.query(FOLLOWING_TABLE, columns, 
 					C_ACCOUNT + " IN (\"" + accountId + "\") AND " + whereClause, 
@@ -455,8 +456,8 @@ public class StatusData {
 		} else {
 			return db.query(FOLLOWING_TABLE, columns, 
 					C_ACCOUNT + " IN (\"" + accountId + "\") AND " + 
-					C_USER + "=\"" + screenName + "\" "+ whereClause, 
-					null, null, null, GET_ALL_ORDER_BY_ALPHA);
+							C_USER + "=\"" + screenName + "\" "+ whereClause, 
+							null, null, null, GET_ALL_ORDER_BY_ALPHA);
 		}
 	}	
 
@@ -485,7 +486,7 @@ public class StatusData {
 					null, null, null, GET_ALL_ORDER_BY_ALPHA);
 		}
 	}
-	
+
 	public Cursor getFollowers(String accountId, String screenName, String whereClause, String[] columns) {   
 		SQLiteDatabase db = this.dbHelper.getReadableDatabase();
 
@@ -496,8 +497,8 @@ public class StatusData {
 		} else {
 			return db.query(FOLLOWERS_TABLE, columns, 
 					C_ACCOUNT + " IN (\"" + accountId + "\")  AND " + 
-					C_USER + "=\"" + screenName + "\" "+ whereClause, 
-					null, null, null, GET_ALL_ORDER_BY_ALPHA);
+							C_USER + "=\"" + screenName + "\" "+ whereClause, 
+							null, null, null, GET_ALL_ORDER_BY_ALPHA);
 		}
 	}
 
@@ -507,41 +508,46 @@ public class StatusData {
 	public Cursor getPeople(String accountId, String screenName, String whereClause, String[] columns) {   
 		Cursor following = getFollowing(accountId, null, whereClause, columns);
 		Cursor followers = getFollowers(accountId, null, whereClause, columns);
-		
+
 		CursorJoiner joiner = new CursorJoiner(following, new String[]{C_ID} , followers, new String[]{C_ID});
-		
+
 		MatrixCursor retval = new MatrixCursor(new String[] {C_SCREEN_NAME, C_IMG, C_ID});
-		
+
 		String name;
 		String image;
 		String id;
-		
+
 		for(CursorJoiner.Result result : joiner) { 
 			name = null;
 			image = null;
 			id = null;
-			switch(result) {
-				case BOTH:
-					name = following.getString(following.getColumnIndex(C_SCREEN_NAME));
-					image = following.getString(following.getColumnIndex(C_IMG));
-					id = following.getString(following.getColumnIndex(C_ID));
-				case LEFT:
-					name = following.getString(following.getColumnIndex(C_SCREEN_NAME));
-					image = following.getString(following.getColumnIndex(C_IMG));
-					id = following.getString(following.getColumnIndex(C_ID));
-				case RIGHT:
-					name = followers.getString(following.getColumnIndex(C_SCREEN_NAME));
-					image = followers.getString(following.getColumnIndex(C_IMG));
-					id = followers.getString(following.getColumnIndex(C_ID));
+			try {
+				switch(result) {
+
+					case BOTH:
+						name = following.getString(following.getColumnIndex(C_SCREEN_NAME));
+						image = following.getString(following.getColumnIndex(C_IMG));
+						id = following.getString(following.getColumnIndex(C_ID));
+					case LEFT:
+						name = following.getString(following.getColumnIndex(C_SCREEN_NAME));
+						image = following.getString(following.getColumnIndex(C_IMG));
+						id = following.getString(following.getColumnIndex(C_ID));
+					case RIGHT:
+						name = followers.getString(followers.getColumnIndex(C_SCREEN_NAME));
+						image = followers.getString(followers.getColumnIndex(C_IMG));
+						id = followers.getString(followers.getColumnIndex(C_ID));
+				}
+			} catch(CursorIndexOutOfBoundsException e) {
+				e.printStackTrace();
 			}
-			
+
 			retval.addRow(new String[]{name, image, id});
 		}
-		
+
 		return retval;
 	}
-	
-	
+
+
 	/**
 	 *
 	 * @return Timestamp of the latest status we have it the database
@@ -611,7 +617,7 @@ public class StatusData {
 
 	public static ContentValues getStatus(Cursor c) {
 		ContentValues values = new ContentValues();
-		
+
 		values.put(C_ACCOUNT, c.getString(c.getColumnIndex(C_ACCOUNT)));
 		values.put(C_USER, c.getString(c.getColumnIndex(C_USER)));
 		values.put(C_ID, c.getString(c.getColumnIndex(C_ID)));

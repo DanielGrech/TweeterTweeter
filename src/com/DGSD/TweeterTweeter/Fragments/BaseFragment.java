@@ -7,6 +7,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.ActionMode;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -15,7 +17,6 @@ import android.widget.SimpleCursorAdapter;
 import com.DGSD.TweeterTweeter.R;
 import com.DGSD.TweeterTweeter.TTApplication;
 import com.DGSD.TweeterTweeter.UI.Adapters.EndlessListAdapter;
-import com.DGSD.TweeterTweeter.UI.Adapters.TimelineCursorAdapter;
 import com.DGSD.TweeterTweeter.Utils.Log;
 
 public abstract class BaseFragment extends DialogFragment {
@@ -104,13 +105,31 @@ public abstract class BaseFragment extends DialogFragment {
 	    }
 	}
 
-	protected void showPanel(View panel, boolean slideUp) {
-		panel.startAnimation(AnimationUtils.loadAnimation(getActivity(),
-				slideUp ? R.anim.slide_in : R.anim.slide_out_top));
-		panel.setVisibility(View.VISIBLE);
+	protected void showContainer(final View panel) {
+		Animation anim = AnimationUtils.loadAnimation(getActivity(),
+				R.anim.rail);
+		
+		anim.setAnimationListener(new AnimationListener(){
+			@Override
+			public void onAnimationEnd(Animation animation) {
+				panel.setVisibility(View.VISIBLE);
+			}
+
+			@Override
+			public void onAnimationRepeat(Animation animation) {
+				
+			}
+
+			@Override
+			public void onAnimationStart(Animation animation) {
+				
+			}
+			
+		});
+		panel.startAnimation(anim);
 	}
 
-	protected void hidePanel(View panel, boolean slideDown) {
+	protected void hideContainer(View panel, boolean slideDown) {
 		panel.startAnimation(AnimationUtils.loadAnimation(getActivity(),
 				slideDown ? R.anim.slide_out : R.anim.slide_in_top));
 		panel.setVisibility(View.GONE);

@@ -168,8 +168,7 @@ public abstract class BaseStatusFragment extends BaseFragment {
 			public void onItemClick(AdapterView<?> parent, View view, 
 					int pos, long id) {
 				//Show the view
-				View container = getActivity().findViewById(R.id.secondary_container);
-				container.setVisibility(View.VISIBLE);
+				showContainer(getActivity().findViewById(R.id.secondary_container));
 				
 				//Insert the fragment!
 				getFragmentManager().beginTransaction()

@@ -47,12 +47,12 @@
         android:textSize="14.0sp" 
         android:textColor="#ff888888"/>
         
-        <com.github.droidfu.widgets.WebImageView
-	        android:id="@+id/timeline_profile_image"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:layout_alignParentTop="true"
-	        android:scaleType="fitXY"
-	        droidfu:autoLoad="false"
-	        droidfu:progressDrawable="@drawable/ic_contact_picture"/>
+    <com.github.droidfu.widgets.WebImageView
+	    android:id="@+id/timeline_profile_image"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_alignParentTop="true"
+	    android:scaleType="fitXY"
+	    droidfu:autoLoad="false"
+	    droidfu:progressDrawable="@drawable/ic_contact_picture"/>
 </RelativeLayout>
