@@ -24,7 +24,9 @@
 	         android:text="Retweet"
 	         android:padding="6dp"
 	         android:gravity="center"
-	         android:drawableLeft="@drawable/retweet"/>
+	         android:clickable="true"
+	         android:drawableLeft="@drawable/retweet"
+	         android:background="@drawable/list_item_background"/>
 	    
 	    <TextView
 	         android:id="@+id/reply"
@@ -37,7 +39,9 @@
 	         android:text="Reply"
 	         android:padding="6dp"
 	         android:gravity="center"
-	         android:drawableLeft="@drawable/reply"/>   
+	         android:clickable="true"
+	         android:drawableLeft="@drawable/reply"
+	         android:background="@drawable/list_item_background"/>   
 	         
 	    <TextView
 	         android:id="@+id/favourite"
@@ -50,7 +54,9 @@
 	         android:text="Favourite"
 	         android:padding="6dp"
 	         android:gravity="center"
-	         android:drawableLeft="@drawable/favourite"/> 
+	         android:clickable="true"
+	         android:drawableLeft="@drawable/favourite"
+	         android:background="@drawable/list_item_background"/> 
 	         
 	    <TextView
 	         android:id="@+id/share"
@@ -63,7 +69,9 @@
 	         android:text="Share"
 	         android:padding="6dp"
 	         android:gravity="center"
-	         android:drawableLeft="@drawable/ic_menu_share"/> 
+	         android:clickable="true"
+	         android:drawableLeft="@drawable/ic_menu_share"
+	         android:background="@drawable/list_item_background"/> 
     </LinearLayout>
     
     <!-- The top data section -->

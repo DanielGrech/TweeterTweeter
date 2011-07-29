@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:padding="6dip"
     android:focusable="false"
-    android:background="@drawable/gradient_background">
+    android:background="@drawable/list_item_background">
 
     <TextView
          android:id="@+id/timeline_source"

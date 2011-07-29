@@ -203,8 +203,8 @@ public abstract class BasePeopleFragment extends BaseFragment {
 			mListView.setAdapter(mAdapter);
 		} else {
 			Log.i(TAG, "REFRESHING CURSOR");
-			((PeopleCursorAdapter)mAdapter).changeCursor(mCursor);
-			((PeopleCursorAdapter)mAdapter).notifyDataSetChanged();
+			((PeopleCursorAdapter)((EndlessListAdapter)mAdapter).getAdapter()).changeCursor(mCursor);
+			((PeopleCursorAdapter)((EndlessListAdapter)mAdapter).getAdapter()).notifyDataSetChanged();
 		}
 	}
 	

@@ -6,7 +6,7 @@
     android:layout_height="?android:attr/listPreferredItemHeight"
     android:padding="6dip"
     android:focusable="false"
-    android:background="@drawable/gradient_background">
+    android:background="@drawable/list_item_background">
     
     <com.github.droidfu.widgets.WebImageView
         android:id="@+id/profile_image"
