@@ -2,9 +2,6 @@ package com.DGSD.TweeterTweeter.Fragments;
 
 import android.database.Cursor;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import com.DGSD.TweeterTweeter.DataFetchers.DataFetcher;
 import com.DGSD.TweeterTweeter.Services.UpdaterService;
@@ -41,14 +38,12 @@ public class TimelineFragment extends BaseStatusFragment {
 			mUserName = mApplication.getTwitterSession().getUsername(mAccountId);
 		}
 		
-		mType = UpdaterService.DATATYPES.TIMELINE;
-
 		Log.i(TAG, "onCreate");
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
-		return super.onCreateView(inflater, container, savedInstanceState);
+	public int getType() {
+		return UpdaterService.DATATYPES.TIMELINE;
 	}
 	
 	
@@ -59,22 +54,26 @@ public class TimelineFragment extends BaseStatusFragment {
 	}
 
 	@Override
-	public synchronized Cursor getNewest() {
+	public synchronized boolean getNewest() {
 		Log.i(TAG, "Getting newest");
 		
-		mApplication.fetchTimeline(mAccountId, mUserName, 
-				DataFetcher.FETCH_NEWEST);
-		
-		return getCurrent();
+		if(mApplication.fetchTimeline(mAccountId, mUserName, 
+				DataFetcher.FETCH_NEWEST) > 0) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	@Override
-	public synchronized Cursor getOlder() {
+	public synchronized boolean getOlder() {
 		Log.i(TAG, "Getting oldest");
 		
-		mApplication.fetchTimeline(mAccountId, mUserName, 
-				DataFetcher.FETCH_OLDER);
-		
-		return getCurrent();
+		if(mApplication.fetchTimeline(mAccountId, mUserName, 
+				DataFetcher.FETCH_OLDER) > 0) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 }

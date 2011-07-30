@@ -27,15 +27,12 @@ public class HomeTimelineFragment extends BaseStatusFragment {
 		return f;
 	}
 
-
 	@Override
 	public void onCreate(Bundle savedInstance){
 		super.onCreate(savedInstance);
 
 		mAccountId = getArguments().getString("accountId");
 
-		mType = UpdaterService.DATATYPES.HOME_TIMELINE;
-		
 		if(mUserName == null) {
 			mUserName = mApplication.getTwitterSession().getUsername(mAccountId);
 		}
@@ -48,18 +45,10 @@ public class HomeTimelineFragment extends BaseStatusFragment {
 		Log.i(TAG, "onCreateView");
 		return super.onCreateView(inflater, container, savedInstanceState);
 	}
-
+	
 	@Override
-	public void onDestroy() {
-		super.onDetach();
-		try{
-			if(mCursor != null) {
-				mCursor.close();
-			}
-		}catch(RuntimeException e) {
-			Log.e(TAG, "Error closing cursor", e);
-		}
-		Log.i(TAG, "Destroying Fragment");
+	public int getType() {
+		return UpdaterService.DATATYPES.HOME_TIMELINE;
 	}
 	
 	@Override
@@ -69,23 +58,27 @@ public class HomeTimelineFragment extends BaseStatusFragment {
 	}
 
 	@Override
-	public synchronized Cursor getNewest() {
+	public synchronized boolean getNewest() {
 		Log.i(TAG, "Getting newest");
 		
-		mApplication.fetchStatusUpdates(mAccountId, mUserName, 
-				DataFetcher.FETCH_NEWEST);
-		
-		return getCurrent();
+		if(mApplication.fetchStatusUpdates(mAccountId, mUserName, 
+				DataFetcher.FETCH_NEWEST) > 0) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	@Override
-	public synchronized Cursor getOlder() {
+	public synchronized boolean getOlder() {
 		Log.i(TAG, "Getting older");
 		
-		mApplication.fetchStatusUpdates(mAccountId, mUserName, 
-				DataFetcher.FETCH_OLDER);
-		
-		return getCurrent();
+		if(mApplication.fetchStatusUpdates(mAccountId, mUserName, 
+				DataFetcher.FETCH_OLDER) > 0) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 }

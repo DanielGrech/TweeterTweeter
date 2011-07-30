@@ -5,7 +5,6 @@ import android.os.AsyncTask;
 import android.widget.Toast;
 
 import com.DGSD.TweeterTweeter.Fragments.BaseFragment;
-import com.DGSD.TweeterTweeter.UI.PullToRefreshListView;
 import com.DGSD.TweeterTweeter.Utils.Log;
 
 public class DataLoadingTask extends AsyncTask<Void, Void, Cursor> {
@@ -37,22 +36,33 @@ public class DataLoadingTask extends AsyncTask<Void, Void, Cursor> {
 	@Override
 	protected Cursor doInBackground(Void ...args) {
 		try {
-			if(mFragment.getAdapter() != null) {
-				synchronized(mFragment.getAdapter()) {
+			if(mFragment.getEndlessAdapter() != null) {
+				synchronized(mFragment.getEndlessAdapter()) {
 					switch(mType) {
-						case CURRENT: return mFragment.getCurrent();
-						case NEWEST: return mFragment.getNewest();
-						case OLDEST: return mFragment.getOlder();
+						case CURRENT: 
+							return mFragment.getCurrent();
+						case NEWEST: 
+							mFragment.getNewest();
+							return mFragment.getCurrent();
+						case OLDEST: 
+							mFragment.getOlder();
+							return mFragment.getCurrent();
 					}
 				}
 			} else {
 				switch(mType) {
-					case CURRENT: return mFragment.getCurrent();
-					case NEWEST: return mFragment.getNewest();
-					case OLDEST: return mFragment.getOlder();
+					case CURRENT: 
+						return mFragment.getCurrent();
+					case NEWEST: 
+						mFragment.getNewest();
+						return mFragment.getCurrent();
+					case OLDEST: 
+						mFragment.getOlder();
+						return mFragment.getCurrent();
 				}
 			}
-			//pageNum++;
+			
+			return null;
 		} catch (Exception e) {
 			Log.e(TAG, "Error getting data",e);
 			hasError = true;
@@ -68,28 +78,20 @@ public class DataLoadingTask extends AsyncTask<Void, Void, Cursor> {
 			return;
 		}
 		
-		Log.i(TAG, "POST EXECUTING");
-		//Check if the refresh view is showing..
-		if(mFragment.getListView() != null) {
-			
-			try{
-				PullToRefreshListView lv = 
-					(PullToRefreshListView)mFragment.getListView();
-				
-				if(lv.isRefreshing()) {
-					lv.onRefreshComplete();
-				}
-			} catch(ClassCastException e) {
-				//ignore..
-			}
-		}
-
 		if(hasError) {
-			Toast.makeText(mFragment.getActivity(), "Error getting data", Toast.LENGTH_SHORT).show();
+			Toast.makeText(mFragment.getActivity(), "Error getting data", 
+					Toast.LENGTH_SHORT).show();
 		}	
-		else {			
-			mFragment.setCursor(cursor);
-			mFragment.appendData();
+		else {
+			switch(mType) {
+				case NEWEST:
+					mFragment.attachNewData();
+					break;
+				case OLDEST:
+					mFragment.attachOldData();
+				case CURRENT:
+					mFragment.changeCursor(cursor);
+			}
 		}
 	}
 }

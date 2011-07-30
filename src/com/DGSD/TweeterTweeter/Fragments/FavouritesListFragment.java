@@ -36,12 +36,10 @@ public class FavouritesListFragment extends BaseStatusFragment {
 		mAccountId = getArguments().getString("accountId");
 
 		mUserName = getArguments().getString("username");
-		
+
 		if(mUserName == null) {
 			mUserName = mApplication.getTwitterSession().getUsername(mAccountId);
 		}
-		
-		mType = UpdaterService.DATATYPES.FAVOURITES;
 
 		Log.i(TAG, "onCreate");
 	}
@@ -50,7 +48,12 @@ public class FavouritesListFragment extends BaseStatusFragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
 		return super.onCreateView(inflater, container, savedInstanceState);
 	}
-	
+
+	@Override
+	public int getType() {
+		return UpdaterService.DATATYPES.FAVOURITES;
+	}
+
 	@Override
 	public synchronized Cursor getCurrent() {
 		Log.i(TAG, "Getting current");
@@ -58,22 +61,26 @@ public class FavouritesListFragment extends BaseStatusFragment {
 	}
 
 	@Override
-	public synchronized Cursor getNewest() {
+	public synchronized boolean getNewest() {
 		Log.i(TAG, "Getting newest");
-		
-		mApplication.fetchFavourites(mAccountId, mUserName, 
-				DataFetcher.FETCH_NEWEST);
-		
-		return getCurrent();
+
+		if(mApplication.fetchFavourites(mAccountId, mUserName, 
+				DataFetcher.FETCH_NEWEST) > 0) {
+			return true;
+		} else {
+			return false;
+		}
 	}
-	
+
 	@Override
-	public synchronized Cursor getOlder() {
+	public synchronized boolean getOlder() {
 		Log.i(TAG, "Getting oldest");
-		
-		mApplication.fetchFavourites(mAccountId, mUserName, 
-				DataFetcher.FETCH_OLDER);
-		
-		return getCurrent();
+
+		if(mApplication.fetchFavourites(mAccountId, mUserName, 
+				DataFetcher.FETCH_OLDER) > 0 ) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 }

@@ -45,7 +45,7 @@ public class EndlessListAdapter extends EndlessAdapter {
 	@Override
 	protected void appendCachedData() {
 		Log.i(TAG, "APPENDING DATA TO LIST!");
-		mFragment.appendData();
+		mFragment.attachOldData();
 	}
 
 	@Override

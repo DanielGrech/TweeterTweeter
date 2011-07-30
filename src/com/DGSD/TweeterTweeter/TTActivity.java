@@ -93,6 +93,8 @@ public class TTActivity extends Activity {
 		});
 		
 		if(savedInstanceState != null) {
+			System.err.println("RESTORING VISIBILITY AS: " + savedInstanceState.getInt("second_container_visibility", 
+							View.GONE));
 			mSecondaryContainer.setVisibility(
 					savedInstanceState.getInt("second_container_visibility", 
 							View.GONE));
@@ -190,7 +192,7 @@ public class TTActivity extends Activity {
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		
+		System.err.println("SAVING VISIBILITY AS: " + mSecondaryContainer.getVisibility());
 		outState.putInt("second_container_visibility", mSecondaryContainer.getVisibility());
 	}
 }

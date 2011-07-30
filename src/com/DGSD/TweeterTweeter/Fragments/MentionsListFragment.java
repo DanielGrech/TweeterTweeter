@@ -34,8 +34,6 @@ public class MentionsListFragment extends BaseStatusFragment {
 		
 		mAccountId = getArguments().getString("accountId");
 		
-		mType = UpdaterService.DATATYPES.MENTIONS;
-		
 		if(mUserName == null) {
 			mUserName = mApplication.getTwitterSession().getUsername(mAccountId);
 		}
@@ -49,6 +47,11 @@ public class MentionsListFragment extends BaseStatusFragment {
 		return super.onCreateView(inflater, container, savedInstanceState);
 	}
 	
+	@Override
+	public int getType() {
+		return UpdaterService.DATATYPES.MENTIONS;
+	}
+	
 	
 	@Override
 	public synchronized Cursor getCurrent() {
@@ -57,22 +60,26 @@ public class MentionsListFragment extends BaseStatusFragment {
 	}
 
 	@Override
-	public synchronized Cursor getNewest() {
+	public synchronized boolean getNewest() {
 		Log.i(TAG, "Getting newest");
 		
-		mApplication.fetchMentions(mAccountId, mUserName, 
-				DataFetcher.FETCH_NEWEST);
-		
-		return getCurrent();
+		if(mApplication.fetchMentions(mAccountId, mUserName, 
+				DataFetcher.FETCH_NEWEST) > 0) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	@Override
-	public synchronized Cursor getOlder() {
+	public synchronized boolean getOlder() {
 		Log.i(TAG, "Getting oldest");
 		
-		mApplication.fetchMentions(mAccountId, mUserName, 
-				DataFetcher.FETCH_OLDER);
-		
-		return getCurrent();
+		if(mApplication.fetchMentions(mAccountId, mUserName, 
+				DataFetcher.FETCH_OLDER) > 0) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 }
