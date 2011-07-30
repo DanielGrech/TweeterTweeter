@@ -43,8 +43,10 @@ public abstract class BaseFragment extends DialogFragment {
 	protected String mAccountId;
 
 	protected String mUserName;
-	
+
 	protected int mLastSelectedListItem;
+
+	protected int mLastVisibileItem;
 
 	protected PortableReceiver mReceiver;
 
@@ -104,21 +106,30 @@ public abstract class BaseFragment extends DialogFragment {
 	 */
 	protected abstract int getType();
 
+	/**
+	 * @param cursor The cursor which supplies the list objects. 
+	 * @return An adapter which will be wrapped with an EndlessAdapter
+	 */
 	protected abstract SimpleCursorAdapter getListAdapter(Cursor cursor);
 
 
 	@Override
 	public void onCreate(Bundle savedInstance){
 		super.onCreate(savedInstance);
-		
+
 		mLastSelectedListItem = -1;
-		
+
 		if(savedInstance != null) {
 			mLastSelectedListItem = 
 					savedInstance.getInt("last_selected_list_item", -1);
 			Log.d(TAG, "Restored item to: " + mLastSelectedListItem);
+
+			mLastVisibileItem = 
+					savedInstance.getInt("first_item_visible", 0);
+
+			Log.d(TAG, "Restored visible to: " + mLastVisibileItem);
 		}
-		
+
 		mApplication = (TTApplication) getActivity().getApplication();	
 
 		mDataFilter = new IntentFilter(UpdaterService.SEND_DATA);
@@ -138,21 +149,25 @@ public abstract class BaseFragment extends DialogFragment {
 		mReceiver.setReceiver(getReceiver());
 
 		setupListView();
-		
+
 		if(mCurrentTask != null && !mCurrentTask.isCancelled()) {
 			mCurrentTask.cancel(true);
 		}
-		
+
 		mCurrentTask = new DataLoadingTask(BaseFragment.this, DataLoadingTask.CURRENT);
 		mCurrentTask.execute();
+
 	}
-	
+
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		outState.putInt("last_selected_list_item", mLastSelectedListItem);
-		
+		outState.putInt("first_item_visible", mListView == null ? 0 : 
+			mListView.getFirstVisiblePosition());
 		Log.d(TAG, "Saving item as: " + mLastSelectedListItem);
+		Log.d(TAG, "First visible item: " + (mListView == null ? 0 : 
+			mListView.getFirstVisiblePosition()));
 	}
 
 	@Override
@@ -241,9 +256,9 @@ public abstract class BaseFragment extends DialogFragment {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, 
 					int pos, long id) {
-				
+
 				Log.d(TAG, "LAST SELECTED: " + mLastSelectedListItem +  " POS: " + pos);
-				
+
 				//If we click on the same item, we know it is already showing!
 				if(mLastSelectedListItem != pos) {
 					onListItemClick(pos);
@@ -265,7 +280,7 @@ public abstract class BaseFragment extends DialogFragment {
 	}
 
 	public void changeCursor(Cursor cursor) {
-		
+
 		if(mWrappedAdapter == null) {
 			mWrappedAdapter = getListAdapter(cursor);
 		} else {
