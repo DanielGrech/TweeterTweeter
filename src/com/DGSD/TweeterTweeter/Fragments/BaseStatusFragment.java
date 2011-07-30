@@ -85,7 +85,7 @@ public abstract class BaseStatusFragment extends BaseFragment {
 
 	@Override
 	public SimpleCursorAdapter getListAdapter(Cursor cursor) {
-		return new TimelineCursorAdapter(getActivity(), R.layout.timeline_list_item, 
+		return new TimelineCursorAdapter(mApplication, R.layout.timeline_list_item, 
 				cursor, FROM, TO);
 	}
 	

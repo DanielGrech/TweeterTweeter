@@ -92,7 +92,7 @@ public abstract class BasePeopleFragment extends BaseFragment {
 
 	@Override
 	public SimpleCursorAdapter getListAdapter(Cursor cursor) {
-		return new PeopleCursorAdapter(getActivity(), R.layout.people_list_item, 
+		return new PeopleCursorAdapter(mApplication, R.layout.people_list_item, 
 				cursor, FROM, TO);
 	}
 	

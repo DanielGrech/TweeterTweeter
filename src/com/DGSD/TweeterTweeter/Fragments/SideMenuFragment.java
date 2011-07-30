@@ -62,6 +62,7 @@ public class SideMenuFragment extends ListFragment {
 
 		if(savedInstanceState != null) {
 			mSelectedItem = savedInstanceState.getInt(KEY_SELECTED_ITEM);
+			getListView().setItemChecked(mSelectedItem, true);
 		} else {
 			//We aren't creating after a rotation!
 			mSelectedItem = 0;
