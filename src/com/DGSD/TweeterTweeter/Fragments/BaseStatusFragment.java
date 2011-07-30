@@ -22,7 +22,6 @@ import com.DGSD.TweeterTweeter.R;
 import com.DGSD.TweeterTweeter.StatusData;
 import com.DGSD.TweeterTweeter.Receivers.PortableReceiver.Receiver;
 import com.DGSD.TweeterTweeter.Services.UpdaterService;
-import com.DGSD.TweeterTweeter.Tasks.DataLoadingTask;
 import com.DGSD.TweeterTweeter.UI.PullToRefreshListView;
 import com.DGSD.TweeterTweeter.UI.Adapters.TimelineCursorAdapter;
 import com.DGSD.TweeterTweeter.Utils.ListUtils;
@@ -96,17 +95,11 @@ public abstract class BaseStatusFragment extends BaseFragment {
 
 		mListView = (PullToRefreshListView) root.findViewById(R.id.list);
 
-		if(mCurrentTask != null && !mCurrentTask.isCancelled()) {
-			mCurrentTask.cancel(true);
-		}
-
-		mCurrentTask = new DataLoadingTask(BaseStatusFragment.this, DataLoadingTask.CURRENT);
-		mCurrentTask.execute();
-
 		Log.i(TAG, "Returning root from onCreateView");
 
 		return root;
 	}
+	
 	
 
 	private class StatusCallback implements ActionMode.Callback {

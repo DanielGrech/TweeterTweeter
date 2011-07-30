@@ -75,13 +75,6 @@ public abstract class BasePeopleFragment extends BaseFragment {
 
 		mListView = (PullToRefreshListView) root.findViewById(R.id.list);
 
-		if(mCurrentTask != null && !mCurrentTask.isCancelled()) {
-			mCurrentTask.cancel(true);
-		}
-
-		mCurrentTask = new DataLoadingTask(BasePeopleFragment.this, DataLoadingTask.CURRENT);
-		mCurrentTask.execute();
-
 		Log.i(TAG, "Returning root from onCreateView");
 
 		return root;

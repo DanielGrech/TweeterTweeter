@@ -127,6 +127,13 @@ public abstract class BaseFragment extends DialogFragment {
 		mReceiver.setReceiver(getReceiver());
 
 		setupListView();
+		
+		if(mCurrentTask != null && !mCurrentTask.isCancelled()) {
+			mCurrentTask.cancel(true);
+		}
+		
+		mCurrentTask = new DataLoadingTask(BaseFragment.this, DataLoadingTask.CURRENT);
+		mCurrentTask.execute();
 	}
 
 	@Override
@@ -185,7 +192,7 @@ public abstract class BaseFragment extends DialogFragment {
 
 		mEndlessAdapter = null;
 
-		mListView = null;
+		//mListView = null;
 
 		Log.i(TAG, "Destroying view");
 	}
@@ -233,6 +240,7 @@ public abstract class BaseFragment extends DialogFragment {
 	}
 
 	public void changeCursor(Cursor cursor) {
+		
 		if(mWrappedAdapter == null) {
 			mWrappedAdapter = getListAdapter(cursor);
 		} else {
