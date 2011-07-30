@@ -130,8 +130,7 @@ public class SideMenuFragment extends ListFragment {
 		}
 
 		getFragmentManager().beginTransaction()
-		.replace(R.id.container, fragment)
-		.addToBackStack(null)
+		.replace(R.id.container, fragment, String.valueOf(itemPos))
 		.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
 		.commit();
 	}

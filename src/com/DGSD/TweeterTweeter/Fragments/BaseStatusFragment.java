@@ -134,7 +134,7 @@ public abstract class BaseStatusFragment extends BaseFragment {
 			}
 		});
 
-		((PullToRefreshListView)mListView).setOnScrollListener(new OnScrollListener(){
+		mListView.setOnScrollListener(new OnScrollListener(){
 
 			@Override
 			public void onScroll(AbsListView view, int firstVisibleItem,
