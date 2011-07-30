@@ -129,6 +129,12 @@ public class SideMenuFragment extends ListFragment {
 				break;
 		}
 
+		getActivity().findViewById(R.id.secondary_container).setVisibility(View.GONE);
+		
+		for(int i = 0, size = getFragmentManager().getBackStackEntryCount(); i < size; i++) {
+			getFragmentManager().popBackStack();
+		}
+		
 		getFragmentManager().beginTransaction()
 		.replace(R.id.container, fragment, String.valueOf(itemPos))
 		.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)

@@ -7,8 +7,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.ActionMode;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -37,22 +35,22 @@ public abstract class BaseFragment extends DialogFragment {
 
 	protected ListView mListView;
 
-	protected ListAdapter mAdapter;
+	protected EndlessListAdapter mAdapter;
 
 	protected Cursor mCursor;
 
 	protected String mAccountId;
 
 	protected String mUserName;
-	
+
 	protected AsyncTask<Void, Void, Cursor> mCurrentTask;
-	
+
 	protected ActionMode mCurrentActionMode;
-	
+
 	//The type of data returned from the updater service
 	protected int mType = -1;
 
-	//What page of tweets we want to load..
+	protected int mLastVisiblePosition = 0;
 
 	@Override
 	public void onCreate(Bundle savedInstance){
@@ -65,15 +63,22 @@ public abstract class BaseFragment extends DialogFragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		
+
 		if(mListView != null) {
 			mListView.setFastScrollEnabled(true);
+			if(savedInstanceState != null) {
+				mListView.setSelectionFromTop(savedInstanceState.getInt("list_position", 0), 
+						savedInstanceState.getInt("list_top", 0));
+			}
 		}
 	}
 
 	@Override
 	public void onSaveInstanceState(Bundle b){
 		super.onSaveInstanceState(b);
+		if(mListView != null) {
+			//hmm
+		}
 	}
 
 	@Override
@@ -88,45 +93,41 @@ public abstract class BaseFragment extends DialogFragment {
 
 		Log.i(TAG, "Destroying view");
 	}
-	
+
 	@Override
-	public void onStop() {
-	    super.onStop();
-	    if(mListView != null) {
-	    	mListView.setVisibility(View.GONE);
-	    }
+	public void onPause() {
+		super.onPause();
+		if(mListView != null) {
+			// Save scroll position
+		    mLastVisiblePosition = mListView.getFirstVisiblePosition();
+		    System.err.println("SAVING SCROLL POS AS: " + mLastVisiblePosition);
+		}
 	}
 	
 	@Override
+	public void onResume() {
+		super.onResume();
+	}
+
+	@Override
+	public void onStop() {
+		super.onStop();
+		if(mListView != null) {
+			mListView.setVisibility(View.GONE);
+		}
+	}
+
+	@Override
 	public void onStart() {
-	    super.onStart();
-	    if(mListView != null) {
-	    	mListView.setVisibility(View.VISIBLE);
-	    }
+		super.onStart();
+		if(mListView != null) {
+			mListView.setVisibility(View.VISIBLE);
+		}
 	}
 
 	protected void showContainer(final View panel) {
-		Animation anim = AnimationUtils.loadAnimation(getActivity(),
-				R.anim.rail);
-		
-		anim.setAnimationListener(new AnimationListener(){
-			@Override
-			public void onAnimationEnd(Animation animation) {
-				panel.setVisibility(View.VISIBLE);
-			}
-
-			@Override
-			public void onAnimationRepeat(Animation animation) {
-				
-			}
-
-			@Override
-			public void onAnimationStart(Animation animation) {
-				
-			}
-			
-		});
-		panel.startAnimation(anim);
+		panel.startAnimation(AnimationUtils.loadAnimation(getActivity(), R.anim.slide_in));
+		panel.setVisibility(View.VISIBLE);
 	}
 
 	protected void hideContainer(View panel, boolean slideDown) {
@@ -142,7 +143,7 @@ public abstract class BaseFragment extends DialogFragment {
 	public ListView getListView() {
 		return mListView;
 	}
-	
+
 	public void setCursor(Cursor c) {
 		mCursor = c;
 		if(mAdapter != null && ((EndlessListAdapter)mAdapter).getAdapter() != null) {

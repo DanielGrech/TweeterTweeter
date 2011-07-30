@@ -19,6 +19,7 @@ import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.DGSD.TweeterTweeter.R;
@@ -103,7 +104,7 @@ public abstract class BaseStatusFragment extends BaseFragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
 		View root = inflater.inflate(R.layout.list_fragment_layout, container, false);
 
-		mListView = (PullToRefreshListView) root.findViewById(R.id.list);
+		mListView = (ListView) root.findViewById(R.id.list);
 
 		if(mCurrentTask != null && !mCurrentTask.isCancelled()) {
 			mCurrentTask.cancel(true);
@@ -157,7 +158,7 @@ public abstract class BaseStatusFragment extends BaseFragment {
 
 				mCurrentActionMode = getActivity().startActionMode(
 						new StatusCallback(pos - 1));
-				
+
 				return true;
 			}
 
@@ -169,14 +170,14 @@ public abstract class BaseStatusFragment extends BaseFragment {
 					int pos, long id) {
 				//Show the view
 				showContainer(getActivity().findViewById(R.id.secondary_container));
-				
+
 				//Insert the fragment!
 				getFragmentManager().beginTransaction()
-									.replace(R.id.secondary_container, 
-											TweetFragment.newInstance(StatusData.getStatus(mCursor)))
-										.addToBackStack(null)
-										.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-										.commit();
+				.replace(R.id.secondary_container, 
+						TweetFragment.newInstance(StatusData.getStatus(mCursor)))
+						.addToBackStack(null)
+						.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+						.commit();
 			}
 
 		});
@@ -220,12 +221,12 @@ public abstract class BaseStatusFragment extends BaseFragment {
 			mCurrentActionMode.finish();
 			mCurrentActionMode = null;
 		}
-		
+
 		mAdapter = null;
 	}
 
 	@Override
-	public void appendData() {
+	public void appendData() {	
 		if(mListView == null || mCursor == null) {
 			Log.i(TAG, "Listview/cursor was null!");
 			return;
@@ -247,13 +248,16 @@ public abstract class BaseStatusFragment extends BaseFragment {
 			mListView.setAdapter(mAdapter);
 		} else {
 			Log.i(TAG, "REFRESHING CURSOR");
-			((TimelineCursorAdapter)((EndlessListAdapter)mAdapter).getAdapter()).changeCursor(mCursor);
-			((TimelineCursorAdapter)((EndlessListAdapter)mAdapter).getAdapter()).notifyDataSetChanged();
+			((TimelineCursorAdapter)(mAdapter).getAdapter()).changeCursor(mCursor);
+			((TimelineCursorAdapter)(mAdapter).getAdapter()).notifyDataSetChanged();
 		}
 
 		if(((PullToRefreshListView)mListView).isRefreshing()) {
 			((PullToRefreshListView)mListView).onRefreshComplete();
 		}
+
+		System.err.println("SETTING LAST VISIBLE POSITION");
+		mListView.setSelection(mLastVisiblePosition);
 	}
 
 	private void startRefresh(int type, String account) {
@@ -289,7 +293,7 @@ public abstract class BaseStatusFragment extends BaseFragment {
 		private String mScreenName;
 
 		private String mTweetText;
-		
+
 		final String[] userEntities;
 
 		private boolean hasError;
@@ -305,7 +309,7 @@ public abstract class BaseStatusFragment extends BaseFragment {
 
 			mTweetText = ListUtils.getTweetProperty(mCursor, 
 					StatusData.C_TEXT, pos);
-			
+
 			userEntities = ListUtils.getTweetProperty(mCursor, 
 					StatusData.C_USER_ENT, pos).split(",");
 
