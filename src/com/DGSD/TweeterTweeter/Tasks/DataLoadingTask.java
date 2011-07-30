@@ -54,11 +54,17 @@ public class DataLoadingTask extends AsyncTask<Void, Void, Cursor> {
 					case CURRENT: 
 						return mFragment.getCurrent();
 					case NEWEST: 
-						mFragment.getNewest();
-						return mFragment.getCurrent();
+						if(mFragment.getNewest()) {
+							return mFragment.getCurrent();
+						} else {
+							return null;
+						}
 					case OLDEST: 
-						mFragment.getOlder();
-						return mFragment.getCurrent();
+						if(mFragment.getOlder()) {
+							return mFragment.getCurrent();
+						} else {
+							return null;
+						}
 				}
 			}
 			
@@ -85,12 +91,15 @@ public class DataLoadingTask extends AsyncTask<Void, Void, Cursor> {
 		else {
 			switch(mType) {
 				case NEWEST:
-					mFragment.attachNewData();
+					mFragment.attachData(cursor);
 					break;
 				case OLDEST:
-					mFragment.attachOldData();
+					mFragment.attachData(cursor);
+					break;
 				case CURRENT:
+					Log.i(TAG, "Changing cursor from DataLoadingTask");
 					mFragment.changeCursor(cursor);
+					break;
 			}
 		}
 	}

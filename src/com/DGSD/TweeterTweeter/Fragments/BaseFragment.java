@@ -12,6 +12,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.SimpleCursorAdapter;
+import android.widget.Toast;
 
 import com.DGSD.TweeterTweeter.TTApplication;
 import com.DGSD.TweeterTweeter.Receivers.PortableReceiver;
@@ -19,6 +20,7 @@ import com.DGSD.TweeterTweeter.Receivers.PortableReceiver.Receiver;
 import com.DGSD.TweeterTweeter.Services.UpdaterService;
 import com.DGSD.TweeterTweeter.Tasks.DataLoadingTask;
 import com.DGSD.TweeterTweeter.UI.PullToRefreshListView;
+import com.DGSD.TweeterTweeter.UI.PullToRefreshListView.OnRefreshListener;
 import com.DGSD.TweeterTweeter.UI.Adapters.EndlessListAdapter;
 import com.DGSD.TweeterTweeter.Utils.Log;
 
@@ -27,7 +29,7 @@ public abstract class BaseFragment extends DialogFragment {
 	private static final String TAG = BaseFragment.class.getSimpleName();
 
 	private static final String RECEIVE_DATA = "com.DGSD.TweeterTweeter.RECEIVE_DATA";
-	
+
 	public static final int ELEMENTS_PER_PAGE = 50;
 
 	protected TTApplication mApplication;
@@ -39,7 +41,7 @@ public abstract class BaseFragment extends DialogFragment {
 	protected EndlessListAdapter mEndlessAdapter;
 
 	protected String mAccountId;
-	
+
 	protected String mUserName;
 
 	protected PortableReceiver mReceiver;
@@ -53,7 +55,7 @@ public abstract class BaseFragment extends DialogFragment {
 	protected ActionMode mCurrentActionMode;
 
 	protected DataLoadingTask mCurrentTask;
-	
+
 	/**
 	 * Check if there is any newer data available on twitter
 	 * @return true if more data loaded, false otherwise
@@ -99,6 +101,9 @@ public abstract class BaseFragment extends DialogFragment {
 	 * See UpdaterService.DATATYPE
 	 */
 	protected abstract int getType();
+
+	protected abstract SimpleCursorAdapter getListAdapter(Cursor cursor);
+
 
 	@Override
 	public void onCreate(Bundle savedInstance){
@@ -167,15 +172,17 @@ public abstract class BaseFragment extends DialogFragment {
 	public void onDestroyView() {
 		super.onDestroyView();
 
-		mEndlessAdapter = null;
-
-		mWrappedAdapter = null;
-
 		try {
-			mWrappedAdapter.getCursor().close();
+			if(mWrappedAdapter.getCursor() != null) {
+				mWrappedAdapter.getCursor().close();
+			}
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
+
+		mEndlessAdapter = null;
+
+		mWrappedAdapter = null;
 
 		mListView = null;
 
@@ -183,12 +190,26 @@ public abstract class BaseFragment extends DialogFragment {
 	}
 
 	private void setupListView() {
-		mListView = new PullToRefreshListView(getActivity());
-
-		if(mListView != null) {
-			mListView.setFastScrollEnabled(true);
+		if(mListView == null) {
+			Log.w(TAG, "Listview was null while trying to setup");
+			return;
 		}
 
+		mListView.setFastScrollEnabled(true);
+		
+		mListView.setOnRefreshListener(new OnRefreshListener() {
+			@Override
+			public void onRefresh() {
+				Log.i(TAG, "STARTING REFRESH!");
+				if(mCurrentTask != null && !mCurrentTask.isCancelled()) {
+					mCurrentTask.cancel(true);
+				}
+
+				mCurrentTask = new DataLoadingTask(BaseFragment.this, DataLoadingTask.NEWEST);
+				mCurrentTask.execute();
+			}
+		});
+		
 		mListView.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
@@ -211,9 +232,23 @@ public abstract class BaseFragment extends DialogFragment {
 	}
 
 	public void changeCursor(Cursor cursor) {
-		mWrappedAdapter.changeCursor(cursor);
+		if(mWrappedAdapter == null) {
+			mWrappedAdapter = getListAdapter(cursor);
+		} else {
+			mWrappedAdapter.changeCursor(cursor);
+		}
 
-		mEndlessAdapter.notifyDataSetChanged();
+		if(mEndlessAdapter == null) {
+			mEndlessAdapter = new EndlessListAdapter(this, mWrappedAdapter);
+		}
+
+		if(mListView.getAdapter() == null) {
+			Log.i(TAG, "Setting list adapter");
+			mListView.setAdapter(mEndlessAdapter);
+		} else {
+			Log.i(TAG, "Notifying adapter of dataset change");
+			mEndlessAdapter.notifyDataSetChanged();
+		}
 	}
 
 	public EndlessListAdapter getEndlessAdapter() {
@@ -267,11 +302,34 @@ public abstract class BaseFragment extends DialogFragment {
 	}
 
 
-	public void attachNewData() {
+	/**
+	 * We have received some new data, lets attach it to the list
+	 * @param cursor A cursor containing a complete list of data (both old and new)
+	 */
+	public void attachData(Cursor cursor) {
+		if(cursor == null) {
+			Toast.makeText(getActivity(), "No new data", Toast.LENGTH_SHORT).show();
+		}
 
-	}
+		if(mListView == null) {
+			Log.i(TAG, "Listview was null!");
+			return;
+		}
 
-	public void attachOldData() {
+		if(mWrappedAdapter == null) {
+			mWrappedAdapter = getListAdapter(cursor);
+		} else {
+			mWrappedAdapter.changeCursor(cursor);
+		}
 
+		if(mEndlessAdapter == null) {
+			mEndlessAdapter = new EndlessListAdapter(this, mWrappedAdapter);
+		} else {
+			mEndlessAdapter.notifyDataSetChanged();
+		}
+
+		if(mListView.isRefreshing()) {
+			mListView.onRefreshComplete();
+		}
 	}
 }

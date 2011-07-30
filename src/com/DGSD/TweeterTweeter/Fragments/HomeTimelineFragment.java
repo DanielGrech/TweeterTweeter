@@ -2,9 +2,6 @@ package com.DGSD.TweeterTweeter.Fragments;
 
 import android.database.Cursor;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import com.DGSD.TweeterTweeter.DataFetchers.DataFetcher;
 import com.DGSD.TweeterTweeter.Services.UpdaterService;
@@ -38,12 +35,6 @@ public class HomeTimelineFragment extends BaseStatusFragment {
 		}
 		
 		Log.i(TAG, "onCreate");
-	}
-
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
-		Log.i(TAG, "onCreateView");
-		return super.onCreateView(inflater, container, savedInstanceState);
 	}
 	
 	@Override

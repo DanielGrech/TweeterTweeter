@@ -2,15 +2,13 @@ package com.DGSD.TweeterTweeter.Fragments;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
+import android.database.Cursor;
 import android.view.ActionMode;
 import android.view.ActionMode.Callback;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
 import com.DGSD.TweeterTweeter.R;
@@ -21,6 +19,7 @@ import com.DGSD.TweeterTweeter.Tasks.AddFriendTask;
 import com.DGSD.TweeterTweeter.Tasks.BlockUserTask;
 import com.DGSD.TweeterTweeter.Tasks.DataLoadingTask;
 import com.DGSD.TweeterTweeter.Tasks.ReportSpamTask;
+import com.DGSD.TweeterTweeter.UI.Adapters.PeopleCursorAdapter;
 import com.DGSD.TweeterTweeter.Utils.ListUtils;
 import com.DGSD.TweeterTweeter.Utils.Log;
 
@@ -69,30 +68,17 @@ public abstract class BasePeopleFragment extends BaseFragment {
 	public void onListItemClick(int pos) {
 		Log.i(TAG, "List item " + pos + " pressed");
 	}
-
-	@Override
-	public void onActivityCreated(Bundle savedInstance) {
-		super.onActivityCreated(savedInstance);
-
-		mListView.setOnItemLongClickListener(new OnItemLongClickListener(){
-			@Override
-			public boolean onItemLongClick(AdapterView<?> parent, View view, 
-					int pos, long id) {
-
-				mCurrentActionMode = getActivity().startActionMode(
-						new PeopleCallback(pos-1));
-
-				return false;
-			}
-
-		});
-	}
 	
 	@Override
 	public Callback getCallback(int pos) {
 		return new PeopleCallback(pos);
 	}
 
+	@Override
+	public SimpleCursorAdapter getListAdapter(Cursor cursor) {
+		return new PeopleCursorAdapter(getActivity(), R.layout.people_list_item, 
+				cursor, FROM, TO);
+	}
 	
 	private class PeopleCallback implements ActionMode.Callback {
 

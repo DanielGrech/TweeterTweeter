@@ -5,17 +5,26 @@ import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
+import android.os.Bundle;
 import android.view.ActionMode;
 import android.view.ActionMode.Callback;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
 import com.DGSD.TweeterTweeter.R;
 import com.DGSD.TweeterTweeter.StatusData;
 import com.DGSD.TweeterTweeter.Receivers.PortableReceiver.Receiver;
 import com.DGSD.TweeterTweeter.Services.UpdaterService;
+import com.DGSD.TweeterTweeter.Tasks.DataLoadingTask;
+import com.DGSD.TweeterTweeter.UI.PullToRefreshListView;
+import com.DGSD.TweeterTweeter.UI.Adapters.TimelineCursorAdapter;
 import com.DGSD.TweeterTweeter.Utils.ListUtils;
 import com.DGSD.TweeterTweeter.Utils.Log;
 
@@ -75,6 +84,30 @@ public abstract class BaseStatusFragment extends BaseFragment {
 		};
 	}
 
+	@Override
+	public SimpleCursorAdapter getListAdapter(Cursor cursor) {
+		return new TimelineCursorAdapter(getActivity(), R.layout.timeline_list_item, 
+				cursor, FROM, TO);
+	}
+	
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
+		View root = inflater.inflate(R.layout.list_fragment_layout, container, false);
+
+		mListView = (PullToRefreshListView) root.findViewById(R.id.list);
+
+		if(mCurrentTask != null && !mCurrentTask.isCancelled()) {
+			mCurrentTask.cancel(true);
+		}
+
+		mCurrentTask = new DataLoadingTask(BaseStatusFragment.this, DataLoadingTask.CURRENT);
+		mCurrentTask.execute();
+
+		Log.i(TAG, "Returning root from onCreateView");
+
+		return root;
+	}
+	
 
 	private class StatusCallback implements ActionMode.Callback {
 

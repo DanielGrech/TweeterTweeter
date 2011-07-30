@@ -1,6 +1,7 @@
 package com.DGSD.TweeterTweeter.UI.Adapters;
 
 import twitter4j.TwitterException;
+import android.database.Cursor;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,8 @@ public class EndlessListAdapter extends EndlessAdapter {
 
 	private LinearLayout mPendingView = null;
 
+	private Cursor mCursor;
+	
 	private BaseFragment mFragment;
 
 	public EndlessListAdapter(BaseFragment fragment, SimpleCursorAdapter sca) {
@@ -39,13 +42,14 @@ public class EndlessListAdapter extends EndlessAdapter {
 	protected boolean cacheInBackground() throws TwitterException{
 		Log.i(TAG, "GETTING OLDER DATA");
 		mFragment.getOlder();
+		mCursor = mFragment.getCurrent();
 		return false;
 	}
 
 	@Override
 	protected void appendCachedData() {
 		Log.i(TAG, "APPENDING DATA TO LIST!");
-		mFragment.attachOldData();
+		mFragment.attachData(mCursor);
 	}
 
 	@Override
