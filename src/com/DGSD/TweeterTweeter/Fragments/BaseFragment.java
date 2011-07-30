@@ -90,16 +90,16 @@ public abstract class BaseFragment extends DialogFragment {
 	}
 	
 	@Override
-	public void onPause() {
-	    super.onPause();
+	public void onStop() {
+	    super.onStop();
 	    if(mListView != null) {
 	    	mListView.setVisibility(View.GONE);
 	    }
 	}
 	
 	@Override
-	public void onResume() {
-	    super.onResume();
+	public void onStart() {
+	    super.onStart();
 	    if(mListView != null) {
 	    	mListView.setVisibility(View.VISIBLE);
 	    }
