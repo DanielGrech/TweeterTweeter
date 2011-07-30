@@ -4,6 +4,7 @@ import android.animation.LayoutTransition;
 import android.app.ActionBar;
 import android.app.ActionBar.OnNavigationListener;
 import android.app.Activity;
+import android.app.FragmentManager.OnBackStackChangedListener;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.Intent;
@@ -30,6 +31,8 @@ public class TTActivity extends Activity {
 	private TTApplication mApplication;
 
 	private ViewGroup mDataContainer;
+	
+	private ViewGroup mSecondaryContainer;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -44,6 +47,8 @@ public class TTActivity extends Activity {
 		} else {
 			mDataContainer = (ViewGroup) findViewById(R.id.data_container_port);
 		}
+		
+		mSecondaryContainer = (ViewGroup) findViewById(R.id.secondary_container);
 
 		LayoutTransition lt = new LayoutTransition();
 
@@ -75,6 +80,23 @@ public class TTActivity extends Activity {
 				 return false;
 			}
 		});
+		
+		getFragmentManager().addOnBackStackChangedListener(new OnBackStackChangedListener(){
+
+			@Override
+			public void onBackStackChanged() {
+				if(mSecondaryContainer.getChildCount() == 0) {
+					mSecondaryContainer.setVisibility(View.GONE);
+				}
+			}
+			
+		});
+		
+		if(savedInstanceState != null) {
+			mSecondaryContainer.setVisibility(
+					savedInstanceState.getInt("second_container_visibility", 
+							View.GONE));
+		}
 	}
 
 
@@ -163,5 +185,12 @@ public class TTActivity extends Activity {
 		}
 
 		return true;
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		
+		outState.putInt("second_container_visibility", mSecondaryContainer.getVisibility());
 	}
 }
