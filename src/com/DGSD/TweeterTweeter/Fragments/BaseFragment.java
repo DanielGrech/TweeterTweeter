@@ -43,6 +43,8 @@ public abstract class BaseFragment extends DialogFragment {
 	protected String mAccountId;
 
 	protected String mUserName;
+	
+	protected int mLastSelectedListItem;
 
 	protected PortableReceiver mReceiver;
 
@@ -108,6 +110,15 @@ public abstract class BaseFragment extends DialogFragment {
 	@Override
 	public void onCreate(Bundle savedInstance){
 		super.onCreate(savedInstance);
+		
+		mLastSelectedListItem = -1;
+		
+		if(savedInstance != null) {
+			mLastSelectedListItem = 
+					savedInstance.getInt("last_selected_list_item", -1);
+			Log.d(TAG, "Restored item to: " + mLastSelectedListItem);
+		}
+		
 		mApplication = (TTApplication) getActivity().getApplication();	
 
 		mDataFilter = new IntentFilter(UpdaterService.SEND_DATA);
@@ -134,6 +145,14 @@ public abstract class BaseFragment extends DialogFragment {
 		
 		mCurrentTask = new DataLoadingTask(BaseFragment.this, DataLoadingTask.CURRENT);
 		mCurrentTask.execute();
+	}
+	
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putInt("last_selected_list_item", mLastSelectedListItem);
+		
+		Log.d(TAG, "Saving item as: " + mLastSelectedListItem);
 	}
 
 	@Override
@@ -219,11 +238,17 @@ public abstract class BaseFragment extends DialogFragment {
 		});
 
 		mListView.setOnItemClickListener(new OnItemClickListener() {
-
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, 
 					int pos, long id) {
-				onListItemClick(pos);
+				
+				Log.d(TAG, "LAST SELECTED: " + mLastSelectedListItem +  " POS: " + pos);
+				
+				//If we click on the same item, we know it is already showing!
+				if(mLastSelectedListItem != pos) {
+					onListItemClick(pos);
+					mLastSelectedListItem = pos;
+				}
 			}
 		});
 

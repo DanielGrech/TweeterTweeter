@@ -45,12 +45,6 @@ public class SideMenuFragment extends ListFragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		if(savedInstanceState != null) {
-			mSelectedItem = savedInstanceState.getInt(KEY_SELECTED_ITEM);
-		} else {
-			mSelectedItem = 0;
-		}
-
 		mApplication = (TTApplication) getActivity().getApplication();
 
 		mListItems = getResources().getStringArray(R.array.menu_list);
@@ -66,7 +60,14 @@ public class SideMenuFragment extends ListFragment {
 
 		lv.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 
-		displayFragmentOfItem(mSelectedItem);
+		if(savedInstanceState != null) {
+			mSelectedItem = savedInstanceState.getInt(KEY_SELECTED_ITEM);
+		} else {
+			//We aren't creating after a rotation!
+			mSelectedItem = 0;
+			displayFragmentOfItem(mSelectedItem);
+		}
+		
 	}
 
 	@Override
