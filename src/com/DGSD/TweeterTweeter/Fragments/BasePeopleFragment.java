@@ -3,11 +3,15 @@ package com.DGSD.TweeterTweeter.Fragments;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.Bundle;
 import android.view.ActionMode;
 import android.view.ActionMode.Callback;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
@@ -19,6 +23,7 @@ import com.DGSD.TweeterTweeter.Tasks.AddFriendTask;
 import com.DGSD.TweeterTweeter.Tasks.BlockUserTask;
 import com.DGSD.TweeterTweeter.Tasks.DataLoadingTask;
 import com.DGSD.TweeterTweeter.Tasks.ReportSpamTask;
+import com.DGSD.TweeterTweeter.UI.PullToRefreshListView;
 import com.DGSD.TweeterTweeter.UI.Adapters.PeopleCursorAdapter;
 import com.DGSD.TweeterTweeter.Utils.ListUtils;
 import com.DGSD.TweeterTweeter.Utils.Log;
@@ -62,6 +67,24 @@ public abstract class BasePeopleFragment extends BaseFragment {
 				}
 			}
 		};
+	}
+	
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
+		View root = inflater.inflate(R.layout.list_fragment_layout, container, false);
+
+		mListView = (PullToRefreshListView) root.findViewById(R.id.list);
+
+		if(mCurrentTask != null && !mCurrentTask.isCancelled()) {
+			mCurrentTask.cancel(true);
+		}
+
+		mCurrentTask = new DataLoadingTask(BasePeopleFragment.this, DataLoadingTask.CURRENT);
+		mCurrentTask.execute();
+
+		Log.i(TAG, "Returning root from onCreateView");
+
+		return root;
 	}
 
 	@Override

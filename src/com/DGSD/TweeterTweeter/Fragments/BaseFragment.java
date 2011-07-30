@@ -172,17 +172,18 @@ public abstract class BaseFragment extends DialogFragment {
 	public void onDestroyView() {
 		super.onDestroyView();
 
-		try {
-			if(mWrappedAdapter.getCursor() != null) {
-				mWrappedAdapter.getCursor().close();
+		if(mWrappedAdapter != null) {
+			try {
+				if(mWrappedAdapter.getCursor() != null) {
+					mWrappedAdapter.getCursor().close();
+				}
+			} catch(Exception e) {
+				e.printStackTrace();
 			}
-		} catch(Exception e) {
-			e.printStackTrace();
+			mWrappedAdapter = null;
 		}
 
 		mEndlessAdapter = null;
-
-		mWrappedAdapter = null;
 
 		mListView = null;
 
@@ -196,7 +197,7 @@ public abstract class BaseFragment extends DialogFragment {
 		}
 
 		mListView.setFastScrollEnabled(true);
-		
+
 		mListView.setOnRefreshListener(new OnRefreshListener() {
 			@Override
 			public void onRefresh() {
@@ -209,7 +210,7 @@ public abstract class BaseFragment extends DialogFragment {
 				mCurrentTask.execute();
 			}
 		});
-		
+
 		mListView.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
