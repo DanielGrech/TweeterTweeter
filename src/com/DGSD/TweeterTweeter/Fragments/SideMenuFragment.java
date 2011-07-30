@@ -1,6 +1,7 @@
 package com.DGSD.TweeterTweeter.Fragments;
 
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.ListFragment;
 import android.graphics.Color;
@@ -79,6 +80,12 @@ public class SideMenuFragment extends ListFragment {
 		} else {
 			mSelectedItem = pos;
 
+			getActivity().findViewById(R.id.secondary_container).setVisibility(View.GONE);
+			FragmentManager fm = getFragmentManager();
+			for(int i = 0, size = fm.getBackStackEntryCount(); i< size; i++) {
+				fm.popBackStack();
+			}
+			
 			displayFragmentOfItem(mSelectedItem);
 		}
 	}
