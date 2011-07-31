@@ -121,6 +121,10 @@ public class TweetFragment extends DialogFragment {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		
+		if(savedInstanceState != null) {
+			mTabs.setCurrentTab(savedInstanceState.getInt("selected_tab", 0));
+		}
+		
 		attachData();
 	}
 	
@@ -133,6 +137,12 @@ public class TweetFragment extends DialogFragment {
 		super.onDestroyView();
 	}
 
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putInt("selected_tab", mTabs == null ? -1 : mTabs.getCurrentTab());
+	}
+	
 	public void attachData() {
 		mText.setText(mData.text);
 
