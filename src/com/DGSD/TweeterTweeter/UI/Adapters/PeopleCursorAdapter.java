@@ -21,6 +21,8 @@ public class PeopleCursorAdapter extends SimpleCursorAdapter{
 	int screenCol = -1;
 
 	int imgCol = -1;
+	
+	int idCol = -1;
 
 	public PeopleCursorAdapter(Context context, int layout, Cursor cursor,
 			String[] from, int[] to) {
@@ -31,14 +33,17 @@ public class PeopleCursorAdapter extends SimpleCursorAdapter{
 		screenCol = cursor.getColumnIndex(StatusData.C_SCREEN_NAME);
 
 		imgCol = cursor.getColumnIndex(StatusData.C_IMG);
+		
+		idCol = cursor.getColumnIndex(StatusData.C_ID);
 	}
 
 	@Override
 	public View newView(Context context, Cursor cursor, ViewGroup parent) {
 		View view = LayoutInflater.from(context).inflate(mLayoutRes, parent, false);
 
-		view.setTag(new ViewHolder((TextView) view.findViewById(R.id.screen_name),
-				(WebImageView) view.findViewById(R.id.profile_image)
+		view.setTag(new PeopleViewHolder((TextView) view.findViewById(R.id.screen_name),
+				(WebImageView) view.findViewById(R.id.profile_image),
+				cursor.getString(idCol)
 				));
 		
 		return view;
@@ -47,11 +52,12 @@ public class PeopleCursorAdapter extends SimpleCursorAdapter{
 	@Override
 	public void bindView(View view, Context context, Cursor c) {
 
-		ViewHolder vh = (ViewHolder) view.getTag();
+		PeopleViewHolder vh = (PeopleViewHolder) view.getTag();
 
 		if(vh == null) {
-			vh = new ViewHolder((TextView) view.findViewById(R.id.screen_name),
-					(WebImageView) view.findViewById(R.id.profile_image));
+			vh = new PeopleViewHolder((TextView) view.findViewById(R.id.screen_name),
+					(WebImageView) view.findViewById(R.id.profile_image),
+					c.getString(idCol));
 			view.setTag(vh);
 		}
 
@@ -67,17 +73,6 @@ public class PeopleCursorAdapter extends SimpleCursorAdapter{
 			// :(
 					Log.e(TAG, "OUT OF MEMORY!");
 					vh.img.reset();
-		}
-	}
-
-	private class ViewHolder {
-		public TextView screenName;
-		public WebImageView img;
-
-
-		public ViewHolder(TextView s, WebImageView i) {
-			screenName = s;
-			img = i;
 		}
 	}
 }

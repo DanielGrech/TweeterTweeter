@@ -20,6 +20,8 @@ public class TimelineCursorAdapter extends SimpleCursorAdapter{
 
 	private int mLayoutRes;
 
+	int idCol = -1;
+	
 	int screenCol = -1;
 
 	int textCol = -1;
@@ -34,6 +36,8 @@ public class TimelineCursorAdapter extends SimpleCursorAdapter{
 
 		mLayoutRes = layout;
 
+		idCol = cursor.getColumnIndex(StatusData.C_ID);
+		
 		screenCol = cursor.getColumnIndex(StatusData.C_SCREEN_NAME);
 
 		textCol = cursor.getColumnIndex(StatusData.C_TEXT);
@@ -48,10 +52,11 @@ public class TimelineCursorAdapter extends SimpleCursorAdapter{
 		final LayoutInflater inflater = LayoutInflater.from(context);
 		View view = inflater.inflate(mLayoutRes, parent, false);
 
-		view.setTag(new ViewHolder((TextView) view.findViewById(R.id.timeline_source), 
+		view.setTag(new TimelineViewHolder((TextView) view.findViewById(R.id.timeline_source), 
 				(TextView) view.findViewById(R.id.timeline_tweet), 
 				(TextView) view.findViewById(R.id.timeline_date), 
-				(WebImageView) view.findViewById(R.id.timeline_profile_image)
+				(WebImageView) view.findViewById(R.id.timeline_profile_image),
+				cursor.getString(idCol)
 		));
 
 		return view;
@@ -60,14 +65,15 @@ public class TimelineCursorAdapter extends SimpleCursorAdapter{
 	@Override
 	public void bindView(View view, Context context, Cursor c) {
 
-		ViewHolder vh = (ViewHolder) view.getTag();
+		TimelineViewHolder vh = (TimelineViewHolder) view.getTag();
 
 		if(vh == null) {
-			vh = new ViewHolder(
+			vh = new TimelineViewHolder(
 					(TextView) view.findViewById(R.id.timeline_source),
 					(TextView) view.findViewById(R.id.timeline_date),
 					(TextView) view.findViewById(R.id.timeline_tweet),
-					(WebImageView) view.findViewById(R.id.timeline_profile_image)
+					(WebImageView) view.findViewById(R.id.timeline_profile_image),
+					c.getString(idCol)
 			);
 
 			view.setTag(vh);
@@ -100,18 +106,4 @@ public class TimelineCursorAdapter extends SimpleCursorAdapter{
 
 	}
 
-	private class ViewHolder {
-		public TextView screenName;
-		public TextView createdAt;
-		public TextView tweet;
-		public WebImageView img;
-
-		public ViewHolder(TextView sn, TextView t, TextView c, WebImageView i) {
-			screenName = sn;
-			createdAt = c;
-			tweet = t;
-			img = i;
-		}
-
-	}
 }

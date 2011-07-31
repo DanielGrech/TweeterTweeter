@@ -21,6 +21,7 @@ import com.DGSD.TweeterTweeter.Services.UpdaterService;
 import com.DGSD.TweeterTweeter.Tasks.DataLoadingTask;
 import com.DGSD.TweeterTweeter.UI.PullToRefreshListView;
 import com.DGSD.TweeterTweeter.UI.PullToRefreshListView.OnRefreshListener;
+import com.DGSD.TweeterTweeter.UI.Adapters.BaseViewHolder;
 import com.DGSD.TweeterTweeter.UI.Adapters.EndlessListAdapter;
 import com.DGSD.TweeterTweeter.Utils.Log;
 
@@ -44,7 +45,7 @@ public abstract class BaseFragment extends DialogFragment {
 
 	protected String mUserName;
 
-	protected int mLastSelectedListItem;
+	protected String mLastSelectedListItemId;
 
 	protected int mLastVisibileItem;
 
@@ -117,12 +118,12 @@ public abstract class BaseFragment extends DialogFragment {
 	public void onCreate(Bundle savedInstance){
 		super.onCreate(savedInstance);
 
-		mLastSelectedListItem = -1;
+		mLastSelectedListItemId = "";
 
 		if(savedInstance != null) {
-			mLastSelectedListItem = 
-					savedInstance.getInt("last_selected_list_item", -1);
-			Log.d(TAG, "Restored item to: " + mLastSelectedListItem);
+			mLastSelectedListItemId = 
+					savedInstance.getString("last_selected_list_item");
+			Log.d(TAG, "Restored item to: " + mLastSelectedListItemId);
 
 			mLastVisibileItem = 
 					savedInstance.getInt("first_item_visible", 0);
@@ -162,10 +163,10 @@ public abstract class BaseFragment extends DialogFragment {
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		outState.putInt("last_selected_list_item", mLastSelectedListItem);
+		outState.putString("last_selected_list_item", mLastSelectedListItemId);
 		outState.putInt("first_item_visible", mListView == null ? 0 : 
 			mListView.getFirstVisiblePosition());
-		Log.d(TAG, "Saving item as: " + mLastSelectedListItem);
+		Log.d(TAG, "Saving item as: " + mLastSelectedListItemId);
 		Log.d(TAG, "First visible item: " + (mListView == null ? 0 : 
 			mListView.getFirstVisiblePosition()));
 	}
@@ -259,10 +260,12 @@ public abstract class BaseFragment extends DialogFragment {
 			public void onItemClick(AdapterView<?> parent, View view, 
 					int pos, long id) {
 
+				BaseViewHolder vh = (BaseViewHolder) view.getTag(); 
+				
 				//If we click on the same item, we know it is already showing!
-				if(mLastSelectedListItem != pos) {
+				if(!mLastSelectedListItemId.equals(vh.id)) {
 					onListItemClick(pos);
-					mLastSelectedListItem = pos;
+					mLastSelectedListItemId = vh.id;
 				}
 			}
 		});
