@@ -96,16 +96,7 @@ public class UrlShortenTask extends AsyncTask<Void, Void, Void> {
 		else {
 			for(Hyperlink link : mLinkList) {
 				System.err.println("NEW LINK: " + link.newUrl);
-				
-				if( link.newUrl.startsWith("http://")) {
-					link.newUrl = link.newUrl.substring(7);
-				}
-				
-				if( link.newUrl.startsWith("www.")) {
-					link.newUrl = link.newUrl.substring(4);
-				}
-					
-				
+
 				mText = mText.replace(link.foundUrl, link.newUrl);
 			}
 			

@@ -1,17 +1,25 @@
 package com.DGSD.TweeterTweeter.Fragments;
 
+import java.net.MalformedURLException;
+import java.util.LinkedList;
+
 import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.format.DateUtils;
+import android.text.method.LinkMovementMethod;
+import android.text.method.MovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
+import android.widget.TabHost;
+import android.widget.TabHost.TabContentFactory;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,11 +27,19 @@ import com.DGSD.TweeterTweeter.R;
 import com.DGSD.TweeterTweeter.TTApplication;
 import com.DGSD.TweeterTweeter.TweetData;
 import com.DGSD.TweeterTweeter.Services.UpdaterService;
+import com.DGSD.TweeterTweeter.UI.LinkEnabledTextView;
+import com.DGSD.TweeterTweeter.UI.LinkEnabledTextView.TextLinkClickListener;
+import com.DGSD.TweeterTweeter.UI.WebViewWithLoading;
+import com.DGSD.TweeterTweeter.Utils.StringUtils;
 import com.github.droidfu.widgets.WebImageView;
 
 public class TweetFragment extends DialogFragment {
 
 	private TTApplication mApplication;
+
+	private LinkedList<TabHost.TabSpec> mTabSpecs;
+
+	private TabHost mTabs;
 
 	private TextView mRetweetBtn;
 
@@ -37,7 +53,7 @@ public class TweetFragment extends DialogFragment {
 
 	private TextView mScreenName;
 
-	private TextView mText;
+	private LinkEnabledTextView mText;
 
 	private WebImageView mvImage;
 
@@ -66,7 +82,10 @@ public class TweetFragment extends DialogFragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
-		View root =  inflater.inflate(R.layout.tweet_layout, container, false);
+		View root = inflater.inflate(R.layout.tweet_layout, container, false);
+
+		//Find the tab host
+		mTabs = (TabHost)root.findViewById(R.id.tabhost);		
 
 		//Find the control buttons
 		mRetweetBtn = (TextView) root.findViewById(R.id.retweet);
@@ -76,6 +95,7 @@ public class TweetFragment extends DialogFragment {
 
 		setupListeners();
 
+		setupTabs();
 
 		mvImage = (WebImageView) root.findViewById(R.id.profile_image);
 
@@ -83,7 +103,7 @@ public class TweetFragment extends DialogFragment {
 
 		mScreenName = (TextView) root.findViewById(R.id.tweet_user);
 
-		mText = (TextView) root.findViewById(R.id.tweet_text);
+		mText = (LinkEnabledTextView) root.findViewById(R.id.tweet_text);
 
 		return root;
 	}
@@ -99,6 +119,8 @@ public class TweetFragment extends DialogFragment {
 	public void attachData() {
 		mText.setText(mData.text);
 
+		linkifyText();
+
 		mScreenName.setText(mData.screenName);
 
 		mDate.setText(DateUtils.getRelativeTimeSpanString(getActivity(), 
@@ -109,9 +131,73 @@ public class TweetFragment extends DialogFragment {
 		mvImage.setAnimation(AnimationUtils.loadAnimation(getActivity(),
 				R.anim.grow_from_bottom));
 		mvImage.loadImage();
+
 	}
 
-	public void setupListeners() {
+	private void linkifyText() {
+		mText.gatherLinksForText(mData.text + " ",//extra space to stop links at end of text..
+				LinkEnabledTextView.MATCH_TWITTER);
+		mText.setLinkTextColor(Color.BLUE);
+
+		mText.setOnTextLinkClickListener(new TextLinkClickListener(){
+			@Override
+			public void onTextLinkClick(View textView, String clickedString) {
+				if( clickedString.startsWith("#") ){
+					System.err.println("HASHTAG: " + clickedString);
+				}
+				else if( clickedString.startsWith("@") ){
+					System.err.println("PERSON: " + clickedString);
+				}
+				else{
+					System.err.println("WEBSITE!: " + clickedString);
+				}
+
+			}
+		});
+
+		MovementMethod m = mText.getMovementMethod();
+		if ((m == null) || !(m instanceof LinkMovementMethod)) {
+			if (mText.getLinksClickable()) {
+				mText.setMovementMethod(LinkMovementMethod.getInstance());
+				mText.setFocusable(false);
+			}
+		}
+
+	}
+
+	private void setupTabs() {
+		mTabSpecs = new LinkedList<TabHost.TabSpec>();
+
+		mTabs.setup();
+
+		//Add a tab for each web address found
+		LinkedList<String> urls = StringUtils.getUrls(mData.text);
+		for(String url : urls) {
+			TabHost.TabSpec webSpec = mTabs.newTabSpec(url);
+			
+			webSpec.setContent(new PreExistingViewFactory(
+					WebViewWithLoading.getView(getActivity(), url)));
+			
+			try {
+				webSpec.setIndicator(StringUtils.getWebsiteFromUrl(url));
+			} catch(MalformedURLException e) {
+				e.printStackTrace();
+				webSpec.setIndicator("Website");
+			}
+			
+			mTabs.addTab(webSpec);
+			mTabSpecs.add(webSpec);
+		}
+
+
+		/*TabHost.TabSpec mediaSpec = mTabs.newTabSpec(null);
+		mediaSpec.setContent(R.id.media);
+		mediaSpec.setIndicator("Media");
+		mTabs.addTab(mediaSpec);
+		mTabSpecs.add(mediaSpec);*/
+	}
+
+	private void setupListeners() {
 		mReplyBtn.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
@@ -147,7 +233,7 @@ public class TweetFragment extends DialogFragment {
 									val + " ").show(getActivity().getFragmentManager(), null);
 						}
 					});
-					
+
 					builder.create().show();
 				} else {
 					NewTweetFragment.newInstance(mApplication.getSelectedAccount(),
@@ -207,6 +293,22 @@ public class TweetFragment extends DialogFragment {
 
 			}
 		});
+	}
+
+	/**
+	 * Class needed when adding dynamic content to a tab
+	 */
+	class PreExistingViewFactory implements TabContentFactory{
+		private final View preExisting;
+		
+		protected PreExistingViewFactory(View view){
+			preExisting = view;
+		}
+		
+		@Override
+		public View createTabContent(String tag) {
+			return preExisting;
+		}
 	}
 
 }

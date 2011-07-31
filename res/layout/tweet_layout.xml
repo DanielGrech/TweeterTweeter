@@ -91,6 +91,7 @@
 	    	android:layout_height="wrap_content"
 	    	android:layout_alignParentLeft="true"
 	    	android:layout_alignParentTop="true"
+	    	android:layout_marginRight="10dip"
 	    	android:scaleType="fitXY"
 	    	android:layout_alignRight="@+id/tweet_user"
 	    	droidfu:autoLoad="false"
@@ -117,7 +118,7 @@
 	    	android:layout_toRightOf="@id/profile_image">
 	    	
 			<!-- The actual tweet text -->
-		    <TextView
+		    <com.DGSD.TweeterTweeter.UI.LinkEnabledTextView
 		        android:id="@+id/tweet_text"
 		        android:layout_width="wrap_content"
 		        android:layout_height="wrap_content"
@@ -128,6 +129,19 @@
 		        android:textColor="#ff888888"/>
 		        
 		    <TextView
+		         android:id="@+id/meta_info"
+		         android:layout_width="wrap_content"
+		         android:layout_height="wrap_content"
+		         android:textAppearance="@android:style/TextAppearance.Small" 
+		         android:textColor="#ff888888"
+		         android:singleLine="true"
+		         android:gravity="center"
+		         android:layout_below="@id/tweet_text"
+		         android:padding="6dp"
+		         android:layout_toLeftOf="@+id/date"/> 
+		     
+		        
+		    <TextView
 		         android:id="@+id/date"
 		         android:layout_width="wrap_content"
 		         android:layout_height="wrap_content"
@@ -136,31 +150,15 @@
 		         android:singleLine="true"
 		         android:layout_alignParentRight="true"
 		         android:gravity="center"
-		         android:text="27/05/1991"
 		         android:layout_below="@id/tweet_text"
 		         android:padding="6dp"/>
 	    	
     	</RelativeLayout>
     </RelativeLayout>
 
-	<!-- 'Media Row' .. show mentioned user images, image links -->
-	<LinearLayout 
-		android:id="@+id/media_row"
-		android:layout_width="match_parent"
-		android:layout_height="0dp"
-		android:layout_weight="1"
-		android:background="@drawable/sidebar_background_repeat">
-	
-	</LinearLayout>
-	
-	<!-- Large media display (for things such as webpage, img if no webapge etc) ..must keep falling back to the next best display option.. -->
-	<LinearLayout 
-        android:id="@+id/contentBox"
-        android:orientation="vertical"
-        android:layout_width="fill_parent"
-        android:layout_height="0dp"
-        android:layout_weight="3"
-        android:background="@drawable/floating_box"/>
-	
+	<include 
+		layout="@layout/tweet_tab_host"
+		android:id="@+id/tabhost"/>
+
 
 </LinearLayout>

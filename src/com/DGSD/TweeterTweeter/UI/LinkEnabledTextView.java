@@ -30,7 +30,7 @@ public class LinkEnabledTextView  extends TextView{
     Pattern hashTagsPattern = Pattern.compile("(#[a-zA-Z0-9_-]+)");
 
     // Pattern for gathering http:// links from the Text
-    Pattern hyperLinksPattern = Pattern.compile("([Hh][tT][tT][pP][sS]?:\\/\\/[^ ,'\">\\]\\)]*[^\\. ,'\">\\]\\)])");
+    Pattern hyperLinksPattern = Pattern.compile("\\(?\\b(http://|www[.])[-A-Za-z0-9+&@#/%?=~_()|!:,.;]*[-A-Za-z0-9+&@#/%=~_()|]");
     
     //Match all text..
     Pattern matchAll = Pattern.compile("[a-zA-Z0-9_-]+");
