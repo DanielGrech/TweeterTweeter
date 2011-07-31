@@ -42,6 +42,8 @@ OnSharedPreferenceChangeListener {
 	public static String CONSUMER_KEY;
 
 	public static String CONSUMER_SECRET;
+	
+	public static String MAPS_KEY;
 
 	private HashMap<String,Twitter> mTwitterList;
 
@@ -106,6 +108,8 @@ OnSharedPreferenceChangeListener {
 
 		CONSUMER_KEY = getResources().getString(R.string.consumer_key);
 		CONSUMER_SECRET = getResources().getString(R.string.consumer_secret);
+		//TODO: Need to change this to production before release
+		MAPS_KEY = getResources().getString(R.string.maps_key_debug);
 
 		mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 

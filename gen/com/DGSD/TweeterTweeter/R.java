@@ -75,15 +75,16 @@ public final class R {
         public static final int icon=0x7f020016;
         public static final int icon_unfollow_user=0x7f020017;
         public static final int list_item_background=0x7f020018;
-        public static final int popup=0x7f020019;
-        public static final int reply=0x7f02001a;
-        public static final int retweet=0x7f02001b;
-        public static final int side_menu_selector=0x7f02001c;
-        public static final int sidebar_background_repeat=0x7f02001d;
-        public static final int sidebar_tile=0x7f02001e;
-        public static final int twitter_icon=0x7f02001f;
-        public static final int twitter_notification_icon=0x7f020020;
-        public static final int word_icon=0x7f020021;
+        public static final int marker=0x7f020019;
+        public static final int popup=0x7f02001a;
+        public static final int reply=0x7f02001b;
+        public static final int retweet=0x7f02001c;
+        public static final int side_menu_selector=0x7f02001d;
+        public static final int sidebar_background_repeat=0x7f02001e;
+        public static final int sidebar_tile=0x7f02001f;
+        public static final int twitter_icon=0x7f020020;
+        public static final int twitter_notification_icon=0x7f020021;
+        public static final int word_icon=0x7f020022;
     }
     public static final class id {
         public static final int actions_container=0x7f0c0029;
@@ -175,24 +176,26 @@ public final class R {
         public static final int status_context_menu=0x7f0b0002;
     }
     public static final class string {
-        public static final int account_spinner=0x7f080003;
+        public static final int account_spinner=0x7f080005;
         public static final int app_name=0x7f080000;
-        public static final int bitlyKey=0x7f080005;
-        public static final int bitlyName=0x7f080006;
+        public static final int bitlyKey=0x7f080007;
+        public static final int bitlyName=0x7f080008;
         public static final int consumer_key=0x7f080001;
         public static final int consumer_secret=0x7f080002;
-        public static final int login_activity=0x7f080010;
-        public static final int pull_to_refresh_pull_label=0x7f08000b;
-        public static final int pull_to_refresh_refreshing_label=0x7f08000d;
-        public static final int pull_to_refresh_release_label=0x7f08000c;
-        public static final int pull_to_refresh_tap_label=0x7f08000e;
-        public static final int receive_data_description=0x7f080008;
-        public static final int receive_twitter_data=0x7f080007;
-        public static final int send_data_description=0x7f080009;
-        public static final int send_twitter_data=0x7f08000a;
-        public static final int set_preferences=0x7f080011;
-        public static final int tt_activity=0x7f08000f;
-        public static final int twitpic_key=0x7f080004;
+        public static final int login_activity=0x7f080012;
+        public static final int maps_key=0x7f080003;
+        public static final int maps_key_debug=0x7f080004;
+        public static final int pull_to_refresh_pull_label=0x7f08000d;
+        public static final int pull_to_refresh_refreshing_label=0x7f08000f;
+        public static final int pull_to_refresh_release_label=0x7f08000e;
+        public static final int pull_to_refresh_tap_label=0x7f080010;
+        public static final int receive_data_description=0x7f08000a;
+        public static final int receive_twitter_data=0x7f080009;
+        public static final int send_data_description=0x7f08000b;
+        public static final int send_twitter_data=0x7f08000c;
+        public static final int set_preferences=0x7f080013;
+        public static final int tt_activity=0x7f080011;
+        public static final int twitpic_key=0x7f080006;
     }
     public static final class style {
         public static final int Animations=0x7f0a0000;

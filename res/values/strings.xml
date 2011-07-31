@@ -3,6 +3,8 @@
 	<string name="app_name">TweeterTweeter</string>
 	<string name="consumer_key">AMJAX1bGldW9sUpXnjDdvw</string>
 	<string name="consumer_secret">HJiwIdO43SfOhxH1aZIfknNmhcN581kgScAhoN2Wbo</string>
+	<string name="maps_key">0jZhYLWjLGQkHaP0icBfKvafsLkJuoRIKqCvwRg</string>
+	<string name="maps_key_debug">0JVCDncbzRBBdj4yTvi9aP8ihTu-eCtoYB7R7jQ</string>
 	<string name="account_spinner">Choose an account</string>
 	<string name="twitpic_key">a70b86c797017c351c09932423d14922</string>
 	<string name="bitlyKey">R_faa997c865c4d1fcfe37217c44c1cc21</string>

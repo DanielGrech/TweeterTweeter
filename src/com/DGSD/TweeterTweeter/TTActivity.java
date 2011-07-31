@@ -3,7 +3,6 @@ package com.DGSD.TweeterTweeter;
 import android.animation.LayoutTransition;
 import android.app.ActionBar;
 import android.app.ActionBar.OnNavigationListener;
-import android.app.Activity;
 import android.app.FragmentManager.OnBackStackChangedListener;
 import android.content.ClipData;
 import android.content.ClipDescription;
@@ -23,10 +22,15 @@ import android.widget.Toast;
 import com.DGSD.TweeterTweeter.Fragments.NewTweetFragment;
 import com.DGSD.TweeterTweeter.Utils.Log;
 import com.appsolut.adapter.collections.CollectionsAdapter;
+import com.google.android.maps.MapActivity;
+import com.google.android.maps.MapView;
 
-public class TTActivity extends Activity {
+public class TTActivity extends MapActivity {
 
 	private static final String TAG = TTActivity.class.getSimpleName();
+	
+	//We can only have 1 per activity, so we need it here for all fragments
+	public static MapView mMapView;
 
 	private TTApplication mApplication;
 
@@ -40,6 +44,10 @@ public class TTActivity extends Activity {
 
 		setContentView(R.layout.main);
 
+		if(mMapView == null) {
+			setMapView( new MapView(this, TTApplication.MAPS_KEY) );
+		}
+		
 		mApplication = (TTApplication) getApplication();
 
 		if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
@@ -191,5 +199,28 @@ public class TTActivity extends Activity {
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		outState.putInt("second_container_visibility", mSecondaryContainer.getVisibility());
+	}
+
+	@Override
+	public void onDestroy() {
+		mMapView = null;
+		
+		super.onDestroy();
+	}
+
+	@Override
+	protected boolean isRouteDisplayed() {
+		return false;
+	}
+	
+	public synchronized MapView getMapView() {
+		return mMapView;
+	}
+	
+	public synchronized void setMapView(MapView m) {
+		mMapView = m;
+		mMapView.setClickable(true);
+		mMapView.setBuiltInZoomControls(true);
+		mMapView.getController().setZoom(12);
 	}
 }

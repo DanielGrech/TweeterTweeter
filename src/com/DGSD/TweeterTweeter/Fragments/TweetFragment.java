@@ -24,14 +24,19 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.DGSD.TweeterTweeter.R;
+import com.DGSD.TweeterTweeter.TTActivity;
 import com.DGSD.TweeterTweeter.TTApplication;
 import com.DGSD.TweeterTweeter.TweetData;
 import com.DGSD.TweeterTweeter.Services.UpdaterService;
 import com.DGSD.TweeterTweeter.UI.LinkEnabledTextView;
 import com.DGSD.TweeterTweeter.UI.LinkEnabledTextView.TextLinkClickListener;
+import com.DGSD.TweeterTweeter.UI.PhotoOverlay;
 import com.DGSD.TweeterTweeter.UI.WebViewWithLoading;
 import com.DGSD.TweeterTweeter.Utils.StringUtils;
 import com.github.droidfu.widgets.WebImageView;
+import com.google.android.maps.GeoPoint;
+import com.google.android.maps.MapView;
+import com.google.android.maps.OverlayItem;
 
 public class TweetFragment extends DialogFragment {
 
@@ -39,6 +44,8 @@ public class TweetFragment extends DialogFragment {
 
 	private LinkedList<TabHost.TabSpec> mTabSpecs;
 
+	private TTActivity mActivity;
+	
 	private TabHost mTabs;
 
 	private TextView mRetweetBtn;
@@ -55,7 +62,7 @@ public class TweetFragment extends DialogFragment {
 
 	private LinkEnabledTextView mText;
 
-	private WebImageView mvImage;
+	private WebImageView mImage;
 
 	private TweetData mData;
 
@@ -84,6 +91,8 @@ public class TweetFragment extends DialogFragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
 		View root = inflater.inflate(R.layout.tweet_layout, container, false);
 
+		mActivity = (TTActivity)getActivity();
+		
 		//Find the tab host
 		mTabs = (TabHost)root.findViewById(R.id.tabhost);		
 
@@ -92,12 +101,12 @@ public class TweetFragment extends DialogFragment {
 		mReplyBtn = (TextView) root.findViewById(R.id.reply);
 		mFavouriteBtn = (TextView) root.findViewById(R.id.favourite);
 		mShareBtn = (TextView) root.findViewById(R.id.share);
-
+		
 		setupListeners();
 
 		setupTabs();
 
-		mvImage = (WebImageView) root.findViewById(R.id.profile_image);
+		mImage = (WebImageView) root.findViewById(R.id.profile_image);
 
 		mDate = (TextView) root.findViewById(R.id.date);
 
@@ -111,9 +120,17 @@ public class TweetFragment extends DialogFragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-
+		
 		attachData();
-
+	}
+	
+	@Override
+	public void onDestroyView() {
+		if(mTabs != null) {
+			mTabs.clearAllTabs();
+		}
+		
+		super.onDestroyView();
 	}
 
 	public void attachData() {
@@ -127,10 +144,10 @@ public class TweetFragment extends DialogFragment {
 				Long.valueOf(mData.date)));
 
 		//Set the image view
-		mvImage.setImageUrl(mData.img);
-		mvImage.setAnimation(AnimationUtils.loadAnimation(getActivity(),
+		mImage.setImageUrl(mData.img);
+		mImage.setAnimation(AnimationUtils.loadAnimation(getActivity(),
 				R.anim.grow_from_bottom));
-		mvImage.loadImage();
+		mImage.loadImage();
 
 	}
 
@@ -174,21 +191,68 @@ public class TweetFragment extends DialogFragment {
 		LinkedList<String> urls = StringUtils.getUrls(mData.text);
 		for(String url : urls) {
 			TabHost.TabSpec webSpec = mTabs.newTabSpec(url);
-			
+
 			webSpec.setContent(new PreExistingViewFactory(
 					WebViewWithLoading.getView(getActivity(), url)));
-			
+
 			try {
 				webSpec.setIndicator(StringUtils.getWebsiteFromUrl(url));
 			} catch(MalformedURLException e) {
 				e.printStackTrace();
 				webSpec.setIndicator("Website");
 			}
-			
+
 			mTabs.addTab(webSpec);
 			mTabSpecs.add(webSpec);
 		}
 
+
+		if(mData.lat != null & mData.lat.length() > 0 
+				&& mData.lon != null && mData.lon.length() > 0) {
+
+			double lat, lon;
+
+			try {
+				lat = Double.valueOf(mData.lat);
+				lon = Double.valueOf(mData.lon);
+				System.err.println("LAT : "+ lat + " LONG: " + lon);
+			} catch(NumberFormatException e) {
+				//We can't add the map view, better exit..
+				e.printStackTrace();
+				return;
+			}
+
+			TabHost.TabSpec mapSpec = mTabs.newTabSpec("map");
+
+			if(mActivity.getMapView() == null) {
+				mActivity.setMapView(new MapView(mActivity, TTApplication.MAPS_KEY));
+			}
+			
+			GeoPoint location = new GeoPoint((int)(lat * 1E6), (int)(lon * 1E6));
+			mActivity.getMapView().getController().setCenter(location);
+
+			try {
+				final PhotoOverlay overlay = 
+						new PhotoOverlay(getActivity().getResources().getDrawable(R.drawable.marker));
+				overlay.addOverlay(new OverlayItem(location, "", ""));
+
+				mActivity.getMapView().getOverlays().clear();
+				mActivity.getMapView().getOverlays().add(overlay);
+			} catch(NullPointerException e) {
+				e.printStackTrace();
+			}
+
+			if(mData.placeName != null && mData.placeName.length() > 0) {
+				mapSpec.setIndicator(mData.placeName);
+			} else {
+				mapSpec.setIndicator("Location");
+			}
+
+			mapSpec.setContent(new MapViewFactory());
+
+			mTabs.addTab(mapSpec);
+			mTabSpecs.add(mapSpec);
+		}
 
 		/*TabHost.TabSpec mediaSpec = mTabs.newTabSpec(null);
 		mediaSpec.setContent(R.id.media);
@@ -300,14 +364,28 @@ public class TweetFragment extends DialogFragment {
 	 */
 	class PreExistingViewFactory implements TabContentFactory{
 		private final View preExisting;
-		
+
 		protected PreExistingViewFactory(View view){
 			preExisting = view;
 		}
-		
+
 		@Override
 		public View createTabContent(String tag) {
 			return preExisting;
+		}
+	}
+	
+	/**
+	 * Class needed because Google makes MapView a pain in the a$$
+	 */
+	class MapViewFactory implements TabContentFactory{
+		protected MapViewFactory(){
+			
+		}
+
+		@Override
+		public View createTabContent(String tag) {
+			return mActivity.getMapView();
 		}
 	}
 

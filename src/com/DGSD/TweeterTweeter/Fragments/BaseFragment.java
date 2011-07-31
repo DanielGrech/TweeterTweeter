@@ -252,12 +252,12 @@ public abstract class BaseFragment extends DialogFragment {
 			}
 		});
 
+		//TODO: Bug if new data comes in, the 'lastselectedposition' no longer
+		// 		refers to the same item..
 		mListView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, 
 					int pos, long id) {
-
-				Log.d(TAG, "LAST SELECTED: " + mLastSelectedListItem +  " POS: " + pos);
 
 				//If we click on the same item, we know it is already showing!
 				if(mLastSelectedListItem != pos) {

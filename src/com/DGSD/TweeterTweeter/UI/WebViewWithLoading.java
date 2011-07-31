@@ -18,6 +18,7 @@ public class WebViewWithLoading {
 					RelativeLayout.LayoutParams.FILL_PARENT );
 
 
+	//TODO: Configuration option to hide zoom controls
 	public static View getView(final Context c, String url) {
 		final RelativeLayout rl = new RelativeLayout(c);
 		rl.setGravity(Gravity.CENTER);
@@ -26,7 +27,7 @@ public class WebViewWithLoading {
 		final WebView wv = new WebView(c);
 		wv.setLayoutParams(lp);
 		wv.getSettings().setJavaScriptEnabled(true);
-		wv.getSettings().setBuiltInZoomControls(false);
+		wv.getSettings().setBuiltInZoomControls(true);
 		wv.getSettings().setDisplayZoomControls(true);
 		wv.setDrawingCacheEnabled(true);
 		wv.setAnimationCacheEnabled(true);

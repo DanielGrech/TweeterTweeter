@@ -616,6 +616,10 @@ public class StatusData {
 	}
 
 	public static ContentValues getStatus(Cursor c) {
+		if(c == null) {
+			return null;
+		}
+		
 		ContentValues values = new ContentValues();
 
 		values.put(C_ACCOUNT, c.getString(c.getColumnIndex(C_ACCOUNT)));
