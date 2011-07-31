@@ -253,8 +253,6 @@ public abstract class BaseFragment extends DialogFragment {
 			}
 		});
 
-		//TODO: Bug if new data comes in, the 'lastselectedposition' no longer
-		// 		refers to the same item..
 		mListView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, 
