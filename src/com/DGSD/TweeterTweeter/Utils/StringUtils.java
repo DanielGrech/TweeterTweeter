@@ -23,6 +23,11 @@ public class StringUtils {
 
 		while (m.find()){
 			String s = src.substring(m.start(), m.end());
+			
+			if(s.startsWith("(") && s.endsWith(")")) {
+				s = s.substring(1, s.length() - 2);
+			}
+				
 			if(!s.startsWith("http://")) {
 				retval.add("http://".concat(s));
 			} else {

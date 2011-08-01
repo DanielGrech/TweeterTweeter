@@ -1,3 +1,5 @@
+//TODO: Add 'passcode' to preferences .. must enter to unlock!
+
 package com.DGSD.TweeterTweeter;
 
 import android.animation.LayoutTransition;

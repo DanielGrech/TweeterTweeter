@@ -100,8 +100,18 @@ public class LinkEnabledTextView  extends TextView{
 	     */
 	    Hyperlink spec = new Hyperlink();
 
-	    spec.textSpan = s.subSequence(start, end);
-	    spec.span = new InternalURLSpan(spec.textSpan.toString());
+	    String pat = s.subSequence(start, end).toString();
+	    
+	    if(pat.startsWith("(") && pat.endsWith(")")) {
+	    	start+=1;
+	    	end-=1;
+	    	pat = pat.substring(1, pat.length() - 2);
+	    	
+		}
+	    
+	    
+	    spec.textSpan = pat;
+	    spec.span = new InternalURLSpan(pat);
 	    spec.start = start;
 	    spec.end = end;
 

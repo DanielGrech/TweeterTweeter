@@ -8,6 +8,7 @@ import android.app.DialogFragment;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.format.DateUtils;
@@ -41,8 +42,6 @@ import com.google.android.maps.OverlayItem;
 public class TweetFragment extends DialogFragment {
 
 	private TTApplication mApplication;
-
-	private LinkedList<TabHost.TabSpec> mTabSpecs;
 
 	private TTActivity mActivity;
 	
@@ -193,10 +192,10 @@ public class TweetFragment extends DialogFragment {
 	}
 
 	private void setupTabs() {
-		mTabSpecs = new LinkedList<TabHost.TabSpec>();
-
 		mTabs.setup();
 
+		int tabCount = 0;
+		
 		//Add a tab for each web address found
 		LinkedList<String> urls = StringUtils.getUrls(mData.text);
 		for(String url : urls) {
@@ -204,7 +203,7 @@ public class TweetFragment extends DialogFragment {
 
 			webSpec.setContent(new PreExistingViewFactory(
 					WebViewWithLoading.getView(getActivity(), url)));
-
+			
 			try {
 				webSpec.setIndicator(StringUtils.getWebsiteFromUrl(url));
 			} catch(MalformedURLException e) {
@@ -213,7 +212,7 @@ public class TweetFragment extends DialogFragment {
 			}
 
 			mTabs.addTab(webSpec);
-			mTabSpecs.add(webSpec);
+			tabCount++;
 		}
 
 
@@ -253,15 +252,22 @@ public class TweetFragment extends DialogFragment {
 			}
 
 			if(mData.placeName != null && mData.placeName.length() > 0) {
-				mapSpec.setIndicator(mData.placeName);
+				mapSpec.setIndicator(mData.placeName, 
+						Resources.getSystem().getDrawable(android.R.drawable.ic_menu_mapmode));
 			} else {
-				mapSpec.setIndicator("Location");
+				mapSpec.setIndicator("Location",
+						Resources.getSystem().getDrawable(android.R.drawable.ic_menu_mapmode));
 			}
 
-			mapSpec.setContent(new MapViewFactory());
+			try {
+				mapSpec.setContent(new MapViewFactory());
+			} catch(IllegalStateException e) {
+				//We are trying to add a second map view to our activity..
+				return;
+			}
 
 			mTabs.addTab(mapSpec);
-			mTabSpecs.add(mapSpec);
+			tabCount++;
 		}
 
 		/*TabHost.TabSpec mediaSpec = mTabs.newTabSpec(null);
@@ -269,6 +275,10 @@ public class TweetFragment extends DialogFragment {
 		mediaSpec.setIndicator("Media");
 		mTabs.addTab(mediaSpec);
 		mTabSpecs.add(mediaSpec);*/
+		
+		if(tabCount == 0) {
+			mTabs.setVisibility(View.GONE);
+		}
 	}
 
 	private void setupListeners() {
