@@ -5,8 +5,7 @@
     android:layout_width="fill_parent"
     android:layout_height="?android:attr/listPreferredItemHeight"
     android:padding="6dip"
-    android:focusable="false"
-    android:background="@drawable/list_item_background">
+    android:focusable="false">
     
     <com.github.droidfu.widgets.WebImageView
         android:id="@+id/profile_image"

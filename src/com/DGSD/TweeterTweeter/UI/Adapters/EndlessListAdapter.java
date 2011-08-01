@@ -77,8 +77,7 @@ public class EndlessListAdapter extends EndlessAdapter {
 		ProgressBar pb = new ProgressBar(mFragment.getActivity());
 		pb.setIndeterminate(true);
 
-		LayoutParams lp = new ListView.LayoutParams( LayoutParams.WRAP_CONTENT, 
-				LayoutParams.WRAP_CONTENT );
+		LayoutParams lp = new ListView.LayoutParams( 30, 30 );
 
 		pb.setLayoutParams(lp);
 
