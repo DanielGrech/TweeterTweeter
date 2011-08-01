@@ -230,6 +230,20 @@ OnSharedPreferenceChangeListener {
 		return retval;
 	}
 
+	public synchronized HashSet<String[]> getAccountListWithImage() {
+		HashSet<String[]> retval = new HashSet<String[]>();
+
+		for(String a: mAccountList) {
+			try {
+				retval.add(new String[]{mSession.getUsername(a), mSession.getUserImage(a)});
+			} catch(NullPointerException e) {
+				Log.e(TAG, "Null pointer getting screen name");
+			}
+		}
+
+		return retval;
+	}
+	
 	public TwitterSession getTwitterSession() {
 		return mSession;
 	}
@@ -260,6 +274,10 @@ OnSharedPreferenceChangeListener {
 	
 	public String getUserName(String account) {
 		return mSession.getUsername(account);
+	}
+	
+	public String getUserImage(String account) {
+		return mSession.getUserImage(account);
 	}
 
 	public void updateStatus(String accountId, String tweet, 

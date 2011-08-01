@@ -170,7 +170,8 @@ public class TwitterConnection {
 
 					User user = mTwitter.verifyCredentials();
 
-					mSession.storeAccessToken(mAccountId, mAccessToken, user.getScreenName());
+					mSession.storeAccessToken(mAccountId, mAccessToken, 
+							user.getScreenName(), user.getProfileImageURL().toString());
 
 					what = 0;
 				} catch (Exception e){

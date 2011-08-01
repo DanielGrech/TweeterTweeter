@@ -14,6 +14,7 @@ public class TwitterSession {
 	private static final String TWEET_AUTH_KEY = "auth_key";
 	private static final String TWEET_AUTH_SECRET_KEY = "auth_secret_key";
 	private static final String TWEET_USER_NAME = "user_name";
+	private static final String TWEET_IMAGE = "user_image";
 	private static final String ACCOUNT_NAME = "account";
 	private static final String SHARED = "Twitter_Preferences";
 
@@ -41,10 +42,12 @@ public class TwitterSession {
 		return retval.isEmpty() ? null : retval;
 	}
 
-	public void storeAccessToken(String accountName, AccessToken accessToken, String username) {
+	public void storeAccessToken(String accountName, AccessToken accessToken, 
+			String username, String image) {
 		editor.putString(accountName + TWEET_AUTH_KEY, accessToken.getToken());
 		editor.putString(accountName + TWEET_AUTH_SECRET_KEY, accessToken.getTokenSecret());
 		editor.putString(accountName + TWEET_USER_NAME, username);
+		editor.putString(accountName + TWEET_IMAGE, image);
 
 		editor.putString(accountName, accountName);
 		
@@ -63,6 +66,10 @@ public class TwitterSession {
 
 	public String getUsername(String accountName) {
 		return sharedPref.getString(accountName + TWEET_USER_NAME, "");
+	}
+	
+	public String getUserImage(String accountName) {
+		return sharedPref.getString(accountName + TWEET_IMAGE, "");
 	}
 
 	public AccessToken getAccessToken(String accountName) {

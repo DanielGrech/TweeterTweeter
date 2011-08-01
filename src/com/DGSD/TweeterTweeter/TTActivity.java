@@ -22,6 +22,7 @@ import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.DGSD.TweeterTweeter.Fragments.NewTweetFragment;
+import com.DGSD.TweeterTweeter.UI.Adapters.NavigationDropdownFactory;
 import com.DGSD.TweeterTweeter.Utils.Log;
 import com.appsolut.adapter.collections.CollectionsAdapter;
 import com.google.android.maps.MapActivity;
@@ -30,14 +31,14 @@ import com.google.android.maps.MapView;
 public class TTActivity extends MapActivity {
 
 	private static final String TAG = TTActivity.class.getSimpleName();
-	
+
 	//We can only have 1 per activity, so we need it here for all fragments
 	public static MapView mMapView;
 
 	private TTApplication mApplication;
 
 	private ViewGroup mDataContainer;
-	
+
 	private ViewGroup mSecondaryContainer;
 
 	@Override
@@ -49,7 +50,7 @@ public class TTActivity extends MapActivity {
 		if(mMapView == null) {
 			setMapView( new MapView(this, TTApplication.MAPS_KEY) );
 		}
-		
+
 		mApplication = (TTApplication) getApplication();
 
 		if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
@@ -57,7 +58,7 @@ public class TTActivity extends MapActivity {
 		} else {
 			mDataContainer = (ViewGroup) findViewById(R.id.data_container_port);
 		}
-		
+
 		mSecondaryContainer = (ViewGroup) findViewById(R.id.secondary_container);
 
 		LayoutTransition lt = new LayoutTransition();
@@ -65,7 +66,7 @@ public class TTActivity extends MapActivity {
 		lt.setStagger(LayoutTransition.CHANGE_APPEARING, 30);
 		lt.setStagger(LayoutTransition.CHANGE_DISAPPEARING, 30);
 		lt.setDuration(500);
-		
+
 		mDataContainer.setLayoutTransition(lt);
 
 		ActionBar mActionBar = getActionBar();
@@ -77,20 +78,20 @@ public class TTActivity extends MapActivity {
 
 		mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 
-		mActionBar.setListNavigationCallbacks(new CollectionsAdapter<String>(this, 
-				android.R.layout.simple_dropdown_item_1line, mApplication.getAccountList()), 
+		mActionBar.setListNavigationCallbacks(new CollectionsAdapter<String[]>(this, 
+				mApplication.getAccountListWithImage(), new NavigationDropdownFactory<String[]>()), 
 				new OnNavigationListener(){
 			@Override
 			public boolean onNavigationItemSelected(int itemPosition, long itemId) {
 				/*
 				 * This is itemPosition+1 as account naming is not 0-indexed
 				 */
-				 Log.i(TAG, "Setting selected account to account" + (itemPosition+1));
-				 mApplication.setSelectedAccount("account" + (itemPosition+1));
-				 return false;
+				Log.i(TAG, "Setting selected account to account" + (itemPosition+1));
+				mApplication.setSelectedAccount("account" + (itemPosition+1));
+				return false;
 			}
 		});
-		
+
 		getFragmentManager().addOnBackStackChangedListener(new OnBackStackChangedListener(){
 
 			@Override
@@ -99,9 +100,9 @@ public class TTActivity extends MapActivity {
 					mSecondaryContainer.setVisibility(View.GONE);
 				}
 			}
-			
+
 		});
-		
+
 		if(savedInstanceState != null) {
 			mSecondaryContainer.setVisibility(
 					savedInstanceState.getInt("second_container_visibility", 
@@ -206,7 +207,7 @@ public class TTActivity extends MapActivity {
 	@Override
 	public void onDestroy() {
 		mMapView = null;
-		
+
 		super.onDestroy();
 	}
 
@@ -214,11 +215,11 @@ public class TTActivity extends MapActivity {
 	protected boolean isRouteDisplayed() {
 		return false;
 	}
-	
+
 	public synchronized MapView getMapView() {
 		return mMapView;
 	}
-	
+
 	public synchronized void setMapView(MapView m) {
 		mMapView = m;
 		mMapView.setClickable(true);
