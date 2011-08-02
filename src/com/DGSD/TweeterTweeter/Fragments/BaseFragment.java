@@ -1,21 +1,14 @@
 package com.DGSD.TweeterTweeter.Fragments;
 
 import twitter4j.TwitterException;
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.ObjectAnimator;
-import android.animation.PropertyValuesHolder;
-import android.animation.ValueAnimator;
 import android.app.DialogFragment;
 import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.ActionMode;
 import android.view.ActionMode.Callback;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
@@ -69,7 +62,7 @@ public abstract class BaseFragment extends DialogFragment {
 
 	protected DataLoadingTask mCurrentTask;
 
-	protected Fragment mCurrentFragment;
+	protected String mCurrentFragmentTag;
 
 	/**
 	 * Check if there is any newer data available on twitter
@@ -137,6 +130,9 @@ public abstract class BaseFragment extends DialogFragment {
 
 			mLastVisibileItem = 
 					savedInstance.getInt("first_item_visible", 0);
+			
+			mCurrentFragmentTag =
+					savedInstance.getString("current_fragment_tag");
 
 			Log.d(TAG, "Restored visible to: " + mLastVisibileItem);
 		}
@@ -174,6 +170,7 @@ public abstract class BaseFragment extends DialogFragment {
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		outState.putString("last_selected_list_item", mLastSelectedListItemId);
+		outState.putString("current_fragment_tag", mCurrentFragmentTag);
 		outState.putInt("first_item_visible", mListView == null ? 0 : 
 			mListView.getFirstVisiblePosition());
 		Log.d(TAG, "Saving item as: " + mLastSelectedListItemId);
@@ -312,9 +309,12 @@ public abstract class BaseFragment extends DialogFragment {
 	}
 
 	public void removeSpawnedFragments() {
-		if(mCurrentFragment != null) {
+		if(mCurrentFragmentTag != null) {
 			try {
-				getFragmentManager().beginTransaction().remove(mCurrentFragment).commit();
+				Fragment f = getFragmentManager().findFragmentByTag(mCurrentFragmentTag);
+				if(f != null) {
+					getFragmentManager().beginTransaction().remove(f).commit();
+				}
 			} catch(IllegalStateException e) {
 				Log.e(TAG, "Error removing mCurrentFragment", e);
 			}

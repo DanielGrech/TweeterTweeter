@@ -1,5 +1,7 @@
 package com.DGSD.TweeterTweeter.Fragments;
 
+import java.util.Random;
+
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
@@ -55,15 +57,21 @@ public abstract class BaseStatusFragment extends BaseFragment {
 		//Insert the fragment!
 		FragmentTransaction ft = getFragmentManager().beginTransaction();
 		
-		if(mCurrentFragment != null) {
+		if(mCurrentFragmentTag != null) {
 			try {
-				ft.remove(mCurrentFragment);
+				Fragment f = getFragmentManager().findFragmentByTag(mCurrentFragmentTag);
+				if(f != null) {
+					ft.remove(f);
+				}
 			} catch(IllegalStateException e) {
 				Log.e(TAG, "Error removing mCurrentFragment", e);
 			}
+		} else {
+			System.err.println("mCurrentFragment WAS NULL!");
 		}
 		
-		ft.add(R.id.data_container, newFragment);
+		mCurrentFragmentTag = String.valueOf(new Random().nextInt());
+		ft.add(R.id.data_container, newFragment, mCurrentFragmentTag);
 		ft.commit();
 		
 		if(sideMenu != null && !sideMenu.isHidden()) {
@@ -72,8 +80,6 @@ public abstract class BaseStatusFragment extends BaseFragment {
 								.addToBackStack(null)
 								.commit();
 		}
-		
-		mCurrentFragment = newFragment;
 	}
 
 	@Override
