@@ -1,5 +1,8 @@
 package com.DGSD.TweeterTweeter.Fragments;
 
+import java.util.Random;
+
+import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.app.ListFragment;
 import android.graphics.Color;
@@ -35,7 +38,7 @@ public class SideMenuFragment extends ListFragment {
 
 	private TTApplication mApplication;
 
-	private BaseFragment mCurrentFragment;
+	private String mCurrentFragmentTag;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -81,9 +84,14 @@ public class SideMenuFragment extends ListFragment {
 		lv.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 
 		if(savedInstanceState != null) {
+			mCurrentFragmentTag = savedInstanceState.getString("current_fragment_tag");
+			
+			System.err.println("RESTORING mCurrentFragmentTag to: " + mCurrentFragmentTag);
+			
 			mSelectedItem = savedInstanceState.getInt(KEY_SELECTED_ITEM);
 			getListView().setItemChecked(mSelectedItem, true);
 		} else {
+			System.err.println("CANT RESTORE mCurrentFragmentTag");
 			//We aren't creating after a rotation!
 			mSelectedItem = 0;
 			displayFragmentOfItem(mSelectedItem);
@@ -106,23 +114,30 @@ public class SideMenuFragment extends ListFragment {
 	private void displayFragmentOfItem(int itemPos) {
 		getListView().setItemChecked(itemPos, true);
 
-		if(mCurrentFragment != null) {
+		if(mCurrentFragmentTag != null) {
 			try {
-				mCurrentFragment.removeSpawnedFragments();
-				getFragmentManager().beginTransaction().remove(mCurrentFragment).commit();
+				BaseFragment oldFrag = 
+						(BaseFragment) getFragmentManager().findFragmentByTag(mCurrentFragmentTag);
+
+				if(oldFrag != null) {
+					oldFrag.removeSpawnedFragments();
+					getFragmentManager().beginTransaction().remove(oldFrag).commit();
+				}
 			} catch(IllegalStateException e) {
 				Log.e(TAG, "Error removing mCurrentFragment", e);
 			}
+		} else {
+			System.err.println("THE CURRENT FRAGMENT TAG WAS NULL!");
 		}
-
-		mCurrentFragment = null;
 
 		String account = mApplication.getSelectedAccount();
 		String username = mApplication.getUserName(account);
 
+		Fragment f = null;
+
 		switch(itemPos) {
 			case ITEM_HOME_TIMELINE:
-				mCurrentFragment = HomeTimelineFragment.newInstance(account);
+				f = HomeTimelineFragment.newInstance(account);
 				break;
 
 			case ITEM_DM_RECEIVED:
@@ -134,27 +149,27 @@ public class SideMenuFragment extends ListFragment {
 				break;
 
 			case ITEM_FAVOURITES:
-				mCurrentFragment = FavouritesListFragment.newInstance(account, username);
+				f = FavouritesListFragment.newInstance(account, username);
 				break;
 
 			case ITEM_FOLLOWERS:
-				mCurrentFragment = FollowersFragment.newInstance(account, username);
+				f = FollowersFragment.newInstance(account, username);
 				break;
 
 			case ITEM_FOLLOWING:
-				mCurrentFragment = FollowingFragment.newInstance(account, username);
+				f = FollowingFragment.newInstance(account, username);
 				break;
 
 			case ITEM_MENTIONS:
-				mCurrentFragment = MentionsListFragment.newInstance(account);
+				f = MentionsListFragment.newInstance(account);
 				break;
 
 			case ITEM_RETWEETS_BY:
-				mCurrentFragment = RetweetsByFragment.newInstance(account, username);
+				f = RetweetsByFragment.newInstance(account, username);
 				break;
 
 			case ITEM_RETWEETS_OF:
-				mCurrentFragment = RetweetsOfFragment.newInstance(account);
+				f = RetweetsOfFragment.newInstance(account);
 				break;
 
 			case ITEM_SAVED_SEARCH:
@@ -164,17 +179,16 @@ public class SideMenuFragment extends ListFragment {
 			case ITEM_LISTS:
 
 				break;
+			default:
+				//O dear dear dear :(
+				f = new Fragment();
+				break;
 		}
 
-		/*getActivity().findViewById(R.id.secondary_container).setVisibility(View.GONE);
-
-		for(int i = 0, size = getFragmentManager().getBackStackEntryCount(); i < size; i++) {
-			getFragmentManager().popBackStack();
-		}*/
-
-
+		mCurrentFragmentTag = String.valueOf(new Random().nextInt());
+		
 		getFragmentManager().beginTransaction()
-		.add(R.id.data_container, mCurrentFragment, String.valueOf(itemPos))
+		.add(R.id.data_container, f, mCurrentFragmentTag)
 		.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
 		.commit();
 	}
@@ -185,5 +199,6 @@ public class SideMenuFragment extends ListFragment {
 		super.onSaveInstanceState(outState);
 		Log.i(TAG, "Saving State: " + mSelectedItem);
 		outState.putInt(KEY_SELECTED_ITEM, mSelectedItem);
+		outState.putString("current_fragment_tag", mCurrentFragmentTag);
 	}
 }

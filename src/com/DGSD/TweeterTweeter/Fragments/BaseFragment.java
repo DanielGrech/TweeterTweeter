@@ -314,10 +314,14 @@ public abstract class BaseFragment extends DialogFragment {
 				Fragment f = getFragmentManager().findFragmentByTag(mCurrentFragmentTag);
 				if(f != null) {
 					getFragmentManager().beginTransaction().remove(f).commit();
+				} else {
+					System.err.println("F WAS NULL!!!!");
 				}
 			} catch(IllegalStateException e) {
 				Log.e(TAG, "Error removing mCurrentFragment", e);
 			}
+		} else {
+			System.err.println("O MY FUCKING GOD!!!!!!!");
 		}
 	}
 

@@ -62,6 +62,8 @@ public abstract class BaseStatusFragment extends BaseFragment {
 				Fragment f = getFragmentManager().findFragmentByTag(mCurrentFragmentTag);
 				if(f != null) {
 					ft.remove(f);
+				} else {
+					System.err.println("F WAS NULL!!!!!!!!");
 				}
 			} catch(IllegalStateException e) {
 				Log.e(TAG, "Error removing mCurrentFragment", e);
