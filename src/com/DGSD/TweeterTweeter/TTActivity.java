@@ -2,9 +2,9 @@
 
 package com.DGSD.TweeterTweeter;
 
+import android.animation.LayoutTransition;
 import android.app.ActionBar;
 import android.app.ActionBar.OnNavigationListener;
-import android.app.Fragment;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.Intent;
@@ -20,7 +20,6 @@ import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.DGSD.TweeterTweeter.Fragments.NewTweetFragment;
-import com.DGSD.TweeterTweeter.Fragments.SideMenuFragment;
 import com.DGSD.TweeterTweeter.UI.Adapters.NavigationDropdownFactory;
 import com.DGSD.TweeterTweeter.Utils.Log;
 import com.appsolut.adapter.collections.CollectionsAdapter;
@@ -54,13 +53,13 @@ public class TTActivity extends MapActivity {
 
 		mDataContainer = (ViewGroup) findViewById(R.id.data_container);
 
-		/*LayoutTransition lt = new LayoutTransition();
+		LayoutTransition lt = new LayoutTransition();
 
 		lt.setStagger(LayoutTransition.CHANGE_APPEARING, 30);
 		lt.setStagger(LayoutTransition.CHANGE_DISAPPEARING, 30);
-		lt.setDuration(500);
+		lt.setDuration(150);
 
-		mDataContainer.setLayoutTransition(lt);*/
+		mDataContainer.setLayoutTransition(lt);
 
 		ActionBar mActionBar = getActionBar();
 

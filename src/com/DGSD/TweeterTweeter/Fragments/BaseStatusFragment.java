@@ -61,18 +61,16 @@ public abstract class BaseStatusFragment extends BaseFragment {
 			} catch(IllegalStateException e) {
 				Log.e(TAG, "Error removing mCurrentFragment", e);
 			}
-		}/* else {
-			ft.addToBackStack(null);
-		}*/
+		}
 		
 		ft.add(R.id.data_container, newFragment);
-		//ft.addToBackStack(null);
-		
-		
 		ft.commit();
 		
 		if(sideMenu != null && !sideMenu.isHidden()) {
-			getFragmentManager().beginTransaction().hide(sideMenu).addToBackStack(null).commit();
+			getFragmentManager().beginTransaction()
+								.hide(sideMenu)
+								.addToBackStack(null)
+								.commit();
 		}
 		
 		mCurrentFragment = newFragment;

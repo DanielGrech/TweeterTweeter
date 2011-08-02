@@ -1,14 +1,21 @@
 package com.DGSD.TweeterTweeter.Fragments;
 
 import twitter4j.TwitterException;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
+import android.animation.PropertyValuesHolder;
+import android.animation.ValueAnimator;
 import android.app.DialogFragment;
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.ActionMode;
 import android.view.ActionMode.Callback;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
@@ -313,7 +320,7 @@ public abstract class BaseFragment extends DialogFragment {
 			}
 		}
 	}
-	
+
 	public EndlessListAdapter getEndlessAdapter() {
 		return mEndlessAdapter;
 	}
