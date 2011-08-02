@@ -74,14 +74,13 @@ public abstract class BaseStatusFragment extends BaseFragment {
 		
 		mCurrentFragmentTag = String.valueOf(new Random().nextInt());
 		ft.add(R.id.data_container, newFragment, mCurrentFragmentTag);
-		ft.commit();
 		
 		if(sideMenu != null && !sideMenu.isHidden()) {
-			getFragmentManager().beginTransaction()
-								.hide(sideMenu)
-								.addToBackStack(null)
-								.commit();
+			ft.hide(sideMenu);
+			ft.addToBackStack(null);
 		}
+		
+		ft.commit();
 	}
 
 	@Override
