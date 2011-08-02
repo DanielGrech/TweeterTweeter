@@ -167,7 +167,8 @@ public final class R {
         public static final int status_notification_layout=0x7f03000c;
         public static final int timeline_list_item=0x7f03000d;
         public static final int tweet_layout=0x7f03000e;
-        public static final int tweet_tab_host=0x7f03000f;
+        public static final int tweet_layout_old=0x7f03000f;
+        public static final int tweet_tab_host=0x7f030010;
     }
     public static final class menu {
         public static final int menu=0x7f0b0000;

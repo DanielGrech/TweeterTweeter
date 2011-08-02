@@ -48,36 +48,55 @@ public abstract class BaseStatusFragment extends BaseFragment {
 	@Override
 	public void onListItemClick(int pos) {
 		//Show the view
-		Fragment sideMenu = getFragmentManager().findFragmentById(R.id.side_menu);
+		final Fragment sideMenu = getFragmentManager().findFragmentById(R.id.side_menu);
 		
-		//getFragmentManager().beginTransaction().hide(sideMenu).addToBackStack(null).commit();
+		Fragment currentList = null;
+		if(SideMenuFragment.getCurrentFragmentTag() != null) {
+			currentList = getFragmentManager().findFragmentByTag(
+					SideMenuFragment.getCurrentFragmentTag());
+		}
 		
-		Fragment newFragment = TweetFragment.newInstance(StatusData.getStatus(getCurrentCursor()));
+		final Fragment newFragment = TweetFragment.newInstance(StatusData.getStatus(getCurrentCursor()));
 		
-		//Insert the fragment!
-		FragmentTransaction ft = getFragmentManager().beginTransaction();
+		final FragmentTransaction ft = getFragmentManager().beginTransaction();
 		
 		if(mCurrentFragmentTag != null) {
 			try {
 				Fragment f = getFragmentManager().findFragmentByTag(mCurrentFragmentTag);
 				if(f != null) {
 					ft.remove(f);
-				} else {
-					System.err.println("F WAS NULL!!!!!!!!");
 				}
 			} catch(IllegalStateException e) {
 				Log.e(TAG, "Error removing mCurrentFragment", e);
 			}
+		}
+		
+		if(mIsPortrait) {
+			FragmentTransaction hideMenus = getFragmentManager().beginTransaction();
+			
+			if(sideMenu != null && currentList != null && sideMenu.isHidden() && !currentList.isHidden()) {
+				getFragmentManager().beginTransaction().hide(currentList).addToBackStack(null).commit();
+			}
+			
+			if(sideMenu != null && !sideMenu.isHidden()) {
+				hideMenus.hide(sideMenu);
+				hideMenus.addToBackStack(null);
+			}
+			
+			/*if(currentList != null && !currentList.isHidden()) {
+				hideMenus.hide(currentList);
+				hideMenus.addToBackStack(null);
+			}*/
+			
+			hideMenus.commit();
 		} else {
-			System.err.println("mCurrentFragment WAS NULL!");
+			if(sideMenu != null && !sideMenu.isHidden()) {
+				getFragmentManager().beginTransaction().hide(sideMenu).addToBackStack(null).commit();
+				//ft.hide(sideMenu).addToBackStack(null);
+			}
 		}
 		
 		mCurrentFragmentTag = String.valueOf(new Random().nextInt());
-
-		if(sideMenu != null && !sideMenu.isHidden()) {
-			ft.hide(sideMenu);
-			ft.addToBackStack(null);
-		}
 		
 		ft.add(R.id.data_container, newFragment, mCurrentFragmentTag);
 		

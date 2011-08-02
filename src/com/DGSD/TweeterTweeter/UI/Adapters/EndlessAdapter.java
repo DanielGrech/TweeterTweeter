@@ -191,7 +191,12 @@ abstract public class EndlessAdapter extends AdapterWrapper {
 			}
 
 			pendingView=null;
-			notifyDataSetChanged();
+			
+			try {
+				notifyDataSetChanged();
+			} catch(Exception exp) {
+				e.printStackTrace();
+			}
 		}
 	}
 

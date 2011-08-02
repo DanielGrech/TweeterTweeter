@@ -4,6 +4,7 @@ import twitter4j.TwitterException;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.content.IntentFilter;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.ActionMode;
@@ -63,6 +64,8 @@ public abstract class BaseFragment extends DialogFragment {
 	protected DataLoadingTask mCurrentTask;
 
 	protected String mCurrentFragmentTag;
+	
+	boolean mIsPortrait;
 
 	/**
 	 * Check if there is any newer data available on twitter
@@ -150,6 +153,9 @@ public abstract class BaseFragment extends DialogFragment {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
+		mIsPortrait = getResources().getConfiguration().orientation ==
+                Configuration.ORIENTATION_PORTRAIT;
+		
 		mReceiver = new PortableReceiver();
 
 		//Register the receive to receive results from a service
@@ -163,7 +169,6 @@ public abstract class BaseFragment extends DialogFragment {
 
 		mCurrentTask = new DataLoadingTask(BaseFragment.this, DataLoadingTask.CURRENT);
 		mCurrentTask.execute();
-
 	}
 
 	@Override

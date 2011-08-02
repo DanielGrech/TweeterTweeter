@@ -38,7 +38,7 @@ public class SideMenuFragment extends ListFragment {
 
 	private TTApplication mApplication;
 
-	private String mCurrentFragmentTag;
+	private static String mCurrentFragmentTag;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -126,9 +126,7 @@ public class SideMenuFragment extends ListFragment {
 			} catch(IllegalStateException e) {
 				Log.e(TAG, "Error removing mCurrentFragment", e);
 			}
-		} else {
-			System.err.println("THE CURRENT FRAGMENT TAG WAS NULL!");
-		}
+		} 
 
 		String account = mApplication.getSelectedAccount();
 		String username = mApplication.getUserName(account);
@@ -193,12 +191,15 @@ public class SideMenuFragment extends ListFragment {
 		.commit();
 	}
 
-
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		Log.i(TAG, "Saving State: " + mSelectedItem);
 		outState.putInt(KEY_SELECTED_ITEM, mSelectedItem);
 		outState.putString("current_fragment_tag", mCurrentFragmentTag);
+	}
+	
+	public static String getCurrentFragmentTag() {
+		return mCurrentFragmentTag;
 	}
 }
