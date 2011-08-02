@@ -2,8 +2,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:droidfu="http://github.com/droidfu/schema"
     android:orientation="vertical"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+    android:layout_width="0dip"
+    android:layout_height="fill_parent"
+    android:layout_weight="1">
     
     <!-- The very top action items -->
    	<LinearLayout
@@ -27,7 +28,7 @@
 	         android:clickable="true"
 	         android:drawableLeft="@drawable/retweet"
 	         android:background="@drawable/list_item_background"/>
-	    
+
 	    <TextView
 	         android:id="@+id/reply"
 	         android:layout_width="0dp"
@@ -42,7 +43,7 @@
 	         android:clickable="true"
 	         android:drawableLeft="@drawable/reply"
 	         android:background="@drawable/list_item_background"/>   
-	         
+
 	    <TextView
 	         android:id="@+id/favourite"
 	         android:layout_width="0dp"
@@ -57,7 +58,7 @@
 	         android:clickable="true"
 	         android:drawableLeft="@drawable/favourite"
 	         android:background="@drawable/list_item_background"/> 
-	         
+
 	    <TextView
 	         android:id="@+id/share"
 	         android:layout_width="0dp"
@@ -96,7 +97,7 @@
 	    	android:layout_alignRight="@+id/tweet_user"
 	    	droidfu:autoLoad="false"
 	    	droidfu:progressDrawable="@drawable/ic_contact_picture"/>
-	    
+
 	    <TextView
 	         android:id="@+id/tweet_user"
 	         android:layout_width="wrap_content"
@@ -107,7 +108,7 @@
 	         android:padding="6dip"
 	         android:layout_below="@+id/profile_image"
 	         android:layout_alignParentLeft="true"/>
-	    	
+
 	    <!-- The whole data chunk of the top row -->
 	    <RelativeLayout
 	    	android:id="@+id/top_row_data_container"
@@ -116,7 +117,7 @@
 	    	android:layout_height="wrap_content"
 	    	android:layout_alignParentTop="true"
 	    	android:layout_toRightOf="@id/profile_image">
-	    	
+
 			<!-- The actual tweet text -->
 		    <com.DGSD.TweeterTweeter.UI.LinkEnabledTextView
 		        android:id="@+id/tweet_text"
@@ -127,7 +128,7 @@
 		        android:singleLine="false"
 		        android:textAppearance="@android:style/TextAppearance.Large" 
 		        android:textColor="#ff888888"/>
-		        
+
 		    <TextView
 		         android:id="@+id/meta_info"
 		         android:layout_width="wrap_content"
@@ -139,8 +140,8 @@
 		         android:layout_below="@id/tweet_text"
 		         android:padding="6dp"
 		         android:layout_toLeftOf="@+id/date"/> 
-		     
-		        
+
+
 		    <TextView
 		         android:id="@+id/date"
 		         android:layout_width="wrap_content"
@@ -152,7 +153,7 @@
 		         android:gravity="center"
 		         android:layout_below="@id/tweet_text"
 		         android:padding="6dp"/>
-	    	
+
     	</RelativeLayout>
     </RelativeLayout>
 

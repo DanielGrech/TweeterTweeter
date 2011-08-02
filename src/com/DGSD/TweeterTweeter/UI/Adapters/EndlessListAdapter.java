@@ -67,7 +67,12 @@ public class EndlessListAdapter extends EndlessAdapter {
 	}
 
 	private void setupPendingView() {
-		mPendingView = new LinearLayout(mFragment.getActivity());
+		try {
+			mPendingView = new LinearLayout(mFragment.getActivity());
+		} catch(NullPointerException e) {
+			//This happens just as the activity is about to die.. lets ignore it.
+			return;
+		}
 
 		mPendingView.setLayoutParams(new ListView.LayoutParams(
 				LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));

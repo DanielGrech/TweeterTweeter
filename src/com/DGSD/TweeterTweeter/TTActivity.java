@@ -2,14 +2,12 @@
 
 package com.DGSD.TweeterTweeter;
 
-import android.animation.LayoutTransition;
 import android.app.ActionBar;
 import android.app.ActionBar.OnNavigationListener;
-import android.app.FragmentManager.OnBackStackChangedListener;
+import android.app.Fragment;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.DragEvent;
@@ -22,6 +20,7 @@ import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.DGSD.TweeterTweeter.Fragments.NewTweetFragment;
+import com.DGSD.TweeterTweeter.Fragments.SideMenuFragment;
 import com.DGSD.TweeterTweeter.UI.Adapters.NavigationDropdownFactory;
 import com.DGSD.TweeterTweeter.Utils.Log;
 import com.appsolut.adapter.collections.CollectionsAdapter;
@@ -32,14 +31,14 @@ public class TTActivity extends MapActivity {
 
 	private static final String TAG = TTActivity.class.getSimpleName();
 
+	public static final String SIDE_MENU = "side_menu";
+	
 	//We can only have 1 per activity, so we need it here for all fragments
 	public static MapView mMapView;
 
 	private TTApplication mApplication;
 
 	private ViewGroup mDataContainer;
-
-	private ViewGroup mSecondaryContainer;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -53,21 +52,15 @@ public class TTActivity extends MapActivity {
 
 		mApplication = (TTApplication) getApplication();
 
-		if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
-			mDataContainer = (ViewGroup) findViewById(R.id.data_container_land);
-		} else {
-			mDataContainer = (ViewGroup) findViewById(R.id.data_container_port);
-		}
+		mDataContainer = (ViewGroup) findViewById(R.id.data_container);
 
-		mSecondaryContainer = (ViewGroup) findViewById(R.id.secondary_container);
-
-		LayoutTransition lt = new LayoutTransition();
+		/*LayoutTransition lt = new LayoutTransition();
 
 		lt.setStagger(LayoutTransition.CHANGE_APPEARING, 30);
 		lt.setStagger(LayoutTransition.CHANGE_DISAPPEARING, 30);
 		lt.setDuration(500);
 
-		mDataContainer.setLayoutTransition(lt);
+		mDataContainer.setLayoutTransition(lt);*/
 
 		ActionBar mActionBar = getActionBar();
 
@@ -92,22 +85,11 @@ public class TTActivity extends MapActivity {
 			}
 		});
 
-		getFragmentManager().addOnBackStackChangedListener(new OnBackStackChangedListener(){
-
-			@Override
-			public void onBackStackChanged() {
-				if(mSecondaryContainer.getChildCount() == 0) {
-					mSecondaryContainer.setVisibility(View.GONE);
-				}
-			}
-
-		});
-
-		if(savedInstanceState != null) {
+		/*if(savedInstanceState != null) {
 			mSecondaryContainer.setVisibility(
 					savedInstanceState.getInt("second_container_visibility", 
 							View.GONE));
-		}
+		}*/
 	}
 
 
@@ -201,7 +183,7 @@ public class TTActivity extends MapActivity {
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		outState.putInt("second_container_visibility", mSecondaryContainer.getVisibility());
+		//outState.putInt("second_container_visibility", mSecondaryContainer.getVisibility());
 	}
 
 	@Override

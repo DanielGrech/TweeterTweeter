@@ -1,6 +1,7 @@
 package com.DGSD.TweeterTweeter.Fragments;
 
 import android.app.AlertDialog;
+import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -45,15 +46,36 @@ public abstract class BaseStatusFragment extends BaseFragment {
 	@Override
 	public void onListItemClick(int pos) {
 		//Show the view
-		showView(getActivity().findViewById(R.id.secondary_container));
-
+		Fragment sideMenu = getFragmentManager().findFragmentById(R.id.side_menu);
+		
+		//getFragmentManager().beginTransaction().hide(sideMenu).addToBackStack(null).commit();
+		
+		Fragment newFragment = TweetFragment.newInstance(StatusData.getStatus(getCurrentCursor()));
+		
 		//Insert the fragment!
-		getFragmentManager().beginTransaction()
-		.replace(R.id.secondary_container, 
-				TweetFragment.newInstance(StatusData.getStatus(getCurrentCursor())))
-				.addToBackStack(null)
-				.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-				.commit();
+		FragmentTransaction ft = getFragmentManager().beginTransaction();
+		
+		if(mCurrentFragment != null) {
+			try {
+				ft.remove(mCurrentFragment);
+			} catch(IllegalStateException e) {
+				Log.e(TAG, "Error removing mCurrentFragment", e);
+			}
+		}/* else {
+			ft.addToBackStack(null);
+		}*/
+		
+		ft.add(R.id.data_container, newFragment);
+		//ft.addToBackStack(null);
+		
+		
+		ft.commit();
+		
+		if(sideMenu != null && !sideMenu.isHidden()) {
+			getFragmentManager().beginTransaction().hide(sideMenu).addToBackStack(null).commit();
+		}
+		
+		mCurrentFragment = newFragment;
 	}
 
 	@Override

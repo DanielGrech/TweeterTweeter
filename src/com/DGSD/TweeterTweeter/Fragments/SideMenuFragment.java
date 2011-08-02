@@ -1,7 +1,5 @@
 package com.DGSD.TweeterTweeter.Fragments;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.ListFragment;
 import android.graphics.Color;
@@ -37,12 +35,33 @@ public class SideMenuFragment extends ListFragment {
 
 	private TTApplication mApplication;
 
+	private BaseFragment mCurrentFragment;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		super.onCreate(savedInstanceState);
 	}
-	
+
+	/*@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+
+		LinearLayout ll = new LinearLayout(getActivity());
+
+		final float scale = getResources().getDisplayMetrics().density + 0.5f;
+
+		//We want a 250dp width
+		int width = Math.round(200 * scale);
+
+		ll.setLayoutParams(new LinearLayout.LayoutParams(width, LayoutParams.MATCH_PARENT));
+
+		ll.addView(super.onCreateView(inflater, container, savedInstanceState));
+
+		return ll;
+	}*/
+
+
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
@@ -69,7 +88,7 @@ public class SideMenuFragment extends ListFragment {
 			mSelectedItem = 0;
 			displayFragmentOfItem(mSelectedItem);
 		}
-		
+
 	}
 
 	@Override
@@ -80,12 +99,6 @@ public class SideMenuFragment extends ListFragment {
 		} else {
 			mSelectedItem = pos;
 
-			getActivity().findViewById(R.id.secondary_container).setVisibility(View.GONE);
-			FragmentManager fm = getFragmentManager();
-			for(int i = 0, size = fm.getBackStackEntryCount(); i< size; i++) {
-				fm.popBackStack();
-			}
-			
 			displayFragmentOfItem(mSelectedItem);
 		}
 	}
@@ -93,14 +106,23 @@ public class SideMenuFragment extends ListFragment {
 	private void displayFragmentOfItem(int itemPos) {
 		getListView().setItemChecked(itemPos, true);
 
-		Fragment fragment = null;
+		if(mCurrentFragment != null) {
+			try {
+				mCurrentFragment.removeSpawnedFragments();
+				getFragmentManager().beginTransaction().remove(mCurrentFragment).commit();
+			} catch(IllegalStateException e) {
+				Log.e(TAG, "Error removing mCurrentFragment", e);
+			}
+		}
+
+		mCurrentFragment = null;
 
 		String account = mApplication.getSelectedAccount();
 		String username = mApplication.getUserName(account);
 
 		switch(itemPos) {
 			case ITEM_HOME_TIMELINE:
-				fragment = HomeTimelineFragment.newInstance(account);
+				mCurrentFragment = HomeTimelineFragment.newInstance(account);
 				break;
 
 			case ITEM_DM_RECEIVED:
@@ -112,27 +134,27 @@ public class SideMenuFragment extends ListFragment {
 				break;
 
 			case ITEM_FAVOURITES:
-				fragment = FavouritesListFragment.newInstance(account, username);
+				mCurrentFragment = FavouritesListFragment.newInstance(account, username);
 				break;
 
 			case ITEM_FOLLOWERS:
-				fragment = FollowersFragment.newInstance(account, username);
+				mCurrentFragment = FollowersFragment.newInstance(account, username);
 				break;
 
 			case ITEM_FOLLOWING:
-				fragment = FollowingFragment.newInstance(account, username);
+				mCurrentFragment = FollowingFragment.newInstance(account, username);
 				break;
 
 			case ITEM_MENTIONS:
-				fragment = MentionsListFragment.newInstance(account);
+				mCurrentFragment = MentionsListFragment.newInstance(account);
 				break;
 
 			case ITEM_RETWEETS_BY:
-				fragment = RetweetsByFragment.newInstance(account, username);
+				mCurrentFragment = RetweetsByFragment.newInstance(account, username);
 				break;
 
 			case ITEM_RETWEETS_OF:
-				fragment = RetweetsOfFragment.newInstance(account);
+				mCurrentFragment = RetweetsOfFragment.newInstance(account);
 				break;
 
 			case ITEM_SAVED_SEARCH:
@@ -145,13 +167,14 @@ public class SideMenuFragment extends ListFragment {
 		}
 
 		/*getActivity().findViewById(R.id.secondary_container).setVisibility(View.GONE);
-		
+
 		for(int i = 0, size = getFragmentManager().getBackStackEntryCount(); i < size; i++) {
 			getFragmentManager().popBackStack();
 		}*/
-		
+
+
 		getFragmentManager().beginTransaction()
-		.replace(R.id.container, fragment, String.valueOf(itemPos))
+		.add(R.id.data_container, mCurrentFragment, String.valueOf(itemPos))
 		.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
 		.commit();
 	}

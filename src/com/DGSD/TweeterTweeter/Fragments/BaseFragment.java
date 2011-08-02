@@ -2,6 +2,7 @@ package com.DGSD.TweeterTweeter.Fragments;
 
 import twitter4j.TwitterException;
 import android.app.DialogFragment;
+import android.app.Fragment;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -60,6 +61,8 @@ public abstract class BaseFragment extends DialogFragment {
 	protected ActionMode mCurrentActionMode;
 
 	protected DataLoadingTask mCurrentTask;
+
+	protected Fragment mCurrentFragment;
 
 	/**
 	 * Check if there is any newer data available on twitter
@@ -259,7 +262,7 @@ public abstract class BaseFragment extends DialogFragment {
 					int pos, long id) {
 
 				BaseViewHolder vh = (BaseViewHolder) view.getTag(); 
-				
+
 				//If we click on the same item, we know it is already showing!
 				if(!mLastSelectedListItemId.equals(vh.id)) {
 					onListItemClick(pos);
@@ -301,6 +304,16 @@ public abstract class BaseFragment extends DialogFragment {
 		}
 	}
 
+	public void removeSpawnedFragments() {
+		if(mCurrentFragment != null) {
+			try {
+				getFragmentManager().beginTransaction().remove(mCurrentFragment).commit();
+			} catch(IllegalStateException e) {
+				Log.e(TAG, "Error removing mCurrentFragment", e);
+			}
+		}
+	}
+	
 	public EndlessListAdapter getEndlessAdapter() {
 		return mEndlessAdapter;
 	}
