@@ -194,7 +194,12 @@ public class TweetFragment extends DialogFragment {
 	private void setupTabs() {
 		mTabs.setup();
 
-		int tabCount = 0;
+		TabHost.TabSpec tweetTab = mTabs.newTabSpec("Tweet Details");
+		tweetTab.setIndicator("Tweet Details");
+		tweetTab.setContent(R.id.tweet_details_tab);
+		mTabs.addTab(tweetTab);
+		
+		int tabCount = 2;
 		
 		//Add a tab for each web address found
 		LinkedList<String> urls = StringUtils.getUrls(mData.text);

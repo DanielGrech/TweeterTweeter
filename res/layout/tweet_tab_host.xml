@@ -10,11 +10,117 @@
 		<TabWidget android:id="@android:id/tabs"
 			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
-			android:background="@drawable/sidebar_background"
 		/>
 		<FrameLayout android:id="@android:id/tabcontent"
 			android:layout_width="fill_parent"
-			android:layout_height="fill_parent">
+			android:layout_height="fill_parent"
+			android:orientation="vertical"
+			android:background="#E6E6E6">
+			
+			<RelativeLayout
+			    	android:id="@+id/tweet_data_container"
+			    	android:orientation="horizontal"
+			    	android:layout_width="match_parent"
+			    	android:layout_height="wrap_content"
+			    	android:padding="20dp"
+			    	android:layout_alignParentTop="true">
+		
+					<!-- The actual tweet text -->
+				    <com.DGSD.TweeterTweeter.UI.LinkEnabledTextView
+				        android:id="@+id/tweet_text"
+				        android:layout_width="wrap_content"
+				        android:layout_height="wrap_content"
+				        android:gravity="center_vertical"
+				        android:singleLine="false"
+				        android:textAppearance="@android:style/TextAppearance.Large" 
+				        android:textColor="#ff888888"/>
+		
+				    <TextView
+				         android:id="@+id/meta_info"
+				         android:layout_width="wrap_content"
+				         android:layout_height="wrap_content"
+				         android:textAppearance="@android:style/TextAppearance.Small" 
+				         android:textColor="#ff888888"
+				         android:singleLine="true"
+				         android:gravity="center"
+				         android:layout_below="@id/tweet_text"
+				         android:padding="6dp"/> 
+		    	</RelativeLayout>
+			
+			<RelativeLayout 
+				android:id="@+id/tweet_details_tab"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent">
+				<LinearLayout
+			    	android:id="@+id/actions_container"
+			    	android:layout_width="match_parent"
+			    	android:layout_height="?android:attr/listPreferredItemHeight"
+			    	android:orientation="horizontal"
+			    	android:paddingBottom="2dip"
+			    	android:paddingLeft="2dip"
+			    	android:paddingRight="2dip"
+			    	android:layout_alignParentBottom="true">
+			    	<TextView
+				         android:id="@+id/retweet"
+				         android:layout_width="0dp"
+				         android:layout_height="fill_parent"
+				         android:layout_weight="1"
+				         android:textAppearance="@android:style/TextAppearance.Small" 
+				         android:textColor="#ff888888"
+				         android:singleLine="true"
+				         android:text="Retweet"
+				         android:padding="6dp"
+				         android:gravity="center"
+				         android:clickable="true"
+				         android:drawableLeft="@drawable/retweet"
+				         android:background="@drawable/list_item_background"/>
+			
+				    <TextView
+				         android:id="@+id/reply"
+				         android:layout_width="0dp"
+				         android:layout_height="fill_parent"
+				         android:layout_weight="1"
+				         android:textAppearance="@android:style/TextAppearance.Small"
+				         android:textColor="#ff888888"
+				         android:singleLine="true"
+				         android:text="Reply"
+				         android:padding="6dp"
+				         android:gravity="center"
+				         android:clickable="true"
+				         android:drawableLeft="@drawable/reply"
+				         android:background="@drawable/list_item_background"/>   
+			
+				    <TextView
+				         android:id="@+id/favourite"
+				         android:layout_width="0dp"
+				         android:layout_height="fill_parent"
+				         android:layout_weight="1"
+				         android:textAppearance="@android:style/TextAppearance.Small" 
+				         android:textColor="#ff888888"
+				         android:singleLine="true"
+				         android:text="Favourite"
+				         android:padding="6dp"
+				         android:gravity="center"
+				         android:clickable="true"
+				         android:drawableLeft="@drawable/favourite"
+				         android:background="@drawable/list_item_background"/> 
+			
+				    <TextView
+				         android:id="@+id/share"
+				         android:layout_width="0dp"
+				         android:layout_height="fill_parent"
+				         android:layout_weight="1"
+				         android:textAppearance="@android:style/TextAppearance.Small" 
+				         android:textColor="#ff888888"
+				         android:singleLine="true"
+				         android:text="Share"
+				         android:padding="6dp"
+				         android:gravity="center"
+				         android:clickable="true"
+				         android:drawableLeft="@drawable/ic_menu_share"
+				         android:background="@drawable/list_item_background"/> 
+			    </LinearLayout>
+		    </RelativeLayout>
 		</FrameLayout>
 	</LinearLayout>
 </TabHost>
