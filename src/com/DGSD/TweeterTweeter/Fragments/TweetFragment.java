@@ -8,7 +8,6 @@ import android.app.DialogFragment;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.format.DateUtils;
@@ -44,7 +43,7 @@ public class TweetFragment extends DialogFragment {
 	private TTApplication mApplication;
 
 	private TTActivity mActivity;
-	
+
 	private TabHost mTabs;
 
 	private TextView mRetweetBtn;
@@ -91,7 +90,7 @@ public class TweetFragment extends DialogFragment {
 		View root = inflater.inflate(R.layout.tweet_layout, container, false);
 
 		mActivity = (TTActivity)getActivity();
-		
+
 		//Find the tab host
 		mTabs = (TabHost)root.findViewById(R.id.tabhost);		
 
@@ -100,7 +99,7 @@ public class TweetFragment extends DialogFragment {
 		mReplyBtn = (TextView) root.findViewById(R.id.reply);
 		mFavouriteBtn = (TextView) root.findViewById(R.id.favourite);
 		mShareBtn = (TextView) root.findViewById(R.id.share);
-		
+
 		setupListeners();
 
 		setupTabs();
@@ -119,20 +118,20 @@ public class TweetFragment extends DialogFragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		
+
 		if(savedInstanceState != null) {
 			mTabs.setCurrentTab(savedInstanceState.getInt("selected_tab", 0));
 		}
-		
+
 		attachData();
 	}
-	
+
 	@Override
 	public void onDestroyView() {
 		if(mTabs != null) {
 			mTabs.clearAllTabs();
 		}
-		
+
 		super.onDestroyView();
 	}
 
@@ -141,7 +140,7 @@ public class TweetFragment extends DialogFragment {
 		super.onSaveInstanceState(outState);
 		outState.putInt("selected_tab", mTabs == null ? -1 : mTabs.getCurrentTab());
 	}
-	
+
 	public void attachData() {
 		mText.setText(mData.text);
 
@@ -198,9 +197,9 @@ public class TweetFragment extends DialogFragment {
 		tweetTab.setIndicator("Tweet Details");
 		tweetTab.setContent(R.id.tweet_details_tab);
 		mTabs.addTab(tweetTab);
-		
+
 		int tabCount = 2;
-		
+
 		//Add a tab for each web address found
 		LinkedList<String> urls = StringUtils.getUrls(mData.text);
 		for(String url : urls) {
@@ -208,6 +207,8 @@ public class TweetFragment extends DialogFragment {
 
 			webSpec.setContent(new PreExistingViewFactory(
 					WebViewWithLoading.getView(getActivity(), url)));
+
+			
 			
 			try {
 				webSpec.setIndicator(StringUtils.getWebsiteFromUrl(url));
@@ -241,7 +242,7 @@ public class TweetFragment extends DialogFragment {
 			if(mActivity.getMapView() == null) {
 				mActivity.setMapView(new MapView(mActivity, TTApplication.MAPS_KEY));
 			}
-			
+
 			GeoPoint location = new GeoPoint((int)(lat * 1E6), (int)(lon * 1E6));
 			mActivity.getMapView().getController().setCenter(location);
 
@@ -257,11 +258,9 @@ public class TweetFragment extends DialogFragment {
 			}
 
 			if(mData.placeName != null && mData.placeName.length() > 0) {
-				mapSpec.setIndicator(mData.placeName, 
-						Resources.getSystem().getDrawable(android.R.drawable.ic_menu_mapmode));
+				mapSpec.setIndicator(mData.placeName);
 			} else {
-				mapSpec.setIndicator("Location",
-						Resources.getSystem().getDrawable(android.R.drawable.ic_menu_mapmode));
+				mapSpec.setIndicator("Location");
 			}
 
 			try {
@@ -280,7 +279,7 @@ public class TweetFragment extends DialogFragment {
 		mediaSpec.setIndicator("Media");
 		mTabs.addTab(mediaSpec);
 		mTabSpecs.add(mediaSpec);*/
-		
+
 		if(tabCount == 0) {
 			mTabs.setVisibility(View.GONE);
 		}
@@ -383,7 +382,7 @@ public class TweetFragment extends DialogFragment {
 			}
 		});
 	}
-
+	
 	/**
 	 * Class needed when adding dynamic content to a tab
 	 */
@@ -399,13 +398,13 @@ public class TweetFragment extends DialogFragment {
 			return preExisting;
 		}
 	}
-	
+
 	/**
 	 * Class needed because Google makes MapView a pain in the a$$
 	 */
 	class MapViewFactory implements TabContentFactory{
 		protected MapViewFactory(){
-			
+
 		}
 
 		@Override
@@ -413,5 +412,4 @@ public class TweetFragment extends DialogFragment {
 			return mActivity.getMapView();
 		}
 	}
-
 }
