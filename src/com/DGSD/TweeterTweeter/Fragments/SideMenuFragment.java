@@ -5,11 +5,15 @@ import java.util.Random;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.app.ListFragment;
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.DGSD.TweeterTweeter.R;
 import com.DGSD.TweeterTweeter.TTApplication;
@@ -46,23 +50,16 @@ public class SideMenuFragment extends ListFragment {
 		super.onCreate(savedInstanceState);
 	}
 
-	/*@Override
+	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 
-		LinearLayout ll = new LinearLayout(getActivity());
+		View v = super.onCreateView(inflater, container, savedInstanceState);
 
-		final float scale = getResources().getDisplayMetrics().density + 0.5f;
+		v.setBackgroundResource(R.drawable.sidebar_background);
 
-		//We want a 250dp width
-		int width = Math.round(200 * scale);
-
-		ll.setLayoutParams(new LinearLayout.LayoutParams(width, LayoutParams.MATCH_PARENT));
-
-		ll.addView(super.onCreateView(inflater, container, savedInstanceState));
-
-		return ll;
-	}*/
+		return v;
+	}
 
 
 	@Override
@@ -74,20 +71,23 @@ public class SideMenuFragment extends ListFragment {
 
 		ListView lv = getListView();
 
-		setListAdapter(new ArrayAdapter<String>(getActivity(), 
+		setListAdapter(new BorderedArrayAdapter(getActivity(), 
 				R.layout.side_menu_list_item, mListItems));
 
 		lv.setCacheColorHint(Color.TRANSPARENT);
 
-		lv.setBackgroundResource(R.drawable.sidebar_background_repeat);
-
 		lv.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+
+		//lv.setDivider(getActivity().getResources().getDrawable(R.drawable.sidebar_list_separator));
+
+		//lv.setDividerHeight(2);
+
 
 		if(savedInstanceState != null) {
 			mCurrentFragmentTag = savedInstanceState.getString("current_fragment_tag");
-			
+
 			System.err.println("RESTORING mCurrentFragmentTag to: " + mCurrentFragmentTag);
-			
+
 			mSelectedItem = savedInstanceState.getInt(KEY_SELECTED_ITEM);
 			getListView().setItemChecked(mSelectedItem, true);
 		} else {
@@ -184,7 +184,7 @@ public class SideMenuFragment extends ListFragment {
 		}
 
 		mCurrentFragmentTag = String.valueOf(new Random().nextInt());
-		
+
 		getFragmentManager().beginTransaction()
 		.add(R.id.data_container, f, mCurrentFragmentTag)
 		.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
@@ -198,8 +198,40 @@ public class SideMenuFragment extends ListFragment {
 		outState.putInt(KEY_SELECTED_ITEM, mSelectedItem);
 		outState.putString("current_fragment_tag", mCurrentFragmentTag);
 	}
-	
+
 	public static String getCurrentFragmentTag() {
 		return mCurrentFragmentTag;
 	}
+
+	private class BorderedArrayAdapter extends ArrayAdapter<String> {
+		private String[] mListItems;
+
+		private Context mContext;
+
+		public BorderedArrayAdapter(Context context, int textViewResourceId, String[] items) {
+			super(context, textViewResourceId, items);
+
+			mContext = context;
+
+			mListItems = items;
+		}
+
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			View v = convertView;
+			if (v == null) {
+				v = LayoutInflater.from(mContext).inflate(R.layout.side_menu_list_item, null);
+				TextView tv = (TextView) v.findViewById(R.id.side_menu_text);
+				v.setTag(tv);
+			} 
+			
+			TextView tv = (TextView) v.getTag();
+			
+			tv.setText(mListItems[position]);
+			
+			return v;
+		}
+	}
+
+
 }

@@ -142,7 +142,7 @@ abstract public class EndlessAdapter extends AdapterWrapper {
 
 			return(pendingView);
 		}
-
+		
 		return(super.getView(position, convertView, parent));
 	}
 

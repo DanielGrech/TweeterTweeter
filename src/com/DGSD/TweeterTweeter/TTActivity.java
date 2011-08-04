@@ -66,7 +66,7 @@ public class TTActivity extends MapActivity {
 		mActionBar.setDisplayShowHomeEnabled(false);
 		mActionBar.setDisplayShowTitleEnabled(false);
 
-		mActionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.actionbar_background_repeat));
+		mActionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.actionbar_background));
 
 		mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 
