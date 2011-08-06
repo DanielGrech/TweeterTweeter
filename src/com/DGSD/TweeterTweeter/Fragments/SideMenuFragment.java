@@ -78,11 +78,6 @@ public class SideMenuFragment extends ListFragment {
 
 		lv.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 
-		//lv.setDivider(getActivity().getResources().getDrawable(R.drawable.sidebar_list_separator));
-
-		//lv.setDividerHeight(2);
-
-
 		if(savedInstanceState != null) {
 			mCurrentFragmentTag = savedInstanceState.getString("current_fragment_tag");
 

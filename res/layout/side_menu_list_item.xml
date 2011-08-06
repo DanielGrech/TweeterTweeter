@@ -3,7 +3,8 @@
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
 	android:orientation="vertical" 
-	android:background="?android:attr/activatedBackgroundIndicator">
+	android:background="@drawable/side_menu_selector">
+	<!-- android:background="?android:attr/activatedBackgroundIndicator" -->
 	
 	<ImageView
 		android:id="@+id/side_menu_top_border"

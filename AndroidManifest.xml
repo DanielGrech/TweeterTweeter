@@ -25,11 +25,13 @@
 	    
 	    <activity
 	    	android:name="TTActivity"
-	    	android:label="@string/tt_activity" />
+	    	android:label="@string/tt_activity" 
+	    	android:screenOrientation="sensorLandscape"/>
 	    	
 	   	<activity
 	    	android:name="LoginActivity"
-	    	android:label="@string/login_activity" />
+	    	android:label="@string/login_activity" 
+	    	android:screenOrientation="sensorLandscape"/>
 	    
 	    <activity
 		    android:name=".LiveFolders.FavouritesFolder"
@@ -42,7 +44,8 @@
 		
 		<activity
 	        android:name=".Preferences"
-	        android:label="@string/set_preferences" />
+	        android:label="@string/set_preferences" 
+	        android:screenOrientation="sensorLandscape"/>
 	
 	    <service android:name=".Services.UpdaterService" />
 	    

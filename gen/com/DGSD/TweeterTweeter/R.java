@@ -28,9 +28,11 @@ public final class R {
         public static final int shrink_from_topleft_to_bottomright=0x7f040010;
         public static final int shrink_from_topright_to_bottomleft=0x7f040011;
         public static final int slide_in=0x7f040012;
-        public static final int slide_in_top=0x7f040013;
-        public static final int slide_out=0x7f040014;
-        public static final int slide_out_top=0x7f040015;
+        public static final int slide_in_left=0x7f040013;
+        public static final int slide_in_top=0x7f040014;
+        public static final int slide_out=0x7f040015;
+        public static final int slide_out_right=0x7f040016;
+        public static final int slide_out_top=0x7f040017;
     }
     public static final class array {
         public static final int menu_list=0x7f090000;
@@ -86,15 +88,16 @@ public final class R {
         public static final int retweet=0x7f020021;
         public static final int round_background=0x7f020022;
         public static final int side_menu_selector=0x7f020023;
-        public static final int sidebar_background=0x7f020024;
-        public static final int sidebar_list_separator=0x7f020025;
-        public static final int single_tab=0x7f020026;
-        public static final int twitter_icon=0x7f020027;
-        public static final int twitter_notification_icon=0x7f020028;
-        public static final int word_icon=0x7f020029;
+        public static final int sidebar_active_listitem=0x7f020024;
+        public static final int sidebar_background=0x7f020025;
+        public static final int sidebar_list_separator=0x7f020026;
+        public static final int single_tab=0x7f020027;
+        public static final int twitter_icon=0x7f020028;
+        public static final int twitter_notification_icon=0x7f020029;
+        public static final int word_icon=0x7f02002a;
     }
     public static final class id {
-        public static final int actions_container=0x7f0c0029;
+        public static final int actions_container=0x7f0c002d;
         public static final int arrow_down=0x7f0c001c;
         public static final int arrow_up=0x7f0c001b;
         public static final int container=0x7f0c0007;
@@ -103,8 +106,8 @@ public final class R {
         public static final int contentTitle=0x7f0c0005;
         public static final int content_top_row=0x7f0c0004;
         public static final int data_container=0x7f0c000c;
-        public static final int date=0x7f0c0033;
-        public static final int favourite=0x7f0c002c;
+        public static final int date=0x7f0c002b;
+        public static final int favourite=0x7f0c0030;
         public static final int icon=0x7f0c0000;
         public static final int image=0x7f0c0023;
         public static final int list=0x7f0c0008;
@@ -123,7 +126,7 @@ public final class R {
         public static final int menu_retweet=0x7f0c003f;
         public static final int menu_search=0x7f0c0038;
         public static final int menu_share=0x7f0c0042;
-        public static final int meta_info=0x7f0c0032;
+        public static final int meta_info=0x7f0c0035;
         public static final int new_tweet_accounts_container=0x7f0c0012;
         public static final int new_tweet_character_count=0x7f0c0014;
         public static final int new_tweet_container=0x7f0c0011;
@@ -139,29 +142,29 @@ public final class R {
         public static final int pull_to_refresh_progress=0x7f0c001d;
         public static final int pull_to_refresh_text=0x7f0c001f;
         public static final int pull_to_refresh_updated_at=0x7f0c0020;
-        public static final int reply=0x7f0c002b;
-        public static final int retweet=0x7f0c002a;
+        public static final int reply=0x7f0c002f;
+        public static final int retweet=0x7f0c002e;
         public static final int screen_name=0x7f0c0010;
         public static final int scroller=0x7f0c0019;
-        public static final int share=0x7f0c002d;
+        public static final int share=0x7f0c0031;
         public static final int side_menu=0x7f0c000d;
         public static final int side_menu_text=0x7f0c0022;
         public static final int side_menu_top_border=0x7f0c0021;
-        public static final int tabhost=0x7f0c0034;
+        public static final int tabhost=0x7f0c002c;
         public static final int text=0x7f0c0024;
         public static final int timeline_date=0x7f0c0027;
         public static final int timeline_profile_image=0x7f0c0026;
         public static final int timeline_source=0x7f0c0025;
         public static final int timeline_tweet=0x7f0c0028;
         public static final int title=0x7f0c0001;
-        public static final int top_bar=0x7f0c0035;
-        public static final int top_row_container=0x7f0c002e;
-        public static final int top_row_data_container=0x7f0c0030;
+        public static final int top_bar=0x7f0c0029;
+        public static final int top_row_container=0x7f0c0032;
+        public static final int top_row_data_container=0x7f0c0033;
         public static final int tracks=0x7f0c001a;
         public static final int tweet_data_container=0x7f0c0037;
         public static final int tweet_details_tab=0x7f0c0036;
-        public static final int tweet_text=0x7f0c0031;
-        public static final int tweet_user=0x7f0c002f;
+        public static final int tweet_text=0x7f0c0034;
+        public static final int tweet_user=0x7f0c002a;
     }
     public static final class layout {
         public static final int action_item=0x7f030000;

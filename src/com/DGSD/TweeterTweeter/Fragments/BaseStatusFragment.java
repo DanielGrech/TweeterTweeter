@@ -72,23 +72,16 @@ public abstract class BaseStatusFragment extends BaseFragment {
 		}
 		
 		if(mIsPortrait) {
-			FragmentTransaction hideMenus = getFragmentManager().beginTransaction();
-			
-			if(sideMenu != null && currentList != null && sideMenu.isHidden() && !currentList.isHidden()) {
-				getFragmentManager().beginTransaction().hide(currentList).addToBackStack(null).commit();
+			if(currentList != null && !currentList.isHidden()) {
+				ft.hide(currentList);
+				ft.addToBackStack(null);
 			}
 			
 			if(sideMenu != null && !sideMenu.isHidden()) {
-				hideMenus.hide(sideMenu);
-				hideMenus.addToBackStack(null);
+				ft.hide(sideMenu);
+				ft.addToBackStack(null);
 			}
 			
-			/*if(currentList != null && !currentList.isHidden()) {
-				hideMenus.hide(currentList);
-				hideMenus.addToBackStack(null);
-			}*/
-			
-			hideMenus.commit();
 		} else {
 			if(sideMenu != null && !sideMenu.isHidden()) {
 				getFragmentManager().beginTransaction().hide(sideMenu).addToBackStack(null).commit();
