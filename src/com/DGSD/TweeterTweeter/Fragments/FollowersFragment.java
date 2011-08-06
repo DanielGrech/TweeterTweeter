@@ -43,7 +43,7 @@ public class FollowersFragment extends BasePeopleFragment {
 
 	@Override
 	public int getType() {
-		return UpdaterService.DATATYPES.FAVOURITES;
+		return UpdaterService.DATATYPES.FOLLOWERS;
 	}
 	
 	@Override

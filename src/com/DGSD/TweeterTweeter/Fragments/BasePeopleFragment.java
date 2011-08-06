@@ -74,7 +74,7 @@ public abstract class BasePeopleFragment extends BaseFragment {
 		View root = inflater.inflate(R.layout.list_fragment_layout, container, false);
 
 		mListView = (PullToRefreshListView) root.findViewById(R.id.list);
-
+		
 		Log.i(TAG, "Returning root from onCreateView");
 
 		return root;
