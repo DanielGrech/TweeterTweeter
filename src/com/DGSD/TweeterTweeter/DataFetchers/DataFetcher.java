@@ -39,10 +39,10 @@ public abstract class DataFetcher {
 			Log.e(TAG, "Error connecting to Twitter service", e);
 			return -1;
 		} catch (NullPointerException e) {
-			Log.e(TAG, "Null pointer getting data. Maybe there was none?");
+			Log.e(TAG, "Null pointer getting data. Maybe there was none?", e);
 			return 0;
 		} catch (RuntimeException e) {
-			Log.e(TAG, "Failed to fetch data");
+			Log.e(TAG, "Failed to fetch data", e);
 			return -1;
 		} 
 	}

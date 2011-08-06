@@ -31,26 +31,11 @@ public class FetchFollowers extends DataFetcher {
 				mIds.add(idArray[i]);
 		}while( (cursor = ids.getNextCursor()) != 0);
 
-		long tempIds[] = new long[mIds.size() > 100 ? 100 : mIds.size()];
+		long tempIds[] = new long[mIds.size()];
+		for(int i = 0, size = mIds.size(); i < size; i++)
+			tempIds[i] = mIds.get(i);
 
-		ResponseList<User> users = null;
-
-		int currentElement = 0;
-		for(int i = 0, size = mIds.size(); i < size; i++) {
-			tempIds[currentElement] = mIds.get(i);
-
-			//This is the most the twitter API allows for the lookupUsers call
-			if(i == 99) {
-				currentElement = 0;
-				if(users == null) {
-					users = mTwitter.lookupUsers(tempIds);
-				} else {
-					users.addAll(mTwitter.lookupUsers(tempIds));
-				}
-			} else {
-				currentElement++;
-			}
-		}
+		ResponseList<User> users = mTwitter.lookupUsers(tempIds);
 
 		ContentValues values;
 		for (User u : users) {
