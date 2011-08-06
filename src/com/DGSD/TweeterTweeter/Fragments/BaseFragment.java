@@ -302,6 +302,10 @@ public abstract class BaseFragment extends DialogFragment {
 
 		if(mEndlessAdapter == null) {
 			mEndlessAdapter = new EndlessListAdapter(this, mWrappedAdapter);
+			
+			if(this instanceof BasePeopleFragment) {
+				mEndlessAdapter.setKeepApending(false);
+			}
 		}
 
 		if(mListView.getAdapter() == null) {
@@ -399,6 +403,10 @@ public abstract class BaseFragment extends DialogFragment {
 
 		if(mEndlessAdapter == null) {
 			mEndlessAdapter = new EndlessListAdapter(this, mWrappedAdapter);
+			
+			if(this instanceof BasePeopleFragment) {
+				mEndlessAdapter.setKeepApending(false);
+			}
 		} else {
 			mEndlessAdapter.notifyDataSetChanged();
 		}
