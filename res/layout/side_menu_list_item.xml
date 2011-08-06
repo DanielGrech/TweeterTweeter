@@ -6,6 +6,7 @@
 	android:background="?android:attr/activatedBackgroundIndicator">
 	
 	<ImageView
+		android:id="@+id/side_menu_top_border"
 		android:layout_height="1px"
 		android:layout_width="match_parent"
 		android:src="@drawable/lightgrey_strip" />
@@ -22,6 +23,7 @@
 	/>
 	
 	<ImageView
+		android:id="@+id/side_menu_top_border"
 		android:layout_height="1px"
 		android:layout_width="match_parent"
 		android:src="@drawable/darkgrey_strip" />

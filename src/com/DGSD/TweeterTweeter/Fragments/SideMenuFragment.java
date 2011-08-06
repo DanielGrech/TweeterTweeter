@@ -229,6 +229,11 @@ public class SideMenuFragment extends ListFragment {
 			
 			tv.setText(mListItems[position]);
 			
+			//For UI consistency, we dont want to see the top border..
+			if(position == 0) {
+				v.findViewById(R.id.side_menu_top_border).setVisibility(View.GONE);
+			}
+			
 			return v;
 		}
 	}
