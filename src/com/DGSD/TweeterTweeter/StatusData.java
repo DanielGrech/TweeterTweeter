@@ -77,7 +77,7 @@ public class StatusData {
 	 */
 	private static final String GET_ALL_ORDER_BY = C_CREATED_AT + " DESC";
 
-	private static final String GET_ALL_ORDER_BY_ALPHA = C_SCREEN_NAME + " ASC";
+	private static final String GET_ALL_ORDER_BY_ALPHA = C_SCREEN_NAME + " COLLATE NOCASE";
 
 	private static final String[] MAX_CREATED_AT_COLUMNS = { "max("
 			+ C_CREATED_AT + ")" };
