@@ -2,9 +2,13 @@
 
 package com.DGSD.TweeterTweeter;
 
+import java.util.LinkedList;
+
 import android.animation.LayoutTransition;
 import android.app.ActionBar;
-import android.app.ActionBar.OnNavigationListener;
+import android.app.ActionBar.Tab;
+import android.app.ActionBar.TabListener;
+import android.app.FragmentTransaction;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.Intent;
@@ -20,13 +24,10 @@ import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.DGSD.TweeterTweeter.Fragments.NewTweetFragment;
-import com.DGSD.TweeterTweeter.UI.Adapters.NavigationDropdownFactory;
-import com.DGSD.TweeterTweeter.Utils.Log;
-import com.appsolut.adapter.collections.CollectionsAdapter;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
 
-public class TTActivity extends MapActivity {
+public class TTActivity extends MapActivity implements TabListener{
 
 	private static final String TAG = TTActivity.class.getSimpleName();
 
@@ -68,22 +69,18 @@ public class TTActivity extends MapActivity {
 
 		mActionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.actionbar_background));
 
-		mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+		mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
-		mActionBar.setListNavigationCallbacks(new CollectionsAdapter<String[]>(this, 
-				mApplication.getAccountListWithImage(), new NavigationDropdownFactory<String[]>()), 
-				new OnNavigationListener(){
-			@Override
-			public boolean onNavigationItemSelected(int itemPosition, long itemId) {
-				/*
-				 * This is itemPosition+1 as account naming is not 0-indexed
-				 */
-				Log.i(TAG, "Setting selected account to account" + (itemPosition+1));
-				mApplication.setSelectedAccount("account" + (itemPosition+1));
-				return false;
-			}
-		});
-
+		LinkedList<String[]> list = mApplication.getAccountListWithImage();
+		
+		for(int i = 0, size = list.size(); i<size; i++) {
+			ActionBar.Tab tab = mActionBar.newTab();
+			tab.setText(list.get(i)[0]);
+			tab.setTabListener(this);
+			mActionBar.addTab(tab);
+		}
+		
+		
 		/*if(savedInstanceState != null) {
 			mSecondaryContainer.setVisibility(
 					savedInstanceState.getInt("second_container_visibility", 
@@ -206,5 +203,23 @@ public class TTActivity extends MapActivity {
 		mMapView.setClickable(true);
 		mMapView.setBuiltInZoomControls(true);
 		mMapView.getController().setZoom(12);
+	}
+
+
+	@Override
+	public void onTabReselected(Tab tab, FragmentTransaction ft) {
+		
+	}
+
+
+	@Override
+	public void onTabSelected(Tab tab, FragmentTransaction ft) {
+		mApplication.setSelectedAccount("account" + (tab.getPosition()+1));		
+	}
+
+
+	@Override
+	public void onTabUnselected(Tab tab, FragmentTransaction ft) {
+		
 	}
 }

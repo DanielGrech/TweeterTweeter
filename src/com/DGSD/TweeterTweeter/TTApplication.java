@@ -2,6 +2,7 @@ package com.DGSD.TweeterTweeter;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 
 import twitter4j.GeoLocation;
 import twitter4j.Status;
@@ -230,8 +231,8 @@ OnSharedPreferenceChangeListener {
 		return retval;
 	}
 
-	public synchronized HashSet<String[]> getAccountListWithImage() {
-		HashSet<String[]> retval = new HashSet<String[]>();
+	public synchronized LinkedList<String[]> getAccountListWithImage() {
+		LinkedList<String[]> retval = new LinkedList<String[]>();
 
 		for(String a: mAccountList) {
 			try {
