@@ -292,5 +292,6 @@ public class UpdaterService extends IntentService {
 		public static final int FOLLOWING = 7;
 		public static final int PROFILE_INFO = 8;
 		public static final int NEW_FAVOURITE = 9;
+		public static final int SEARCH = 10;
 	}
 }

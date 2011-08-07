@@ -3,6 +3,7 @@ package com.DGSD.TweeterTweeter;
 import twitter4j.HashtagEntity;
 import twitter4j.MediaEntity;
 import twitter4j.Status;
+import twitter4j.Tweet;
 import twitter4j.URLEntity;
 import twitter4j.User;
 import twitter4j.UserMentionEntity;
@@ -40,6 +41,7 @@ public class StatusData {
 	public static final String RT_BY_TABLE = "rt_by_me_table";
 	public static final String FAVOURITES_PENDING_TABLE = "favourites_pending_table";
 	public static final String UNFAVOURITES_PENDING_TABLE = "unfavourites_pending_table";
+	public static final String TEMP_SEARCH_TABLE = "search_results_table";
 
 
 	/*
@@ -155,6 +157,8 @@ public class StatusData {
 			db.execSQL(statusTemp.replace(TABLE_NAME_TEMPLATE, RT_BY_TABLE));
 
 			db.execSQL(statusTemp.replace(TABLE_NAME_TEMPLATE, RT_OF_TABLE));
+			
+			db.execSQL(statusTemp.replace(TABLE_NAME_TEMPLATE, TEMP_SEARCH_TABLE));
 
 
 			db.execSQL(userTemp.replace(TABLE_NAME_TEMPLATE, FOLLOWERS_TABLE));
@@ -178,6 +182,7 @@ public class StatusData {
 			db.execSQL("drop table " + FOLLOWERS_TABLE);
 			db.execSQL("drop table " + FOLLOWING_TABLE);
 			db.execSQL("drop table " + PROFILE_TABLE);
+			db.execSQL("drop table " + TEMP_SEARCH_TABLE);
 
 			this.onCreate(db);
 		}
@@ -270,6 +275,55 @@ public class StatusData {
 
 		return values;
 	}
+	
+	public static synchronized ContentValues 
+	createSearchContentValues(String account, Tweet t) {
+		ContentValues values = new ContentValues();
+
+
+		String mediaEntities = "";
+		String hashtagEntities = "";
+		String urlEntities = "";
+		String userEntities = "";
+		String placeName = "";
+		String latitude = "";
+		String longitude = "";
+		String retweetedScreenName = "";
+
+		if( t.getPlace() != null ) {
+			placeName = t.getPlace().getName();
+		}
+
+		if(t.getGeoLocation() != null) {
+			latitude = Double.toString(t.getGeoLocation().getLatitude());
+			longitude = Double.toString(t.getGeoLocation().getLongitude());
+		}
+
+
+		values.put(C_ACCOUNT, account);
+		values.put(C_USER, "");
+		values.put(C_ID, Long.toString(t.getId()));
+		values.put(C_CREATED_AT, Long.toString(t.getCreatedAt().getTime()));
+		values.put(C_TEXT, t.getText());
+		values.put(C_USER_NAME, t.getFromUser());
+		values.put(C_SCREEN_NAME, t.getFromUser());
+		values.put(C_IMG, t.getProfileImageUrl());
+		values.put(C_FAV, 0);
+		values.put(C_SRC, t.getSource());
+		values.put(C_IN_REPLY, t.getToUser());
+		values.put(C_ORIG_TWEET, retweetedScreenName);
+		values.put(C_RETWEET_COUNT, 0);
+		values.put(C_PLACE_NAME, placeName);
+		values.put(C_LAT, latitude);
+		values.put(C_LONG, longitude);
+		values.put(C_MEDIA_ENT, mediaEntities);
+		values.put(C_HASH_ENT, hashtagEntities);
+		values.put(C_URL_ENT, urlEntities);
+		values.put(C_USER_ENT, userEntities);
+
+
+		return values;
+	}
 
 	public static synchronized ContentValues createUserContentValues(String account, String user, User u) {
 		ContentValues values = new ContentValues();
@@ -327,6 +381,10 @@ public class StatusData {
 			db.close(); 
 		}
 	}
+	
+	public void clearSearchResults() {
+		this.dbHelper.getWritableDatabase().delete(TEMP_SEARCH_TABLE, null, null);
+	}
 
 	public boolean contains(String table, String accountId, String column, String val) {
 		SQLiteDatabase db = this.dbHelper.getReadableDatabase();
@@ -339,6 +397,12 @@ public class StatusData {
 	}
 
 
+	public Cursor getSearchResults(String accountId, String[] columns) {   
+		SQLiteDatabase db = this.dbHelper.getReadableDatabase();
+		return db.query(TEMP_SEARCH_TABLE, columns, C_ACCOUNT + " IN (\"" + accountId + "\")", 
+				null, null, null, GET_ALL_ORDER_BY);
+	}
+	
 	public Cursor getStatusUpdates(String accountId, String[] columns) {   
 		SQLiteDatabase db = this.dbHelper.getReadableDatabase();
 		return db.query(HOME_TIMELINE_TABLE, columns, C_ACCOUNT + " IN (\"" + accountId + "\")", 

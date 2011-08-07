@@ -8,6 +8,7 @@ import android.animation.LayoutTransition;
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.ActionBar.TabListener;
+import android.app.DialogFragment;
 import android.app.FragmentTransaction;
 import android.content.ClipData;
 import android.content.ClipDescription;
@@ -21,15 +22,15 @@ import android.view.View;
 import android.view.View.OnDragListener;
 import android.view.ViewGroup;
 import android.widget.SearchView;
-import android.widget.Toast;
 
 import com.DGSD.TweeterTweeter.Fragments.NewTweetFragment;
+import com.DGSD.TweeterTweeter.Fragments.SearchFragment;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
 
 public class TTActivity extends MapActivity implements TabListener{
 
-	private static final String TAG = TTActivity.class.getSimpleName();
+	//private static final String TAG = TTActivity.class.getSimpleName();
 
 	public static final String SIDE_MENU = "side_menu";
 	
@@ -105,7 +106,9 @@ public class TTActivity extends MapActivity implements TabListener{
 
 			@Override
 			public boolean onQueryTextSubmit(String query) {
-				Toast.makeText(TTActivity.this, "Searching for " + query, Toast.LENGTH_SHORT).show();
+				DialogFragment f = SearchFragment.newInstance(mApplication.getSelectedAccount(), query);
+				f.setShowsDialog(true);
+				f.show(getFragmentManager(), "dialog");
 				return true;
 			}
 		});

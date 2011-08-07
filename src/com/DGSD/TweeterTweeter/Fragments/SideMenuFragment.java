@@ -178,12 +178,14 @@ public class SideMenuFragment extends ListFragment {
 				break;
 		}
 
-		mCurrentFragmentTag = String.valueOf(new Random().nextInt());
+		if(f != null) {
+			mCurrentFragmentTag = String.valueOf(new Random().nextInt());
 
-		getFragmentManager().beginTransaction()
-		.add(R.id.data_container, f, mCurrentFragmentTag)
-		.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-		.commit();
+			getFragmentManager().beginTransaction()
+			.add(R.id.data_container, f, mCurrentFragmentTag)
+			.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+			.commit();
+		}
 	}
 
 	@Override
@@ -219,16 +221,16 @@ public class SideMenuFragment extends ListFragment {
 				TextView tv = (TextView) v.findViewById(R.id.side_menu_text);
 				v.setTag(tv);
 			} 
-			
+
 			TextView tv = (TextView) v.getTag();
-			
+
 			tv.setText(mListItems[position]);
-			
+
 			//For UI consistency, we dont want to see the top border..
 			if(position == 0) {
 				v.findViewById(R.id.side_menu_top_border).setVisibility(View.GONE);
 			}
-			
+
 			return v;
 		}
 	}

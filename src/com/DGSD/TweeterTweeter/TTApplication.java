@@ -29,6 +29,7 @@ import com.DGSD.TweeterTweeter.DataFetchers.FetchMentions;
 import com.DGSD.TweeterTweeter.DataFetchers.FetchProfileInfo;
 import com.DGSD.TweeterTweeter.DataFetchers.FetchRetweetsBy;
 import com.DGSD.TweeterTweeter.DataFetchers.FetchRetweetsOf;
+import com.DGSD.TweeterTweeter.DataFetchers.FetchSearch;
 import com.DGSD.TweeterTweeter.DataFetchers.FetchStatusUpdates;
 import com.DGSD.TweeterTweeter.DataFetchers.FetchTimeline;
 import com.DGSD.TweeterTweeter.Utils.Log;
@@ -81,6 +82,8 @@ OnSharedPreferenceChangeListener {
 
 	private FetchProfileInfo   mFetchProfileInfo;
 
+	private FetchSearch mFetchSearch;
+	
 	private String mSelectedAccount;
 
 	@Override
@@ -149,6 +152,8 @@ OnSharedPreferenceChangeListener {
 		mFetchFollowing = new FetchFollowing(this);
 
 		mFetchProfileInfo = new FetchProfileInfo(this);
+		
+		mFetchSearch = new FetchSearch(this);
 
 		Log.i(TAG, "onCreated");
 	}
@@ -296,6 +301,12 @@ OnSharedPreferenceChangeListener {
 		twitter.updateStatus(status);
 	}
 
+	public synchronized int fetchSearchResults(String accountId, String query, 
+			int type) { 
+		return mFetchSearch.fetch(accountId, query, type);
+	}
+	
+	
 	public synchronized int fetchStatusUpdates(String accountId, String user, 
 			int type) { 
 		return mFetchStatusUpdates.fetch(accountId, user, type);
