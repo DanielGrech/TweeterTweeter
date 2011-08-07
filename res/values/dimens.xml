@@ -4,4 +4,9 @@
 	<dimen name="side_menu_width">300dip</dimen>
 	
 	<dimen name="text_size_large">18sp</dimen>
+	
+	<!-- Action bar -->
+    <dimen name="actionbar_height">45dip</dimen>
+    <dimen name="actionbar_item_height">45dip</dimen>
+    <dimen name="actionbar_item_width">45dip</dimen>
 </resources>

@@ -6,14 +6,21 @@
     android:layout_weight="1"
     android:orientation="horizontal"
     android:padding="6dip">
-    <LinearLayout
+    <RelativeLayout
 	    android:layout_width="match_parent"
 	    android:layout_height="match_parent"
 	    android:background="@drawable/round_background">
+	    
+	    <com.DGSD.TweeterTweeter.UI.ActionBarCompat 
+	        android:id="@+id/titlebar"
+	        style="@style/ActionBarCompat" />
+	    
 		<com.DGSD.TweeterTweeter.UI.PullToRefreshListView
 		    android:id="@+id/list"
-		    android:layout_width="0dip"
+		    android:layout_width="fill_parent"
 		    android:layout_height="fill_parent" 
-		    android:layout_weight="1"/>
-	</LinearLayout>
+		    android:layout_weight="1"
+		    android:layout_below="@id/titlebar"
+		    android:layout_alignParentBottom="true"/>
+	</RelativeLayout>
 </LinearLayout>

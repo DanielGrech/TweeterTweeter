@@ -79,5 +79,30 @@
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/accent_1</item>
     </style>
+    
+    <style name="ActionBarCompat">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">@dimen/actionbar_height</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:background">@drawable/titlebar_background</item>
+    </style>
+    <style name="ActionBarCompatItem">
+        <item name="android:layout_width">@dimen/actionbar_item_width</item>
+        <item name="android:layout_height">@dimen/actionbar_height</item>
+        <item name="android:padding">5dp</item>
+        <item name="android:layout_marginLeft">1px</item>
+    </style>
+    <style name="ActionBarCompatHomeItem" parent="ActionBarCompatItem">
+        <item name="android:layout_marginRight">1px</item>
+        <item name="android:layout_marginLeft">0px</item>
+    </style>
+    <style name="ActionBarCompatHomeLogo">
+        <item name="android:layout_marginRight">1px</item>
+        <item name="android:layout_marginLeft">0px</item>
+        <item name="android:layout_width">@dimen/actionbar_item_width</item>
+        <item name="android:layout_height">@dimen/actionbar_height</item>
+    </style>
+    <style name="ActionBarCompatProgressBar" parent="@android:style/Widget.ProgressBar.Small">
+    </style>
 
 </resources>
