@@ -16,6 +16,7 @@ import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
+import com.DGSD.TweeterTweeter.R;
 import com.DGSD.TweeterTweeter.TTApplication;
 import com.DGSD.TweeterTweeter.Receivers.PortableReceiver;
 import com.DGSD.TweeterTweeter.Receivers.PortableReceiver.Receiver;
@@ -23,6 +24,8 @@ import com.DGSD.TweeterTweeter.Services.UpdaterService;
 import com.DGSD.TweeterTweeter.Tasks.DataLoadingTask;
 import com.DGSD.TweeterTweeter.UI.PullToRefreshListView;
 import com.DGSD.TweeterTweeter.UI.PullToRefreshListView.OnRefreshListener;
+import com.DGSD.TweeterTweeter.UI.TitleBar;
+import com.DGSD.TweeterTweeter.UI.TitleBar.AbstractAction;
 import com.DGSD.TweeterTweeter.UI.Adapters.BaseViewHolder;
 import com.DGSD.TweeterTweeter.UI.Adapters.EndlessListAdapter;
 import com.DGSD.TweeterTweeter.Utils.Log;
@@ -64,6 +67,8 @@ public abstract class BaseFragment extends DialogFragment {
 	protected DataLoadingTask mCurrentTask;
 
 	protected String mCurrentFragmentTag;
+	
+	protected TitleBar mTitleBar;
 	
 	boolean mIsPortrait;
 
@@ -118,6 +123,12 @@ public abstract class BaseFragment extends DialogFragment {
 	 * @return An adapter which will be wrapped with an EndlessAdapter
 	 */
 	protected abstract SimpleCursorAdapter getListAdapter(Cursor cursor);
+	
+	/**
+	 * 
+	 * @return the title of the fragment
+	 */
+	protected abstract String getTitle();
 
 
 	@Override
@@ -161,6 +172,22 @@ public abstract class BaseFragment extends DialogFragment {
 		//Register the receive to receive results from a service
 		mReceiver.setReceiver(getReceiver());
 
+		if(mTitleBar != null) {
+			mTitleBar.setTitle(getTitle());
+			
+			mTitleBar.addAction(new AbstractAction(R.drawable.go_top) {
+				@Override
+				public void performAction(View view) {
+					try {
+						mListView.setSelection(1);
+					}catch(Exception e) {
+						e.printStackTrace();
+					}
+					
+				}
+			});
+		}
+		
 		setupListView();
 
 		if(mCurrentTask != null && !mCurrentTask.isCancelled()) {

@@ -76,4 +76,9 @@ public class TimelineFragment extends BaseStatusFragment {
 			return false;
 		}
 	}
+	
+	@Override
+	public String getTitle() {
+		return "Timeline";
+	}
 }

@@ -76,4 +76,9 @@ public class RetweetsByFragment extends BaseStatusFragment {
 			return false;
 		}
 	}
+	
+	@Override
+	public String getTitle() {
+		return "Retweeted by you";
+	}
 }

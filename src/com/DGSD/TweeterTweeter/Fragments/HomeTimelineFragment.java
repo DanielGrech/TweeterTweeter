@@ -72,4 +72,9 @@ public class HomeTimelineFragment extends BaseStatusFragment {
 		}
 	}
 	
+	@Override
+	public String getTitle() {
+		return "Home Timeline";
+	}
+	
 }

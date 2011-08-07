@@ -24,6 +24,7 @@ import com.DGSD.TweeterTweeter.Tasks.BlockUserTask;
 import com.DGSD.TweeterTweeter.Tasks.DataLoadingTask;
 import com.DGSD.TweeterTweeter.Tasks.ReportSpamTask;
 import com.DGSD.TweeterTweeter.UI.PullToRefreshListView;
+import com.DGSD.TweeterTweeter.UI.TitleBar;
 import com.DGSD.TweeterTweeter.UI.Adapters.PeopleCursorAdapter;
 import com.DGSD.TweeterTweeter.Utils.ListUtils;
 import com.DGSD.TweeterTweeter.Utils.Log;
@@ -74,6 +75,8 @@ public abstract class BasePeopleFragment extends BaseFragment {
 		View root = inflater.inflate(R.layout.list_fragment_layout, container, false);
 
 		mListView = (PullToRefreshListView) root.findViewById(R.id.list);
+		
+		mTitleBar = (TitleBar) root.findViewById(R.id.titlebar);
 		
 		Log.i(TAG, "Returning root from onCreateView");
 

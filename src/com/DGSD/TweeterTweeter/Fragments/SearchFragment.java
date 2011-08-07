@@ -64,5 +64,10 @@ public class SearchFragment extends BaseStatusFragment {
 	protected int getType() {
 		return UpdaterService.DATATYPES.SEARCH;
 	}
+	
+	@Override
+	public String getTitle() {
+		return "Search";
+	}
 
 }

@@ -83,4 +83,9 @@ public class FavouritesListFragment extends BaseStatusFragment {
 			return false;
 		}
 	}
+	
+	@Override
+	public String getTitle() {
+		return "Favourites";
+	}
 }

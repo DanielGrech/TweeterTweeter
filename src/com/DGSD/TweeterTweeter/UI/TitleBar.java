@@ -39,7 +39,7 @@ import android.widget.Toast;
 
 import com.DGSD.TweeterTweeter.R;
 
-public class ActionBarCompat extends RelativeLayout implements OnClickListener {
+public class TitleBar extends RelativeLayout implements OnClickListener {
 
 	private LayoutInflater mInflater;
 	private RelativeLayout mBarView;
@@ -52,12 +52,12 @@ public class ActionBarCompat extends RelativeLayout implements OnClickListener {
 	private RelativeLayout mHomeLayout;
 	private ProgressBar mProgress;
 
-	public ActionBarCompat(Context context, AttributeSet attrs) {
+	public TitleBar(Context context, AttributeSet attrs) {
 		super(context, attrs);
 
 		mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-		mBarView = (RelativeLayout) mInflater.inflate(R.layout.actionbar_compat, null);
+		mBarView = (RelativeLayout) mInflater.inflate(R.layout.titlebar, null);
 		addView(mBarView);
 
 		mLogoView = (ImageView) mBarView.findViewById(R.id.actionbar_home_logo);
@@ -242,10 +242,10 @@ public class ActionBarCompat extends RelativeLayout implements OnClickListener {
 	 * @return a view
 	 */
 	private View inflateAction(Action action) {
-		View view = mInflater.inflate(R.layout.actionbarcompat_item, mActionsView, false);
+		View view = mInflater.inflate(R.layout.titlebar_item, mActionsView, false);
 
 		ImageButton labelView =
-			(ImageButton) view.findViewById(R.id.actionbar_item);
+			(ImageButton) view.findViewById(R.id.titlebar_item);
 		labelView.setImageResource(action.getDrawable());
 
 		view.setTag(action);

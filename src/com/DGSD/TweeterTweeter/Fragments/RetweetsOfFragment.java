@@ -72,4 +72,9 @@ public class RetweetsOfFragment extends BaseStatusFragment {
 			return false;
 		}
 	}
+	
+	@Override
+	public String getTitle() {
+		return "Retweets of you";
+	}
 }

@@ -11,7 +11,7 @@
 	    android:layout_height="match_parent"
 	    android:background="@drawable/round_background">
 	    
-	    <com.DGSD.TweeterTweeter.UI.ActionBarCompat 
+	    <com.DGSD.TweeterTweeter.UI.TitleBar 
 	        android:id="@+id/titlebar"
 	        style="@style/ActionBarCompat" />
 	    

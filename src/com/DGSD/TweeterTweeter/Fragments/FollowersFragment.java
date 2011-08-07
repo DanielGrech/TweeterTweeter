@@ -75,4 +75,9 @@ public class FollowersFragment extends BasePeopleFragment {
 			return false;
 		}
 	}
+	
+	@Override
+	public String getTitle() {
+		return "Followers";
+	}
 }
