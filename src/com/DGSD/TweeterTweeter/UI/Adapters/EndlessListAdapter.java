@@ -45,6 +45,7 @@ public class EndlessListAdapter extends EndlessAdapter {
 			mCursor = mFragment.getCurrent();
 			return true;
 		} else {
+			mCursor = mFragment.getCurrent();
 			return false;
 		}
 	}
