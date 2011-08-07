@@ -112,14 +112,15 @@ containing a value of this type.
         public static final int sidebar_background=0x7f020026;
         public static final int sidebar_list_separator=0x7f020027;
         public static final int single_tab=0x7f020028;
-        public static final int titlebar_back_indicator=0x7f020029;
-        public static final int titlebar_background=0x7f02002a;
-        public static final int titlebar_btn=0x7f02002b;
-        public static final int titlebar_btn_normal=0x7f02002c;
-        public static final int titlebar_btn_pressed=0x7f02002d;
-        public static final int twitter_icon=0x7f02002e;
-        public static final int twitter_notification_icon=0x7f02002f;
-        public static final int word_icon=0x7f020030;
+        public static final int titlebar_action_background=0x7f020029;
+        public static final int titlebar_back_indicator=0x7f02002a;
+        public static final int titlebar_background=0x7f02002b;
+        public static final int titlebar_btn=0x7f02002c;
+        public static final int titlebar_btn_normal=0x7f02002d;
+        public static final int titlebar_btn_pressed=0x7f02002e;
+        public static final int twitter_icon=0x7f02002f;
+        public static final int twitter_notification_icon=0x7f020030;
+        public static final int word_icon=0x7f020031;
     }
     public static final class id {
         public static final int actionbar_actions=0x7f0c0030;

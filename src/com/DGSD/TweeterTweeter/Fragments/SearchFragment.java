@@ -10,6 +10,8 @@ import com.DGSD.TweeterTweeter.Utils.Log;
 
 public class SearchFragment extends BaseStatusFragment {
 
+	private static String mLastQuery = null;
+	
 	private static final String TAG = SearchFragment.class.getSimpleName();
 	
 	private String mQuery;
@@ -34,11 +36,22 @@ public class SearchFragment extends BaseStatusFragment {
 		mQuery = getArguments().getString("query");
 		
 		mAccountId = getArguments().getString("account");
+		
+		if(mLastQuery != mQuery) {
+			mApplication.getStatusData().clearSearchResults();
+		}
+		
+		mLastQuery = mQuery;
 	}
 	
 	@Override
 	public boolean getNewest() throws TwitterException {
 		Log.i(TAG, "Getting newest search results");
+		
+		if(mQuery == null) {
+			//TODO: Should show saved searches here!
+			return false;
+		}
 		
 		if(mApplication.fetchSearchResults(mAccountId, mQuery, 
 				DataFetcher.FETCH_NEWEST) > 0) {
@@ -56,8 +69,12 @@ public class SearchFragment extends BaseStatusFragment {
 
 	@Override
 	public boolean getOlder() throws TwitterException {
-		// TODO Auto-generated method stub
-		return false;
+		if(mApplication.fetchSearchResults(mAccountId, mQuery, 
+				DataFetcher.FETCH_OLDER) > 0) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	@Override
@@ -67,7 +84,11 @@ public class SearchFragment extends BaseStatusFragment {
 	
 	@Override
 	public String getTitle() {
-		return "Search";
+		if(mQuery != null) {
+			return "Search for '" + mQuery + "'";
+		} else {
+			return "Search";
+		}
 	}
 
 }

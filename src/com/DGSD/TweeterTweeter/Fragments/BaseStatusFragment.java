@@ -142,9 +142,16 @@ public abstract class BaseStatusFragment extends BaseFragment {
 
 		return root;
 	}
-	
-	
 
+	/*@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+		
+		if(mListView != null) {
+			mListView.refresh();
+		}
+	}*/
+	
 	private class StatusCallback implements ActionMode.Callback {
 
 		private String mTweetId;

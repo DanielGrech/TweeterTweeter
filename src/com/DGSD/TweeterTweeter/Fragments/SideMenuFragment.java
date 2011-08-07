@@ -24,17 +24,17 @@ public class SideMenuFragment extends ListFragment {
 
 	private static final String KEY_SELECTED_ITEM = "selected_item";
 
-	private static final int ITEM_HOME_TIMELINE = 0;
-	private static final int ITEM_DM_RECEIVED = 1;
-	private static final int ITEM_DM_SENT = 2;
-	private static final int ITEM_FAVOURITES = 3;
-	private static final int ITEM_FOLLOWERS = 4;
-	private static final int ITEM_FOLLOWING = 5;
-	private static final int ITEM_MENTIONS = 6;
-	private static final int ITEM_RETWEETS_BY = 7;
-	private static final int ITEM_RETWEETS_OF = 8;
-	private static final int ITEM_SAVED_SEARCH = 9;
-	private static final int ITEM_LISTS = 10;
+	public static final int ITEM_HOME_TIMELINE = 0;
+	public static final int ITEM_DM_RECEIVED = 1;
+	public static final int ITEM_DM_SENT = 2;
+	public static final int ITEM_FAVOURITES = 3;
+	public static final int ITEM_FOLLOWERS = 4;
+	public static final int ITEM_FOLLOWING = 5;
+	public static final int ITEM_MENTIONS = 6;
+	public static final int ITEM_RETWEETS_BY = 7;
+	public static final int ITEM_RETWEETS_OF = 8;
+	public static final int ITEM_SAVED_SEARCH = 9;
+	public static final int ITEM_LISTS = 10;
 
 	private int mSelectedItem;
 
@@ -89,7 +89,7 @@ public class SideMenuFragment extends ListFragment {
 			System.err.println("CANT RESTORE mCurrentFragmentTag");
 			//We aren't creating after a rotation!
 			mSelectedItem = 0;
-			displayFragmentOfItem(mSelectedItem);
+			displayFragmentOfItem(mSelectedItem, null);
 		}
 
 	}
@@ -100,13 +100,11 @@ public class SideMenuFragment extends ListFragment {
 			//We are already showing this item!
 			return;
 		} else {
-			mSelectedItem = pos;
-
-			displayFragmentOfItem(mSelectedItem);
+			setCurrentSelectedItem(pos, null);
 		}
 	}
 
-	private void displayFragmentOfItem(int itemPos) {
+	public void displayFragmentOfItem(int itemPos, Object extra) {
 		getListView().setItemChecked(itemPos, true);
 
 		if(mCurrentFragmentTag != null) {
@@ -166,7 +164,7 @@ public class SideMenuFragment extends ListFragment {
 				break;
 
 			case ITEM_SAVED_SEARCH:
-
+				f = SearchFragment.newInstance(account, extra == null ? null : (String) extra);
 				break;
 
 			case ITEM_LISTS:
@@ -198,6 +196,12 @@ public class SideMenuFragment extends ListFragment {
 
 	public static String getCurrentFragmentTag() {
 		return mCurrentFragmentTag;
+	}
+	
+	public void setCurrentSelectedItem(int pos, Object extra) {
+		mSelectedItem = pos;
+		
+		displayFragmentOfItem(mSelectedItem, extra);
 	}
 
 	private class BorderedArrayAdapter extends ArrayAdapter<String> {

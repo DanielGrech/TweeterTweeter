@@ -19,4 +19,6 @@
         android:startColor="@color/actionbar_background_start"
         android:endColor="@color/actionbar_background_end"
         android:angle="-90"/>
+        
+        <corners  android:topRightRadius="7dp"/> 
 </shape>

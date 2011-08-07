@@ -60,7 +60,7 @@
             android:layout_centerVertical="true"
             android:layout_margin="0dp"
             android:padding="0dp"
-            android:background="@color/actionbar_separator"
+            android:background="@drawable/titlebar_action_background"
             />
         
         <RelativeLayout

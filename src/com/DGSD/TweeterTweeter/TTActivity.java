@@ -8,10 +8,10 @@ import android.animation.LayoutTransition;
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.ActionBar.TabListener;
-import android.app.DialogFragment;
 import android.app.FragmentTransaction;
 import android.content.ClipData;
 import android.content.ClipDescription;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -21,10 +21,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnDragListener;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.SearchView;
 
 import com.DGSD.TweeterTweeter.Fragments.NewTweetFragment;
-import com.DGSD.TweeterTweeter.Fragments.SearchFragment;
+import com.DGSD.TweeterTweeter.Fragments.SideMenuFragment;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
 
@@ -40,6 +41,8 @@ public class TTActivity extends MapActivity implements TabListener{
 	private TTApplication mApplication;
 
 	private ViewGroup mDataContainer;
+	
+	private SideMenuFragment mSideMenu;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -55,6 +58,8 @@ public class TTActivity extends MapActivity implements TabListener{
 
 		mDataContainer = (ViewGroup) findViewById(R.id.data_container);
 
+		mSideMenu = (SideMenuFragment) getFragmentManager().findFragmentById(R.id.side_menu);
+		
 		LayoutTransition lt = new LayoutTransition();
 
 		lt.setStagger(LayoutTransition.CHANGE_APPEARING, 30);
@@ -106,9 +111,15 @@ public class TTActivity extends MapActivity implements TabListener{
 
 			@Override
 			public boolean onQueryTextSubmit(String query) {
-				DialogFragment f = SearchFragment.newInstance(mApplication.getSelectedAccount(), query);
+				mSideMenu.setCurrentSelectedItem(SideMenuFragment.ITEM_SAVED_SEARCH, query);
+				
+				InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+				imm.hideSoftInputFromWindow(searchView.getWindowToken(), 0);
+				
+				/*DialogFragment f = SearchFragment.newInstance(mApplication.getSelectedAccount(), query);
 				f.setShowsDialog(true);
-				f.show(getFragmentManager(), "dialog");
+				f.setStyle(DialogFragment.STYLE_NO_FRAME, 0);
+				f.show(getFragmentManager(), "dialog");*/
 				return true;
 			}
 		});

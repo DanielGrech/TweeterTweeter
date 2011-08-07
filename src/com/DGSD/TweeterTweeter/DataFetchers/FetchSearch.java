@@ -11,29 +11,34 @@ import com.DGSD.TweeterTweeter.StatusData;
 import com.DGSD.TweeterTweeter.TTApplication;
 
 public class FetchSearch extends DataFetcher {
+	private static String mLastQuery = null;
+	
+	private static int mPageCounter = 1;
+	
 	public FetchSearch(TTApplication app) {
 		super(app);
 	}
 
 	public int fetchData(String account, String query, int type) throws TwitterException {
-		/*Paging p = new Paging(1, BaseFragment.ELEMENTS_PER_PAGE);
-		if(type == FETCH_NEWEST) {
-			String latestTweet = 
-				mApplication.getStatusData().getLatestTweetId(StatusData.HOME_TIMELINE_TABLE, account);
+		int pageToUse;
 
-			if(latestTweet != null) {
-				p.sinceId(Long.valueOf(latestTweet));
-			}
+		if(mLastQuery == null) {
+			mLastQuery = query;
+		}
+		
+		if(mLastQuery != query) {
+			//We have a new search; reset all counters;
+			mLastQuery = query;
+			mPageCounter = 1;
+			pageToUse = 1;
 		} else {
-			String oldestTweet = 
-				mApplication.getStatusData().getOldestTweetId(StatusData.HOME_TIMELINE_TABLE, account);
-			
-			if(oldestTweet != null) {
-				p.maxId(Long.valueOf(oldestTweet));
-			}
-		}*/
-
+			pageToUse = (type == FETCH_NEWEST) ? 1 : ++mPageCounter; 
+		}
+		
+		System.err.println("MPAGECOUNTER = " + mPageCounter + " mLASTQUERY = " + mLastQuery + " TO USE: " + pageToUse);
+		
 		Query mQuery = new Query(query);
+		mQuery.setPage(pageToUse);
 		QueryResult results= mTwitter.search(mQuery);
 		
 		List<Tweet> tweets = results.getTweets();

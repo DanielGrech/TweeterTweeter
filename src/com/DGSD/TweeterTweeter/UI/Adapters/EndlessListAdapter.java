@@ -22,7 +22,7 @@ public class EndlessListAdapter extends EndlessAdapter {
 	private LinearLayout mPendingView = null;
 
 	private Cursor mCursor;
-	
+
 	private BaseFragment mFragment;
 
 	public EndlessListAdapter(BaseFragment fragment, SimpleCursorAdapter sca) {
@@ -41,9 +41,12 @@ public class EndlessListAdapter extends EndlessAdapter {
 	@Override
 	protected boolean cacheInBackground() throws TwitterException{
 		Log.i(TAG, "GETTING OLDER DATA");
-		mFragment.getOlder();
-		mCursor = mFragment.getCurrent();
-		return false;
+		if(mFragment.getOlder()) {
+			mCursor = mFragment.getCurrent();
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	@Override

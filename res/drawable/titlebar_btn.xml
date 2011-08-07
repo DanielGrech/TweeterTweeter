@@ -48,4 +48,6 @@
         android:state_pressed="true"
         android:drawable="@drawable/titlebar_btn_pressed"
         />
+        
+   <item android:drawable="@drawable/titlebar_btn_normal" />
 </selector>
